@@ -1,0 +1,31 @@
+{
+  "servers": [
+    {
+      "serverId": "1",
+      "name": "Murcia",
+      "endpoint": "http://murcia-server.com"
+    },
+    {
+      "serverId": "2",
+      "name": "Madrid",
+      "endpoint": "http://madrid-server.com"
+    }
+  ],
+  "devices": [
+    {
+      "serial": "123456",
+      "apikey": "abcd",
+      "lastCommunication": "2023-07-12T10:00:00Z",
+      "serverId": "1"
+    }
+  ],
+  "messages": [
+    {
+      "serial": "123456",
+      "timestamp": "2023-07-12T10:00:00Z",
+      "messageType": "attrs",
+      "content": { "temperature": 25, "humidity": 60 }
+    }
+  ],
+  "users": [{ "name": "admin", "password": "admin123" }]
+}
