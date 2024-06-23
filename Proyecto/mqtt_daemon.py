@@ -4,11 +4,12 @@ import json
 from datetime import datetime
 import threading
 
+# PROBLEMA: NO MUERE CON CTRL+C
+
 # Configuración de los servidores MQTT
 SERVERS = [
     {"broker": "agriculture-dev.odins.es", "port": 11883, "username": "8hHjQnvZ9TnZ3QVgrzkhnF2G4xunJW", "password": "9xPkYtJ8eMBvJYNMXRd6kkMhFdZVhz"},
     # Si tengo mas brokers los añado aquí
-    # {"broker": "otro-servidor", "port": 11883, "username": "usuario", "password": "contraseña"}
 ]
 
 # URL del json-server
@@ -51,13 +52,9 @@ def start_client(broker, port, username, password):
     client.connect(broker, port, 60)
     client.loop_forever()
 
-# Crear y arrancar un hilo por cada servidor (ni idea de si tengo que hacer esto)
+# Crear y arrancar un hilo por cada servidor MQTT
 threads = []
 for server in SERVERS:
     thread = threading.Thread(target=start_client, args=(server["broker"], server["port"], server["username"], server["password"]))
     threads.append(thread)
     thread.start()
-
-# Esperar a que todos los hilos terminen (tampoco se si sera necesario)
-for thread in threads:
-    thread.join()
