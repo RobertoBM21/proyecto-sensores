@@ -13,7 +13,7 @@ SERVERS = [
 
 # URL del json-server
 JSON_SERVER_URL = "http://localhost:3000/messages"
-TOPIC = "/apikey/+/attrs"
+TOPIC = "#" # Para suscribirse a todos los topics
 
 def on_connect(client, userdata, flags, rc):
     print(f"Conectado con código {rc} a {client._host}")
@@ -30,7 +30,7 @@ def on_message(client, userdata, msg):
     # Crear el objeto de mensaje
     message = {
         "serial": serial,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now().isoformat(),
         "messageType": "attrs",
         "content": json.loads(msg.payload.decode())
     }
