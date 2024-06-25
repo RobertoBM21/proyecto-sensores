@@ -30,8 +30,36 @@ header img {
   background-color: #79b73c; /* Color verde oscuro al pasar el mouse */
 }
 
+.btn-search {
+  background-color: #92d050; /* Color verde del botón */
+  color: white; /* Color del texto */
+  border: none; /* Sin borde */
+  border-radius: 30px; /* Bordes redondeados */
+  padding: 8px 70px; /* Espaciado interno ajustado */
+  font-size: 16px; /* Tamaño de la fuente */
+  font-weight: bold;
+  cursor: pointer; /* Cambia el cursor al pasar el mouse */
+  transition: background-color 0.3s ease; /* Animación suave del color de fondo */
+}
+
+.btn-search:hover {
+  background-color: #79b73c; /* Color verde oscuro al pasar el mouse */
+}
+
 main {
   padding: 20px;
+}
+
+h1 {
+  font-size: 3.5rem;
+  font-weight: bold;
+}
+
+p {
+  color: #666666;
+  font-weight: bold;
+  line-height: 2;
+  margin-top: 20px;
 }
 
 form input,
