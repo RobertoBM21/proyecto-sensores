@@ -1,9 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Asignar el evento de clic al botón de búsqueda
   document
     .getElementById("searchButton")
     .addEventListener("click", searchDevices);
-  // Asignar el evento de clic al botón de filtros
   document
     .getElementById("filterButton")
     .addEventListener("click", toggleFilters);
@@ -15,7 +13,11 @@ function toggleFilters() {
 }
 
 function toggleDropdown() {
-  document.getElementById("serverDropdown").classList.toggle("show");
+  const serverDropdown = document.getElementById("serverDropdown");
+  const dropdownIcon = document.getElementById("dropdownIcon");
+  serverDropdown.classList.toggle("show");
+  dropdownIcon.classList.toggle("fa-chevron-down");
+  dropdownIcon.classList.toggle("fa-chevron-up");
 }
 
 function searchDevices() {
@@ -70,7 +72,7 @@ function viewDeviceDetails(serial) {
   window.location.href = `device.html?serial=${serial}`;
 }
 
-// Close the dropdown if the user clicks outside of it
+// Maneja el dropdown de servidores
 window.onclick = function (event) {
   if (!event.target.matches(".dropdown-toggle")) {
     var dropdowns = document.getElementsByClassName("dropdown-menu");
@@ -78,6 +80,12 @@ window.onclick = function (event) {
       var openDropdown = dropdowns[i];
       if (openDropdown.classList.contains("show")) {
         openDropdown.classList.remove("show");
+        document
+          .getElementById("dropdownIcon")
+          .classList.remove("fa-chevron-up");
+        document
+          .getElementById("dropdownIcon")
+          .classList.add("fa-chevron-down");
       }
     }
   }

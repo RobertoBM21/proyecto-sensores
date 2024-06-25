@@ -14,7 +14,6 @@
       <div class="container d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
           <img src="logo.png" alt="OdinS" class="mr-3" />
-          <h1 class="h3 mb-0">OdinS</h1>
         </div>
         <button class="btn btn-success ml-3" onclick="login()">Login</button>
       </div>
@@ -39,7 +38,8 @@
               aria-expanded="false"
               onclick="toggleDropdown()"
             >
-              Selecciona Servidores
+              Servidores
+              <span id="dropdownIcon" class="fas fa-chevron-down"></span>
             </button>
             <div
               class="dropdown-menu"
@@ -119,15 +119,16 @@
       <div id="results"></div>
       <nav>
         <ul id="pagination" class="pagination justify-content-center">
-          <!-- Pagination items will be inserted here -->
+          <!-- Aqui se muestran los resultados de la busqueda -->
         </ul>
       </nav>
     </main>
     <footer class="bg-light py-3">
       <div class="container text-center">
-        <!-- Footer content here -->
+        <!-- FOOTER CUANDO LO TENGA -->
       </div>
     </footer>
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
