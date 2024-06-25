@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sensores</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="bg-light py-3">
+      <div class="container d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <img src="logo.png" alt="OdinS" class="mr-3" />
+          <h1 class="h3 mb-0">OdinS</h1>
+        </div>
+        <button class="btn btn-success ml-3" onclick="login()">Login</button>
+      </div>
+    </header>
+    <main class="container my-5">
+      <div class="text-center mb-5">
+        <h1>Sensores</h1>
+        <p>
+          Aquí podrás acceder a la información transmitida por los sensores de
+          OdinS distribuidos por todo el país.
+        </p>
+      </div>
+      <div class="row mb-3">
+        <div class="col-md-4 offset-md-8 text-right">
+          <label for="servers" class="d-block">Servidores</label>
+          <div class="dropdown">
+            <button
+              class="btn btn-secondary dropdown-toggle"
+              type="button"
+              id="dropdownMenuButton"
+              aria-haspopup="true"
+              aria-expanded="false"
+              onclick="toggleDropdown()"
+            >
+              Selecciona Servidores
+            </button>
+            <div
+              class="dropdown-menu"
+              aria-labelledby="dropdownMenuButton"
+              id="serverDropdown"
+            >
+              <label class="dropdown-item">
+                <input type="checkbox" value="murcia" checked /> Murcia
+              </label>
+              <label class="dropdown-item">
+                <input type="checkbox" value="madrid" checked /> Madrid
+              </label>
+              <label class="dropdown-item">
+                <input type="checkbox" value="server3" checked /> Servidor 3
+              </label>
+              <label class="dropdown-item">
+                <input type="checkbox" value="server4" checked /> Servidor 4
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <form id="searchForm" class="mb-5">
+        <div class="form-row">
+          <div class="col-md-4 mb-3">
+            <input
+              type="text"
+              id="serial"
+              class="form-control"
+              placeholder="Número de serie"
+            />
+          </div>
+          <div class="col-md-2 mb-3">
+            <button
+              type="button"
+              id="filterButton"
+              class="btn btn-secondary btn-block"
+            >
+              Filtros
+            </button>
+          </div>
+          <div class="col-md-2 mb-3">
+            <button
+              type="button"
+              id="searchButton"
+              class="btn btn-primary btn-block"
+            >
+              Buscar
+            </button>
+          </div>
+        </div>
+        <div id="filters" class="form-row" style="display: none">
+          <div class="col-md-3 mb-3">
+            <input
+              type="text"
+              id="apikey"
+              class="form-control"
+              placeholder="API Key"
+            />
+          </div>
+          <div class="col-md-3 mb-3">
+            <input type="date" id="startDate" class="form-control" />
+          </div>
+          <div class="col-md-3 mb-3">
+            <input type="date" id="endDate" class="form-control" />
+          </div>
+          <div class="col-md-3 mb-3">
+            <input
+              type="text"
+              id="topic"
+              class="form-control"
+              placeholder="Topic"
+            />
+          </div>
+        </div>
+      </form>
+      <div id="results"></div>
+      <nav>
+        <ul id="pagination" class="pagination justify-content-center">
+          <!-- Pagination items will be inserted here -->
+        </ul>
+      </nav>
+    </main>
+    <footer class="bg-light py-3">
+      <div class="container text-center">
+        <!-- Footer content here -->
+      </div>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
