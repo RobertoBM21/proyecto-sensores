@@ -74,12 +74,11 @@ function viewDeviceDetails(serial) {
 
 // Maneja el dropdown de servidores
 window.onclick = function (event) {
-  if (!event.target.matches(".dropdown-toggle")) {
-    var dropdowns = document.getElementsByClassName("dropdown-menu");
-    for (var i = 0; i < dropdowns.length; i++) {
-      var openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains("show")) {
-        openDropdown.classList.remove("show");
+  if (!event.target.closest(".dropdown-toggle")) {
+    const dropdowns = document.getElementsByClassName("dropdown-menu");
+    for (const dropdown of dropdowns) {
+      if (dropdown.classList.contains("show")) {
+        dropdown.classList.remove("show");
         document
           .getElementById("dropdownIcon")
           .classList.remove("fa-chevron-up");

@@ -5,23 +5,29 @@ body {
 }
 
 header {
-  border-bottom: 2px solid #dcdcdc;
+  background-color: #f7f7f7;
+  border-bottom: 2px solid #92d050;
+  padding: 1rem 0; /* Se supone el padding vertical se mantiene gracias a esto*/
 }
 
-header .logo {
-  display: flex;
-  align-items: center;
+header img {
+  max-width: 20%;
 }
 
-header .logo img {
-  height: 50px;
-  margin-right: 10px;
+.btn-login {
+  background-color: #92d050; /* Color verde del botón */
+  color: white; /* Color del texto */
+  border: none; /* Sin borde */
+  border-radius: 30px; /* Bordes redondeados */
+  padding: 8px 30px; /* Espaciado interno ajustado */
+  font-size: 16px; /* Tamaño de la fuente */
+  font-weight: bold;
+  cursor: pointer; /* Cambia el cursor al pasar el mouse */
+  transition: background-color 0.3s ease; /* Animación suave del color de fondo */
 }
 
-header .logo h1 {
-  margin: 0;
-  font-size: 24px;
-  color: #333;
+.btn-login:hover {
+  background-color: #79b73c; /* Color verde oscuro al pasar el mouse */
 }
 
 main {
@@ -65,7 +71,18 @@ form button {
   border-radius: 5px;
 }
 
+.dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
 .dropdown-menu {
+  display: none;
   max-height: 200px;
   overflow-y: auto;
+}
+
+.dropdown-menu.show {
+  display: block;
 }

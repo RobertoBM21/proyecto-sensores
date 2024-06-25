@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Sensores</title>
+    <title>Sensores OdinS</title>
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
@@ -10,37 +10,31 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header class="bg-light py-3">
-      <div class="container d-flex justify-content-between align-items-center">
+    <header class="bg-light py-0">
+      <div
+        class="container-fluid d-flex justify-content-between align-items-center px-5"
+      >
         <div class="d-flex align-items-center">
-          <img src="logo.png" alt="OdinS" class="mr-3" />
+          <img src="images/logo.png" alt="OdinS" class="mr-3" />
+          <!-- AUN NO TENGO LA IMAGEN -->
         </div>
-        <button class="btn btn-success ml-3" onclick="login()">Login</button>
+        <button class="btn-login btn-sm ml-3" onclick="login()">Login</button>
       </div>
     </header>
     <main class="container my-5">
-      <div class="text-center mb-5">
-        <h1>Sensores</h1>
-        <p>
-          Aquí podrás acceder a la información transmitida por los sensores de
-          OdinS distribuidos por todo el país.
-        </p>
-      </div>
       <div class="row mb-3">
         <div class="col-md-4 offset-md-8 text-right">
-          <label for="servers" class="d-block">Servidores</label>
           <div class="dropdown">
-            <button
-              class="btn btn-secondary dropdown-toggle"
-              type="button"
+            <div
+              class="dropdown-toggle"
               id="dropdownMenuButton"
+              onclick="toggleDropdown()"
               aria-haspopup="true"
               aria-expanded="false"
-              onclick="toggleDropdown()"
             >
-              Servidores
+              <span id="dropdownText">Servidores</span>
               <span id="dropdownIcon" class="fas fa-chevron-down"></span>
-            </button>
+            </div>
             <div
               class="dropdown-menu"
               aria-labelledby="dropdownMenuButton"
@@ -62,6 +56,13 @@
           </div>
         </div>
       </div>
+      <div class="text-center mb-5">
+        <h1>Sensores</h1>
+        <p>
+          Aquí podrás acceder a la información transmitida por los sensores de
+          OdinS distribuidos por todo el país.
+        </p>
+      </div>
       <form id="searchForm" class="mb-5">
         <div class="form-row">
           <div class="col-md-4 mb-3">
@@ -81,6 +82,8 @@
               Filtros
             </button>
           </div>
+        </div>
+        <div class="form-row">
           <div class="col-md-2 mb-3">
             <button
               type="button"
