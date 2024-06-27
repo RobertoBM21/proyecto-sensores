@@ -9,7 +9,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function toggleFilters() {
   const filters = document.getElementById("filters");
-  filters.style.display = filters.style.display === "none" ? "flex" : "none";
+  const searchButton =
+    document.getElementById("searchButton").parentElement.parentElement;
+  // No he sabido hacerlo sin javascript
+  if (filters.style.display === "none") {
+    filters.style.display = "flex";
+    searchButton.style.marginTop = "1rem"; // Añade un margen superior cuando se muestran los filtros
+  } else {
+    filters.style.display = "none";
+    searchButton.style.marginTop = "0"; // Elimina el margen superior cuando se ocultan los filtros
+  }
 }
 
 function toggleDropdown() {
@@ -72,7 +81,7 @@ function viewDeviceDetails(serial) {
   window.location.href = `device.html?serial=${serial}`;
 }
 
-// Maneja el dropdown de servidores
+// Maneja el dropdown de servidores (habra que modificarlo)
 window.onclick = function (event) {
   if (!event.target.closest(".dropdown-toggle")) {
     const dropdowns = document.getElementsByClassName("dropdown-menu");

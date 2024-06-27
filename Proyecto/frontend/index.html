@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <title>Sensores OdinS</title>
     <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -15,49 +15,54 @@
         class="container-fluid d-flex justify-content-between align-items-center px-5"
       >
         <div class="d-flex align-items-center">
-          <img src="images/logo.png" alt="OdinS" class="mr-3" />
-          <!-- AUN NO TENGO LA IMAGEN -->
+          <img src="images/logo.png" alt="OdinS" class="me-3" />
         </div>
-        <button class="btn-login btn-sm ml-3" onclick="login()">Login</button>
+        <button class="btn-login btn-sm ms-3" onclick="login()">Login</button>
       </div>
     </header>
     <main class="container my-5">
-      <!-- CAMBIAR CASI TODO -->
       <div class="row mb-3">
-        <div class="col-md-4 offset-md-11 text-right">
+        <div class="col-md-4 offset-md-8 text-end">
           <div class="dropdown">
             <div
               class="dropdown-toggle"
               id="dropdownMenuButton"
-              onclick="toggleDropdown()"
-              aria-haspopup="true"
+              data-bs-toggle="dropdown"
               aria-expanded="false"
             >
               <span id="dropdownText">Servidores</span>
-              <span id="dropdownIcon" class="fas fa-chevron-down"></span>
+              <span id="dropdownIcon" class="fas fa-angle-down"></span>
             </div>
-            <div
+            <ul
               class="dropdown-menu"
               aria-labelledby="dropdownMenuButton"
               id="serverDropdown"
             >
-              <label class="dropdown-item">
-                <input type="checkbox" value="murcia" checked /> Murcia
-              </label>
-              <label class="dropdown-item">
-                <input type="checkbox" value="madrid" checked /> Madrid
-              </label>
-              <label class="dropdown-item">
-                <input type="checkbox" value="server3" checked /> Servidor 3
-              </label>
-              <label class="dropdown-item">
-                <input type="checkbox" value="server4" checked /> Servidor 4
-              </label>
-            </div>
+              <li>
+                <label class="dropdown-item">
+                  <input type="checkbox" value="murcia" checked /> Murcia
+                </label>
+              </li>
+              <li>
+                <label class="dropdown-item">
+                  <input type="checkbox" value="madrid" checked /> Madrid
+                </label>
+              </li>
+              <li>
+                <label class="dropdown-item">
+                  <input type="checkbox" value="server3" checked /> Servidor 3
+                </label>
+              </li>
+              <li>
+                <label class="dropdown-item">
+                  <input type="checkbox" value="server4" checked /> Servidor 4
+                </label>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
-      <div class="text-center mb-5">
+      <div id="main" class="text-center mb-5">
         <h1>Sensores</h1>
         <p>
           Aquí podrás acceder a la información transmitida por los sensores de
@@ -66,9 +71,8 @@
         </p>
       </div>
       <form id="searchForm" class="mb-5">
-        <div class="form-row">
-          <!-- CAMBIAR A FORMULARIO FLOTANTE DE BOOTSTRAP -->
-          <div class="col-md-4 mb-3">
+        <div class="row mb-3 justify-content-center">
+          <div class="col-md-10 mb-3">
             <input
               type="text"
               id="serial"
@@ -76,30 +80,14 @@
               placeholder="Número de serie"
             />
           </div>
-          <!-- REAJUSTAR -->
           <div class="col-md-2 mb-3">
-            <button
-              type="button"
-              id="filterButton"
-              class="btn btn-secondary btn-block"
-            >
+            <button type="button" id="filterButton" class="btn btn-secondary">
               Filtros
             </button>
           </div>
         </div>
-        <div class="form-row">
-          <div class="col-md-2 mb-3">
-            <button
-              type="button"
-              id="searchButton"
-              class="btn-search btn-sm ml-3"
-            >
-              Buscar
-            </button>
-          </div>
-        </div>
-        <div id="filters" class="form-row" style="display: none">
-          <div class="col-md-3 mb-3">
+        <div id="filters" class="row mb-3" style="display: none">
+          <div class="col-md-6 mt-4 mb-4">
             <input
               type="text"
               id="apikey"
@@ -107,19 +95,36 @@
               placeholder="API Key"
             />
           </div>
-          <div class="col-md-3 mb-3">
-            <input type="date" id="startDate" class="form-control" />
+          <div class="col-md-6 mb-4">
+            <input
+              type="date"
+              id="startDate"
+              class="form-control"
+              placeholder="Fecha Inicio"
+            />
           </div>
-          <div class="col-md-3 mb-3">
-            <input type="date" id="endDate" class="form-control" />
+          <div class="col-md-6 mb-4">
+            <input
+              type="date"
+              id="endDate"
+              class="form-control"
+              placeholder="Fecha Fin"
+            />
           </div>
-          <div class="col-md-3 mb-3">
+          <div class="col-md-6 mb-4">
             <input
               type="text"
               id="topic"
               class="form-control"
               placeholder="Topic"
             />
+          </div>
+        </div>
+        <div class="row justify-content-center">
+          <div class="mb-5">
+            <button type="button" id="searchButton" class="btn-search">
+              Buscar
+            </button>
           </div>
         </div>
       </form>
@@ -132,13 +137,13 @@
     </main>
     <footer class="bg-light py-3">
       <div class="container text-center">
-        <!-- FOOTER CUANDO LO TENGA -->
+        <p class="mb-1">FOOTER PENDIENTE</p>
       </div>
     </footer>
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

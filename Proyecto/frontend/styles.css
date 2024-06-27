@@ -1,51 +1,56 @@
+/* Texto General */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
 }
 
+/* Header */
 header {
   background-color: #f7f7f7;
   border-bottom: 2px solid #92d050;
-  padding: 1rem 0; /* Se supone el padding vertical se mantiene gracias a esto*/
+  padding: 1rem 0;
 }
 
 header img {
   max-width: 20%;
 }
 
+/* Boton Login */
 .btn-login {
-  background-color: #92d050; /* Color verde del botón */
-  color: white; /* Color del texto */
-  border: none; /* Sin borde */
-  border-radius: 30px; /* Bordes redondeados */
-  padding: 8px 30px; /* Espaciado interno ajustado */
-  font-size: 16px; /* Tamaño de la fuente */
+  background-color: #92d050;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 8px 30px;
+  font-size: 16px;
   font-weight: bold;
-  cursor: pointer; /* Cambia el cursor al pasar el mouse */
-  transition: background-color 0.3s ease; /* Animación suave del color de fondo */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .btn-login:hover {
-  background-color: #79b73c; /* Color verde oscuro al pasar el mouse */
+  background-color: #79b73c;
 }
 
+/* Boton Search */
 .btn-search {
-  background-color: #92d050; /* Color verde del botón */
-  color: white; /* Color del texto */
-  border: none; /* Sin borde */
-  border-radius: 30px; /* Bordes redondeados */
-  padding: 8px 70px; /* Espaciado interno ajustado */
-  font-size: 16px; /* Tamaño de la fuente */
+  background-color: #92d050;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 8px 70px;
+  font-size: 16px;
   font-weight: bold;
-  cursor: pointer; /* Cambia el cursor al pasar el mouse */
-  transition: background-color 0.3s ease; /* Animación suave del color de fondo */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .btn-search:hover {
-  background-color: #79b73c; /* Color verde oscuro al pasar el mouse */
+  background-color: #79b73c;
 }
 
+/* Texto Principal */
 main {
   padding: 20px;
 }
@@ -55,24 +60,42 @@ h1 {
   font-weight: bold;
 }
 
-p {
+#main p {
   color: #666666;
   font-weight: bold;
   line-height: 2;
   margin-top: 20px;
 }
 
-form input,
-form button {
-  margin: 10px 0;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+/* Formulario de Búsqueda */
+form#searchForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 #filters {
-  display: flex;
+  display: none;
   flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+  width: 70%;
+  border: 2px solid #ccc;
+  background-color: #f7f7f7;
+  border-radius: 30px;
+}
+
+.container-form {
+  display: flex;
+  justify-content: center;
+}
+
+.form-control {
+  width: 100%;
+}
+
+.btn {
+  margin: 0 5px;
 }
 
 #results {
