@@ -1,34 +1,27 @@
 document.addEventListener("DOMContentLoaded", () => {
   document
-    .getElementById("searchButton")
-    .addEventListener("click", searchDevices);
-  document
     .getElementById("filterButton")
     .addEventListener("click", toggleFilters);
+  document
+    .getElementById("searchButton")
+    .addEventListener("click", searchDevices);
 });
 
+// Funcionalidad de filtros: muestra/oculta los filtros de búsqueda y ajusta el margen del botón de búsqueda
 function toggleFilters() {
   const filters = document.getElementById("filters");
   const searchButton =
     document.getElementById("searchButton").parentElement.parentElement;
-  // No he sabido hacerlo sin javascript
-  if (filters.style.display === "none") {
+  if (filters.style.display === "none" || filters.style.display === "") {
     filters.style.display = "flex";
-    searchButton.style.marginTop = "1rem"; // Añade un margen superior cuando se muestran los filtros
+    searchButton.style.marginTop = "1rem";
   } else {
     filters.style.display = "none";
-    searchButton.style.marginTop = "0"; // Elimina el margen superior cuando se ocultan los filtros
+    searchButton.style.marginTop = "0";
   }
 }
 
-function toggleDropdown() {
-  const serverDropdown = document.getElementById("serverDropdown");
-  const dropdownIcon = document.getElementById("dropdownIcon");
-  serverDropdown.classList.toggle("show");
-  dropdownIcon.classList.toggle("fa-chevron-down");
-  dropdownIcon.classList.toggle("fa-chevron-up");
-}
-
+// Funcionalidad de búsqueda: API fetch y muestra los dispositivos que coinciden con los filtros
 function searchDevices() {
   const serial = document.getElementById("serial").value;
   const apikey = document.getElementById("apikey").value;
@@ -81,20 +74,4 @@ function viewDeviceDetails(serial) {
   window.location.href = `device.html?serial=${serial}`;
 }
 
-// Maneja el dropdown de servidores (habra que modificarlo)
-window.onclick = function (event) {
-  if (!event.target.closest(".dropdown-toggle")) {
-    const dropdowns = document.getElementsByClassName("dropdown-menu");
-    for (const dropdown of dropdowns) {
-      if (dropdown.classList.contains("show")) {
-        dropdown.classList.remove("show");
-        document
-          .getElementById("dropdownIcon")
-          .classList.remove("fa-chevron-up");
-        document
-          .getElementById("dropdownIcon")
-          .classList.add("fa-chevron-down");
-      }
-    }
-  }
-};
+// Funcionalidad futura
