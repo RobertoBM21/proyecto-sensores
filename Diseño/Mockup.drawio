@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2024-06-25T16:52:29.500Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" etag="YpYm2FeYZTBOCML3cTYh" version="24.6.3" type="device" pages="2">
+<mxfile host="app.diagrams.net" modified="2024-06-28T15:13:37.563Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" etag="y_9Dvvu6W3VAAyZfWidF" version="24.6.4" type="device" pages="2">
   <diagram name="Buscador" id="kwYRUUmypK1Sft-GeLnx">
-    <mxGraphModel dx="941" dy="479" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="1600" background="#fafafa" math="0" shadow="0">
+    <mxGraphModel dx="1647" dy="839" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="1600" background="#fafafa" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" value="Principal" parent="0" />

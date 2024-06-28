@@ -19,36 +19,42 @@
         class="container-fluid d-flex justify-content-between align-items-center px-5"
       >
         <div class="d-flex align-items-center">
-          <img src="images/logo.png" alt="OdinS" class="me-3"/>
+          <img src="images/logo.png" alt="OdinS" class="me-3" />
         </div>
-        <button id="loginButton" class="boton btn-sm ms-3">
-          Login
-        </button>
+        <div>
+          <button id="loginButton" class="boton btn-sm ms-3">Login</button>
+        </div>
       </div>
     </header>
+    <div class="dropdown-container mt-2 text-end">
+      <div class="dropdown">
+        <button
+          class="btn labeled-icon"
+          type="button"
+          id="dropdownMenuButton"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <span id="serverName">Servidores</span>
+          <i id="dropdownIcon" class="bi bi-chevron-up"></i>
+        </button>
+        <ul
+          class="dropdown-menu mt-2"
+          aria-labelledby="dropdownMenuButton"
+          id="serverDropdown"
+        >
+          <!-- Aquí se agregarán dinámicamente los servidores -->
+        </ul>
+      </div>
+    </div>
     <div class="d-flex flex-column min-vh-100">
       <main class="flex-grow-1">
         <div class="container my-5">
-          <div class="row mb-3">
-            <div class="col-md-4 offset-md-8 text-end">
-              <div class="dropdown">
-                <button class="btn labeled-icon" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                  Servidores
-                  <i id="dropdownIcon" class="bi bi-chevron-up"></i>
-                </button>
-                <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton" id="serverDropdown">
-                  <!-- Aquí se agregarán dinámicamente los servidores -->
-                </ul>
-              </div>
-            </div>
-          </div>
           <div id="main" class="text-center mb-5">
             <h1>Sensores</h1>
             <p>
               Aquí podrás acceder a la información transmitida por los sensores
-              de
-              <br />
-              OdinS distribuidos por todo el país.
+              de OdinS distribuidos por todo el país.
             </p>
           </div>
           <form id="searchForm">

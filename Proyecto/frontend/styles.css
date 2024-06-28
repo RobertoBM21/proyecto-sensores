@@ -66,6 +66,16 @@ header img {
 }
 
 /* Menu de Servidores */
+#serverName {
+  font-weight: bold;
+  padding: 0 10px;
+  color: #92d050;
+}
+
+.dropdown-container {
+  margin-right: 10px;
+}
+
 .dropdown-menu {
   border: 1px solid #92d050;
   padding: 0.5rem 1rem;
@@ -89,7 +99,6 @@ header img {
   background-color: #92d050;
   border-color: #92d050;
 }
-
 
 /* Texto Principal */
 main {
@@ -177,7 +186,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   margin-right: 1rem;
 }
 
-
 /* Paginación */
 #pagination {
   display: flex;
@@ -188,7 +196,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .page-button {
   margin: 0 -1px; /* Ajuste para eliminar el espacio entre botones */
   padding: 5px 14px;
-  background-color: #92d050; 
+  background-color: #92d050;
   color: white;
   border: 1px solid #ccc;
   cursor: pointer;
@@ -196,11 +204,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .page-button:hover {
-  background-color: #79b73c; 
+  background-color: #79b73c;
 }
 
 .page-button.active {
-  background-color: #5bae5e; 
+  background-color: #5bae5e;
 }
 
 .page-button.disabled {
