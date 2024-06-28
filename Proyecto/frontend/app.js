@@ -11,31 +11,49 @@ function login() {}
 
 // Funcionalidad para obtener la lista de servidores del backend
 function fetchServers() {
-  fetch('http://localhost:3000/servers')
+  fetch('http://localhost:3000/servers') 
     .then(response => response.json())
     .then(data => {
       const serverDropdown = document.getElementById("serverDropdown");
+      serverDropdown.innerHTML = "";
+
+      if (data.length === 0) {
+        const li = document.createElement("li");
+        li.className = "dropdown-item text-center";
+        li.textContent = "No hay servidores disponibles";
+        serverDropdown.appendChild(li);
+
+      } else {
+        data.forEach(server => {
+          const li = document.createElement("li");
+          const label = document.createElement("label");
+          label.className = "dropdown-item";
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.value = server.id; 
+          checkbox.className = "form-check-input me-1";
+          checkbox.checked = true;
+
+          label.appendChild(checkbox);
+          label.appendChild(document.createTextNode(server.name)); 
+          li.appendChild(label);
+          serverDropdown.appendChild(li);
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching servers:', error);
+      const serverDropdown = document.getElementById("serverDropdown");
       serverDropdown.innerHTML = ""; 
 
-      data.forEach(server => {
-        const li = document.createElement("li");
-        const label = document.createElement("label");
-        label.className = "dropdown-item";
-
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.value = server.id; 
-        checkbox.className = "form-check-input me-1";
-        checkbox.checked = true;
-
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(server.name));
-        li.appendChild(label);
-        serverDropdown.appendChild(li);
-      });
-    })
-    .catch(error => console.error('Error fetching servers:', error));
+      const li = document.createElement("li");
+      li.className = "dropdown-item text-center";
+        li.textContent = "No hay servidores disponibles";
+      serverDropdown.appendChild(li);
+    });
 }
+
 
 // Funcionalidad de dropdown: cambia el ícono del botón de dropdown al expandirse o contraerse
 function toggleDropdownIcon() {
