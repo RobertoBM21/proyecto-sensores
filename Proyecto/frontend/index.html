@@ -32,42 +32,12 @@
           <div class="row mb-3">
             <div class="col-md-4 offset-md-8 text-end">
               <div class="dropdown">
-                <div
-                  class="dropdown-toggle"
-                  id="dropdownMenuButton"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <span id="dropdownText">Servidores</span>
-                  <span id="dropdownIcon" class="fas fa-angle-down"></span>
-                </div>
-                <ul
-                  class="dropdown-menu"
-                  aria-labelledby="dropdownMenuButton"
-                  id="serverDropdown"
-                >
-                  <li>
-                    <label class="dropdown-item">
-                      <input type="checkbox" value="murcia" checked /> Murcia
-                    </label>
-                  </li>
-                  <li>
-                    <label class="dropdown-item">
-                      <input type="checkbox" value="madrid" checked /> Madrid
-                    </label>
-                  </li>
-                  <li>
-                    <label class="dropdown-item">
-                      <input type="checkbox" value="server3" checked /> Servidor
-                      3
-                    </label>
-                  </li>
-                  <li>
-                    <label class="dropdown-item">
-                      <input type="checkbox" value="server4" checked /> Servidor
-                      4
-                    </label>
-                  </li>
+                <button class="btn labeled-icon" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                  Servidores
+                  <i id="dropdownIcon" class="bi bi-chevron-up"></i>
+                </button>
+                <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton" id="serverDropdown">
+                  <!-- Aquí se agregarán dinámicamente los servidores -->
                 </ul>
               </div>
             </div>

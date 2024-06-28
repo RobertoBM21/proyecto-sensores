@@ -1,12 +1,50 @@
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("loginButton").addEventListener("click", login);
+  document.getElementById("dropdownMenuButton").addEventListener("click", toggleDropdownIcon);
   document.getElementById("filterButton").addEventListener("click", toggleFilters);
   document.getElementById("searchButton").addEventListener("click", searchDevices);
+  fetchServers();
 });
 
 // Funcionalidad de login: AUN NO IMPLEMENTADA
 function login() {}
 
+// Funcionalidad para obtener la lista de servidores del backend
+function fetchServers() {
+  fetch('http://localhost:3000/servers')
+    .then(response => response.json())
+    .then(data => {
+      const serverDropdown = document.getElementById("serverDropdown");
+      serverDropdown.innerHTML = ""; 
+
+      data.forEach(server => {
+        const li = document.createElement("li");
+        const label = document.createElement("label");
+        label.className = "dropdown-item";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = server.id; 
+        checkbox.className = "form-check-input me-1";
+        checkbox.checked = true;
+
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(server.name));
+        li.appendChild(label);
+        serverDropdown.appendChild(li);
+      });
+    })
+    .catch(error => console.error('Error fetching servers:', error));
+}
+
+// Funcionalidad de dropdown: cambia el ícono del botón de dropdown al expandirse o contraerse
+function toggleDropdownIcon() {
+  const dropdownMenuButton = document.getElementById("dropdownMenuButton");
+  const dropdownIcon = document.getElementById("dropdownIcon");
+  const isExpanded = dropdownMenuButton.getAttribute("aria-expanded") === "true";
+  dropdownIcon.classList.toggle("bi-chevron-down", isExpanded);
+  dropdownIcon.classList.toggle("bi-chevron-up", !isExpanded);
+}
 
 // Funcionalidad de filtros: muestra/oculta los filtros de búsqueda y ajusta la posicion del botón de búsqueda
 function toggleFilters() {
@@ -104,6 +142,10 @@ function renderPagination() {
   paginationDiv.innerHTML = "";
 
   const totalPages = Math.ceil(searchResults.length / RESULTS_PER_PAGE);
+
+  if (totalPages <= 1) {
+    return;
+  }
 
   const createButton = (text, page, isDisabled = false) => {
     const button = document.createElement("button");

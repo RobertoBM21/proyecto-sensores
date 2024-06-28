@@ -24,7 +24,7 @@ header img {
   max-width: 20%;
 }
 
-/* Botones Login, Buscar y Filtrar */
+/* Botones*/
 .boton {
   background-color: #92d050;
   color: white;
@@ -56,12 +56,40 @@ header img {
   justify-content: center;
 }
 
-/* Menu de Servidores */
-.dropdown-toggle {
-  display: inline-flex;
-  align-items: center;
-  cursor: pointer;
+#dropdownMenuButton {
+  padding: 8px 30px;
 }
+
+#dropdownMenuButton:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Menu de Servidores */
+.dropdown-menu {
+  border: 1px solid #92d050;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+}
+
+.form-check-input {
+  width: 1.25em;
+  height: 1.25em;
+  margin-right: 0.5em;
+  border: 2px solid #92d050;
+  border-radius: 0.25em;
+}
+
+.form-check-input:checked {
+  background-color: #92d050;
+  border-color: #92d050;
+}
+
 
 /* Texto Principal */
 main {
@@ -94,7 +122,7 @@ form#searchForm {
 }
 
 .form-control {
-  border-radius: 10px;
+  border-radius: 5px;
 }
 
 #filters {
