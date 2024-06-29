@@ -33,7 +33,7 @@ def on_message(client, userdata, msg):
     # Crear el objeto de mensaje
     message = {
         "serial": serial,
-        "timestamp": datetime.now().isoformat(),
+        "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
         "messageType": parts[3],
         "content": json.loads(msg.payload.decode())
     }
@@ -54,8 +54,8 @@ def update_or_create_device(serial, apikey, last_communication, server_id):
     if response.status_code == 200 and response.json():
         # El dispositivo existe, actualizar lastCommunication
         device = response.json()[0]
-        device["lastCommunication"] = last_communication
-        response = requests.put(f"{JSON_SERVER_URL}/devices/{device['id']}", json=device)
+        update_payload = {"lastCommunication": last_communication}
+        response = requests.patch(f"{JSON_SERVER_URL}/devices/{device['id']}", json=update_payload)
         if response.status_code == 200:
             print("Dispositivo actualizado en json-server")
         else:

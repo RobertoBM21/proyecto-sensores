@@ -1,8 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("loginButton").addEventListener("click", login);
-  document.getElementById("dropdownMenuButton").addEventListener("click", toggleDropdownIcon);
-  document.getElementById("filterButton").addEventListener("click", toggleFilters);
-  document.getElementById("searchButton").addEventListener("click", searchDevices);
+  document
+    .getElementById("dropdownMenuButton")
+    .addEventListener("click", toggleDropdownIcon);
+  document
+    .getElementById("filterButton")
+    .addEventListener("click", toggleFilters);
+  document
+    .getElementById("searchButton")
+    .addEventListener("click", searchDevices);
   fetchServers();
 });
 
@@ -11,9 +17,9 @@ function login() {}
 
 // Funcionalidad para obtener la lista de servidores del backend
 function fetchServers() {
-  fetch('http://localhost:3000/servers') 
-    .then(response => response.json())
-    .then(data => {
+  fetch("http://localhost:3000/servers")
+    .then((response) => response.json())
+    .then((data) => {
       const serverDropdown = document.getElementById("serverDropdown");
       serverDropdown.innerHTML = "";
 
@@ -22,44 +28,43 @@ function fetchServers() {
         li.className = "dropdown-item text-center";
         li.textContent = "No hay servidores disponibles";
         serverDropdown.appendChild(li);
-
       } else {
-        data.forEach(server => {
+        data.forEach((server) => {
           const li = document.createElement("li");
           const label = document.createElement("label");
           label.className = "dropdown-item";
 
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
-          checkbox.value = server.id; 
+          checkbox.value = server.serverId;
           checkbox.className = "form-check-input me-1";
           checkbox.checked = true;
 
           label.appendChild(checkbox);
-          label.appendChild(document.createTextNode(server.name)); 
+          label.appendChild(document.createTextNode(server.name));
           li.appendChild(label);
           serverDropdown.appendChild(li);
         });
       }
     })
-    .catch(error => {
-      console.error('Error fetching servers:', error);
+    .catch((error) => {
+      console.error("Error fetching servers:", error);
       const serverDropdown = document.getElementById("serverDropdown");
-      serverDropdown.innerHTML = ""; 
+      serverDropdown.innerHTML = "";
 
       const li = document.createElement("li");
       li.className = "dropdown-item text-center";
-        li.textContent = "No hay servidores disponibles";
+      li.textContent = "No hay servidores disponibles";
       serverDropdown.appendChild(li);
     });
 }
-
 
 // Funcionalidad de dropdown: cambia el ícono del botón de dropdown al expandirse o contraerse
 function toggleDropdownIcon() {
   const dropdownMenuButton = document.getElementById("dropdownMenuButton");
   const dropdownIcon = document.getElementById("dropdownIcon");
-  const isExpanded = dropdownMenuButton.getAttribute("aria-expanded") === "true";
+  const isExpanded =
+    dropdownMenuButton.getAttribute("aria-expanded") === "true";
   dropdownIcon.classList.toggle("bi-chevron-down", isExpanded);
   dropdownIcon.classList.toggle("bi-chevron-up", !isExpanded);
 }
@@ -82,7 +87,7 @@ function toggleFilters() {
 function searchDevices() {
   const serial = document.getElementById("serial").value;
   const apikey = document.getElementById("apikey").value;
-  const topic = document.getElementById("topic").value;
+  // const topic = document.getElementById("topic").value;
   const startDate = document.getElementById("startDate").value;
   const endDate = document.getElementById("endDate").value;
 
@@ -96,17 +101,32 @@ function searchDevices() {
     return;
   }
 
-  let url = `http://localhost:3000/messages?`;
+  let url = `http://localhost:3000/devices?`;
 
-  if (serial) url += `serial=${serial}&`;
+  // Si lo agrego a la peticion los demas filtros no funcionan
+  servers.forEach((serverId) => {
+    url += `serverId=${serverId}&`;
+  });
+  // Con la opcion _expand se obtendra el nombre del servidor
+
+  if (serial) url += `serial_like=^${serial}&`; // NO FUNCIONA
   if (apikey) url += `apikey=${apikey}&`;
-  if (topic) url += `messageType=${topic}&`;
-  if (startDate) url += `timestamp_gte=${new Date(startDate).toISOString()}&`;
-  if (endDate) url += `timestamp_lte=${new Date(endDate).toISOString()}&`;
+  // if (topic) url += `messageType=${topic}&`;
+  if (startDate)
+    url += `lastCommunication_gte=${new Date(startDate).toISOString()}&`; // NO FUNCIONA PORQUE NO SE ESTA USANDO UN MIDDLEWARE
+  if (endDate)
+    url += `lastCommunication_lte=${new Date(endDate).toISOString()}&`; // NO FUNCIONA PORQUE NO SE ESTA USANDO UN MIDDLEWARE
+
+  url = url.endsWith("&") ? url.slice(0, -1) : url;
+
+  console.log("Constructed URL:", url);
 
   fetch(url)
     .then((response) => response.json())
-    .then((data) => displayResults(data))
+    .then((data) => {
+      console.log("Data received:", data);
+      displayResults(data);
+    })
     .catch((error) => console.error("Error fetching data:", error));
 }
 
@@ -126,13 +146,16 @@ function renderPage() {
   resultsDiv.innerHTML = "";
 
   const startIndex = (currentPage - 1) * RESULTS_PER_PAGE;
-  const endIndex = Math.min(startIndex + RESULTS_PER_PAGE, searchResults.length);
+  const endIndex = Math.min(
+    startIndex + RESULTS_PER_PAGE,
+    searchResults.length
+  );
 
   for (let i = startIndex; i < endIndex; i++) {
     const item = searchResults[i];
     const div = document.createElement("div");
     div.className = "result-item";
-    
+
     const header = document.createElement("div");
     header.className = "result-header";
     header.textContent = `Serial: ${item.serial}`;
@@ -143,8 +166,9 @@ function renderPage() {
       <span>API Key: ${item.apikey || "N/A"}</span>
       <span>Servidor: ${item.name || "N/A"}</span>
       <span>ServerId: ${item.serverId || "N/A"}</span>
-      <span>Última Comunicación: ${new Date(item.timestamp).toLocaleDateString()}</span>
-    `;
+      <span>Última Comunicación: ${new Date(
+        item.lastCommunication
+      ).toLocaleString()}</span>`;
 
     div.appendChild(header);
     div.appendChild(details);
@@ -168,7 +192,7 @@ function renderPagination() {
   const createButton = (text, page, isDisabled = false) => {
     const button = document.createElement("button");
     button.textContent = text;
-    button.className = `page-button ${isDisabled ? 'disabled' : ''}`;
+    button.className = `page-button ${isDisabled ? "disabled" : ""}`;
     if (page === currentPage) {
       button.classList.add("active");
     }
@@ -190,10 +214,13 @@ function renderPagination() {
   }
 
   // Botón de ir a la última página
-  paginationDiv.appendChild(createButton(">>", totalPages, currentPage === totalPages));
+  paginationDiv.appendChild(
+    createButton(">>", totalPages, currentPage === totalPages)
+  );
 }
 
 // Funcionalidad de redirección a la página de detalles de un dispositivo
 function viewDeviceDetails(serial) {
+  // Con la peticion http://localhost:3000/devices/${serial}?_embed=messages, se obtiene el dispositivo y sus mensajes si serial es el id
   window.location.href = `device.html?serial=${serial}`;
 }
