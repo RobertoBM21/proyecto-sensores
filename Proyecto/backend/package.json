@@ -1,7 +1,7 @@
 {
-  "name": "proyecto",
+  "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "json-server --watch db.json --port 3000"
   },
