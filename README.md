@@ -1,107 +1,91 @@
-# Proyecto Sensores
+# Overview
 
-Documento pendiente de modificar.
+La aplicación aún se encuentra en una etapa temprana de desarrollo.
 
-Actualmente los cambios pensados para el fronend no estan implementados, sino planteados en un word para meditarlos y revisarlos.
+El objetivo de este proyecto es crear una página/app que centralice la recepción y consulta de mensajes MQTT enviados por los dispositivos de la empresa.
+De esta manera, los técnicos tendrán una platarforma en la que consultar de manera sencilla si el dispositivo que han instalado está funcionando correctamente, así como un histórico de los datos enviados por cualquier dispositivo.
+Este proyecto está enfocado en ser presentado como un TFG.
 
-## Getting started
+# Organization
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Esta sección detalla como esta organizado tanto el código del proyecto como los archivos relevantes del mismo. Existen dos carpetas principales: Diseño y Proyecto.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- `Diseño/`: contiene aclaraciones, conceptos y referencias que son claves para el desarrollo de la aplicación. Una vez haya concluido el desarrollo de este proyecto ya no será necesario.
 
-## Add your files
+- `Proyecto/`: el código de la aplicacion se encuentra organizado dentro de esta carpeta, dividiendose en frontend y backend.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+- `frontend/`: está compuesto por los archivos que constituyen el frontend de la aplicación.
 
-```
-cd existing_repo
-git remote add origin https://gitlab.odins.es/roberto.burruezom/proyecto-sensores.git
-git branch -M main
-git push -uf origin main
-```
+- `index.html`: es la página de inicio, en ella se pueden realizar las búsquedas con filtros de los dispositvos buscados. Se apoya en styles.css y app.js para completar su funcionalidad.
 
-## Integrate with your tools
+- `device.html`: la información y mensajes de cada dispositivo se muestra y organiza gracias a esta página.
 
-- [ ] [Set up project integrations](https://gitlab.odins.es/roberto.burruezom/proyecto-sensores/-/settings/integrations)
+- `backend/`: está compuesto por los archivos que constituyen el backend de la aplicación.
 
-## Collaborate with your team
+- `mqtt_daemon.py`: se trata de un demonio que se conecta a los brokers MQTT. Su funcionalidad consiste en realizar la conexión a cada broker, recibir mensajes, y almacenarlos de forma estructura en la base de datos.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+- `db.json`: base de datos basada en json-server en la que se almacenan los servidores/brokers, dispositivos y mensajes. Depende de `package.json` para su ejecución.
 
-## Test and Deploy
+- `package.json`: define la configuración de ejecución de json-server.
 
-Use the built-in continuous integration in GitLab.
+# Dependencies & Requirements
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+La versión de Node empleada es 20.13.1.
 
----
+Para lanzar correctamente la aplicación es necesario instalar varias dependencias. Tal como se menciona en el apartado anterior, para el backend con **npm install** sería suficiente, ya que la dependencia a json-server está definida en el archivo package.json.
 
-# Editing this README
+Para ejecutar el frontend necesitarás o instalar _http-server_ en tu ordenador a través del comando **npm install --global http-server** o descargando la extensión _Live Server_ en VSCode.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+# Building & Running
 
-## Suggestions for a good README
+- Para lanzar la aplicación primero hay que ejecutar los siguientes comandos en las carpetas que contienen los archivos correspondientes.
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+  - Primera ejecución. Instalar dependencias:
+    ```bash
+    npm install
+    ```
+  - Base de datos:
 
-## Name
+    ```bash
+    npm start
+    ```
 
-Choose a self-explaining name for your project.
+  - Script Python:
+    ```bash
+    python mqtt_daemon.py
+    ```
 
-## Description
+- Para el frontend mencionaré dos alternativas, con http-server o con la extensión Live Server de VSCode.
 
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+  - Http-Server:
 
-## Badges
+    ```bash
+    http-server -o
+    ```
 
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+    - Live Server (combinación de teclas): _Alt + L_ y, a continuación, _Alt + O_
 
-## Visuals
+# Known Issues
 
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+Dado que aún quedan muchos cambios tanto de arquitectura como de tecnologías por hacer esta sección será actualizada cuando el proyecto se encuentre en una fase más avanzada de desarrollo.
 
-## Installation
+# References
 
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+Http-Server information: https://www.npmjs.com/package/http-server  
+Json-Server information: https://www.npmjs.com/package/json-server
 
-## Usage
+# Authors
 
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+- Roberto Burruezo Martínez \<roberto.burruezom@um.es\>
 
-## Support
+# TODO
 
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+- Pasar el frontend a Vue.js para poder usar plantillas y reestructurar el código
 
-## Roadmap
+- Hacer el backend con express y conectarlo con la base de datos correspondiente
 
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+- Cambiar a otra base de datos (MySQL, SQLite o MongoDB)
 
-## Contributing
+- Crear una API REST
 
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-
-Show your appreciation to those who have contributed to the project.
-
-## License
-
-For open source projects, say how it is licensed.
-
-## Project status
-
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+- Muchos cambios en el diseño y funcionamiento del frontend

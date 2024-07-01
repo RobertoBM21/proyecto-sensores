@@ -7,8 +7,6 @@ import threading
 # URL del json-server
 JSON_SERVER_URL = "http://localhost:3000"
 TOPIC = "#"  # Para suscribirse a todos los topics
-USERNAME = "8hHjQnvZ9TnZ3QVgrzkhnF2G4xunJW"
-PASSWORD = "9xPkYtJ8eMBvJYNMXRd6kkMhFdZVhz" # Credenciales de prueba
 
 def get_servers():
     response = requests.get(f"{JSON_SERVER_URL}/servers")
@@ -27,16 +25,30 @@ def on_message(client, userdata, msg):
 
     # Procesar el topic para conseguir el apikey y serial
     parts = msg.topic.split('/')
-    apikey = parts[1]
-    serial = parts[2]
-
-    # Crear el objeto de mensaje
-    message = {
-        "serial": serial,
-        "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
-        "messageType": parts[3],
-        "content": json.loads(msg.payload.decode())
-    }
+    
+    # Comprobar si el topic tiene el formato esperado: /apikey/serial/...
+    if len(parts) >= 3 and parts[0] == '' and parts[1] and parts[2]:
+        apikey = parts[1]
+        serial = parts[2]
+        
+        # Construir el resto del topic después del serial
+        topic = '/'.join(parts[3:])
+        
+        # Crear el objeto de mensaje con apikey, serial y el resto del topic
+        message = {
+            "serial": serial,
+            "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
+            "topic": topic,
+            "content": json.loads(msg.payload.decode())
+        }
+    else:
+        # Si el formato no es /apikey/serial/..., guardar el topic entero
+        message = {
+            "serial": "",
+            "timestamp": datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
+            "topic": msg.topic,
+            "content": json.loads(msg.payload.decode())
+        }
 
     # Enviar el mensaje a json-server
     response = requests.post(f"{JSON_SERVER_URL}/messages", json=message)
@@ -45,8 +57,9 @@ def on_message(client, userdata, msg):
     else:
         print(f"Error al enviar el mensaje a json-server: {response.status_code}")
 
-    # Comprobar y actualizar/crear el dispositivo en la base de datos
-    update_or_create_device(serial, apikey, message["timestamp"], userdata["server_id"])
+    # Comprobar y actualizar/crear el dispositivo en la base de datos solo si hay serial
+    if 'serial' in message:
+        update_or_create_device(serial, apikey, message["timestamp"], userdata["server_id"])
 
 def update_or_create_device(serial, apikey, last_communication, server_id):
     # Verificar si el dispositivo ya existe
@@ -97,7 +110,7 @@ def main():
     # Crear y arrancar un hilo por cada servidor MQTT
     threads = []
     for server in servers:
-        thread = threading.Thread(target=start_client, args=(server["endpoint"], USERNAME, PASSWORD, server["serverId"]))
+        thread = threading.Thread(target=start_client, args=(server["endpoint"], server["username"], server["password"], server["serverId"]))
         threads.append(thread)
         thread.start()
 

@@ -4,355 +4,258 @@
       "serverId": "1",
       "name": "Murcia",
       "endpoint": "agriculture-dev.odins.es:11883",
+      "username": "8hHjQnvZ9TnZ3QVgrzkhnF2G4xunJW",
+      "password": "9xPkYtJ8eMBvJYNMXRd6kkMhFdZVhz",
       "id": "ec2b"
     }
   ],
   "devices": [
     {
-      "id": "fd9b",
+      "id": "e287",
       "serial": "MC0203J22010600009",
-      "apikey": "odin",
-      "lastCommunication": "2024-06-29T19:51:05",
-      "serverId": "ec2b"
-    },
-    {
-      "id": "19ef",
-      "serial": "IQ0101G19014600041",
       "apikey": "odins",
-      "lastCommunication": "2024-06-29T17:58:00",
+      "lastCommunication": "2024-07-01T19:18:10",
       "serverId": "1"
     },
     {
-      "id": "5844",
-      "serial": "IC0104E17000800012",
-      "apikey": "odins",
-      "lastCommunication": "2024-06-29T19:51:11",
-      "serverId": "1"
-    },
-    {
-      "id": "628c",
-      "serial": "ID0102E18005200148",
-      "apikey": "odins",
-      "lastCommunication": "2024-05-29T17:57:04",
-      "serverId": "1"
-    },
-    {
-      "id": "94a8",
-      "serial": "IQ0101G19014600044",
-      "apikey": "odins",
-      "lastCommunication": "2024-06-29T19:51:07",
-      "serverId": "1"
-    },
-    {
-      "id": "aff6",
-      "serial": "IQ0101G19014600045",
-      "apikey": "odins",
-      "lastCommunication": "2024-06-29T17:57:21",
-      "serverId": "1"
-    },
-    {
-      "id": "7429",
-      "serial": "IQ0101G19014600000",
-      "apikey": "odins",
-      "lastCommunication": "2024-06-29T19:51:22",
-      "serverId": "1"
-    },
-    {
-      "id": "cd47",
-      "serial": "GSF-ID0102E18005200076",
-      "apikey": "odins",
-      "lastCommunication": "2024-06-29T17:57:25",
-      "serverId": "1"
-    },
-    {
-      "id": "8349",
+      "id": "934f",
       "serial": "IQ0101G19014600046",
       "apikey": "odins",
-      "lastCommunication": "2024-06-29T19:51:23",
+      "lastCommunication": "2024-07-01T19:18:32",
       "serverId": "1"
     },
     {
-      "id": "5447",
-      "serial": "MG0101E20018500029-temp",
-      "apikey": "odins",
-      "lastCommunication": "2024-06-29T17:57:30",
-      "serverId": "1"
-    },
-    {
-      "id": "2741",
-      "serial": "MG0101E20018500029-hum",
-      "apikey": "odins",
-      "lastCommunication": "2024-06-29T17:57:30",
-      "serverId": "1"
-    },
-    {
-      "id": "b874",
-      "serial": "MG0101E20018500029-co2",
-      "apikey": "odins",
-      "lastCommunication": "2024-06-29T17:57:30",
-      "serverId": "1"
-    },
-    {
-      "id": "2fd0",
-      "serial": "MG0101E20018500015",
-      "apikey": "odins",
-      "lastCommunication": "2024-06-29T17:57:35",
-      "serverId": "1"
-    },
-    {
-      "id": "6800",
-      "serial": "GSF-ID0102E18005200148",
-      "apikey": "odins",
-      "lastCommunication": "2024-06-29T17:57:43",
-      "serverId": "1"
-    },
-    {
-      "id": "4761",
-      "serial": "MG0101E20018500013",
-      "apikey": "odins",
-      "lastCommunication": "2024-06-29T17:57:44",
-      "serverId": "1"
-    },
-    {
-      "id": "defd",
-      "serial": "MG0101E20018500014",
-      "apikey": "odins",
-      "lastCommunication": "2024-06-29T17:57:46",
-      "serverId": "1"
-    },
-    {
-      "id": "7865",
+      "id": "7b79",
       "serial": "IQ0101G19014600042",
       "apikey": "odins",
-      "lastCommunication": "2024-06-29T17:57:55",
+      "lastCommunication": "2024-07-01T19:18:12",
       "serverId": "1"
     },
     {
-      "id": "7a1d",
+      "id": "9b5e",
+      "serial": "IQ0101G19014600044",
+      "apikey": "odins",
+      "lastCommunication": "2024-07-01T19:18:33",
+      "serverId": "1"
+    },
+    {
+      "id": "cbaa",
       "serial": "IA0300I22002900100",
       "apikey": "odins",
-      "lastCommunication": "2024-06-29T17:58:01",
+      "lastCommunication": "2024-07-01T19:18:34",
+      "serverId": "1"
+    },
+    {
+      "id": "89ef",
+      "serial": "IC0104E17000800012",
+      "apikey": "odins",
+      "lastCommunication": "2024-07-01T19:18:35",
+      "serverId": "1"
+    },
+    {
+      "id": "27d4",
+      "serial": "GSF-ID0102E18005200148",
+      "apikey": "odins",
+      "lastCommunication": "2024-07-01T19:18:33",
+      "serverId": "1"
+    },
+    {
+      "id": "ee21",
+      "serial": "IQ0101G19014600045",
+      "apikey": "odins",
+      "lastCommunication": "2024-07-01T19:18:34",
       "serverId": "1"
     }
   ],
   "messages": [
     {
-      "id": "a7e7",
+      "id": "0838",
       "serial": "MC0203J22010600009",
-      "timestamp": "2024-06-29T17:56:54",
-      "messageType": "cmd",
+      "timestamp": "2024-07-01T19:18:10",
+      "topic": "cmd",
       "content": {
         "info": {}
       }
     },
     {
-      "id": "e000",
-      "serial": "IQ0101G19014600041",
-      "timestamp": "2024-06-29T17:56:55",
-      "messageType": "attrs",
-      "content": {
-        "powfail": 0
-      }
-    },
-    {
-      "id": "15b8",
-      "serial": "IC0104E17000800012",
-      "timestamp": "2024-06-29T17:56:59",
-      "messageType": "attrs",
-      "content": {
-        "powfail": "0"
-      }
-    },
-    {
-      "id": "19ab",
-      "serial": "ID0102E18005200148",
-      "timestamp": "2024-06-29T17:57:03",
-      "messageType": "attrs",
-      "content": {
-        "sm2-val": "0.76"
-      }
-    },
-    {
-      "id": "b673",
-      "serial": "ID0102E18005200148",
-      "timestamp": "2024-06-29T17:57:04",
-      "messageType": "attrs",
-      "content": {
-        "sm3-val": "7.27"
-      }
-    },
-    {
-      "id": "76a8",
-      "serial": "IQ0101G19014600044",
-      "timestamp": "2024-06-29T17:57:10",
-      "messageType": "attrs",
-      "content": {
-        "ea6": 10.12
-      }
-    },
-    {
-      "id": "a5e7",
-      "serial": "IQ0101G19014600044",
-      "timestamp": "2024-06-29T17:57:13",
-      "messageType": "attrs",
-      "content": {
-        "ea6": 10.13
-      }
-    },
-    {
-      "id": "a1e4",
-      "serial": "IC0104E17000800012",
-      "timestamp": "2024-06-29T17:57:14",
-      "messageType": "attrs",
-      "content": {
-        "powfail": "0"
-      }
-    },
-    {
-      "id": "3232",
-      "serial": "IQ0101G19014600045",
-      "timestamp": "2024-06-29T17:57:21",
-      "messageType": "attrs",
-      "content": {
-        "powfail": 0
-      }
-    },
-    {
-      "id": "4e85",
-      "serial": "IQ0101G19014600000",
-      "timestamp": "2024-06-29T17:57:22",
-      "messageType": "attrs",
-      "content": {
-        "powfail": 0
-      }
-    },
-    {
-      "id": "2d33",
-      "serial": "GSF-ID0102E18005200076",
-      "timestamp": "2024-06-29T17:57:25",
-      "messageType": "attrs",
-      "content": {
-        "gs_tsvalues": "1719676638",
-        "gs_comm": "1",
-        "gs_uwa": "0",
-        "gs_mrt": "0",
-        "gs_cgs": "0",
-        "gs_on": "1",
-        "gs_alertfiltro": "1",
-        "gs_regla": "0",
-        "gs_stat": "1",
-        "gs_pot": "72",
-        "gs_volt": "3.8",
-        "gs_curr": "28.9",
-        "gs_horas": "11060",
-        "gs_numreg": "145",
-        "gs_timenextreg": "37"
-      }
-    },
-    {
-      "id": "40e8",
+      "id": "596c",
       "serial": "IQ0101G19014600046",
-      "timestamp": "2024-06-29T17:57:26",
-      "messageType": "attrs",
+      "timestamp": "2024-07-01T19:18:10",
+      "topic": "attrs",
+      "content": {
+        "cnt2": 119630,
+        "cau2": 60
+      }
+    },
+    {
+      "id": "4aea",
+      "serial": "IQ0101G19014600042",
+      "timestamp": "2024-07-01T19:18:12",
+      "topic": "attrs",
       "content": {
         "powfail": 0
       }
     },
     {
-      "id": "4048",
-      "serial": "MG0101E20018500029-temp",
-      "timestamp": "2024-06-29T17:57:30",
-      "messageType": "attrs",
+      "id": "cb18",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-01T19:18:12",
+      "topic": "attrs",
       "content": {
-        "value": 29.19,
-        "dateObserved": "2024-06-29T15:57:31.000Z"
+        "ea6": 10.21
       }
     },
     {
-      "id": "4170",
-      "serial": "MG0101E20018500029-hum",
-      "timestamp": "2024-06-29T17:57:30",
-      "messageType": "attrs",
+      "id": "ce93",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-01T19:18:15",
+      "topic": "attrs",
       "content": {
-        "value": 48.9,
-        "dateObserved": "2024-06-29T15:57:31.000Z"
+        "ea6": 10.22
       }
     },
     {
-      "id": "ffb4",
-      "serial": "MG0101E20018500029-co2",
-      "timestamp": "2024-06-29T17:57:30",
-      "messageType": "attrs",
+      "id": "aef7",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-01T19:18:17",
+      "topic": "attrs",
       "content": {
-        "value": 406,
-        "dateObserved": "2024-06-29T15:57:31.000Z"
+        "ea6": 10.21
       }
     },
     {
-      "id": "42ce",
+      "id": "7dcd",
+      "serial": "IA0300I22002900100",
+      "timestamp": "2024-07-01T19:18:18",
+      "topic": "cmdexe",
+      "content": {
+        "list": "%7b%22id%22%3a%2232766%22%2c%22stat%22%3a%22Complete%22%2c%22num%22%3a%223%22%2c%22data%22%3a[%7b%22name%22%3a%22valve4auto%22%2c%22id%22%3a%221346%22%7d%2c%7b%22name%22%3a%22valve3auto%22%2c%22id%22%3a%222191%22%7d%2c%7b%22name%22%3a%22valve1auto%22%2c%22id%22%3a%223249%22%7d]%7d"
+      }
+    },
+    {
+      "id": "9efe",
       "serial": "IC0104E17000800012",
-      "timestamp": "2024-06-29T17:57:30",
-      "messageType": "attrs",
+      "timestamp": "2024-07-01T19:18:20",
+      "topic": "attrs",
       "content": {
         "powfail": "0"
       }
     },
     {
-      "id": "0222",
+      "id": "43e6",
       "serial": "IQ0101G19014600044",
-      "timestamp": "2024-06-29T17:57:33",
-      "messageType": "attrs",
+      "timestamp": "2024-07-01T19:18:20",
+      "topic": "attrs",
       "content": {
-        "ea5": 11.85
+        "ea5": 11.98
       }
     },
     {
-      "id": "184b",
-      "serial": "MG0101E20018500015",
-      "timestamp": "2024-06-29T17:57:35",
-      "messageType": "attrs",
-      "content": {
-        "co2": 411,
-        "tem": 29.42,
-        "hum": 42.68
-      }
-    },
-    {
-      "id": "b612",
-      "serial": "MG0101E20018500015",
-      "timestamp": "2024-06-29T17:57:35",
-      "messageType": "attrs",
-      "content": {
-        "co2": 411,
-        "tem": 29.42,
-        "hum": 42.68
-      }
-    },
-    {
-      "id": "7c08",
+      "id": "36da",
       "serial": "IQ0101G19014600044",
-      "timestamp": "2024-06-29T17:57:35",
-      "messageType": "attrs",
+      "timestamp": "2024-07-01T19:18:22",
+      "topic": "attrs",
       "content": {
-        "ea5": 11.84
+        "ea5": 11.97
       }
     },
     {
-      "id": "6145",
-      "serial": "IQ0101G19014600044",
-      "timestamp": "2024-06-29T17:57:41",
-      "messageType": "attrs",
+      "id": "ef50",
+      "serial": "IQ0101G19014600046",
+      "timestamp": "2024-07-01T19:18:23",
+      "topic": "attrs",
       "content": {
-        "ea5": 11.85
+        "cnt2": 119630,
+        "cau2": 55
       }
     },
     {
-      "id": "bd1f",
+      "id": "bae2",
+      "serial": "IA0300I22002900100",
+      "timestamp": "2024-07-01T19:18:29",
+      "topic": "attrs",
+      "content": {
+        "bat_l": "79.295",
+        "bat_v": "12.337",
+        "sp": "0.000",
+        "ucTemp": "29.600",
+        "rssi": "-94.000",
+        "ev3": "0",
+        "ea1_temp": "27.658",
+        "ea2_hum": "-25.000",
+        "hist": [
+          {
+            "n": "ev3",
+            "t": "1719854281",
+            "v": "0"
+          },
+          {
+            "n": "ea2_hum",
+            "t": "1719854280",
+            "v": "-25.000"
+          },
+          {
+            "n": "bat_v",
+            "t": "1719854280",
+            "v": "12.337"
+          },
+          {
+            "n": "bat_l",
+            "t": "1719854280",
+            "v": "79.295"
+          },
+          {
+            "n": "sp",
+            "t": "1719854280",
+            "v": "0.000"
+          },
+          {
+            "n": "ucTemp",
+            "t": "1719854280",
+            "v": "29.600"
+          },
+          {
+            "n": "rssi",
+            "t": "1719854280",
+            "v": "-94.000"
+          },
+          {
+            "n": "ea1_temp",
+            "t": "1719854280",
+            "v": "27.658"
+          }
+        ]
+      }
+    },
+    {
+      "id": "fd29",
+      "serial": "IA0300I22002900100",
+      "timestamp": "2024-07-01T19:18:29",
+      "topic": "cmd",
+      "content": {
+        "ipex12": {
+          "globalpercent": "200",
+          "id": 6146
+        }
+      }
+    },
+    {
+      "id": "5d83",
+      "serial": "IQ0101G19014600046",
+      "timestamp": "2024-07-01T19:18:32",
+      "topic": "attrs",
+      "content": {
+        "cnt2": 119640,
+        "cau2": 55
+      }
+    },
+    {
+      "id": "c08d",
       "serial": "GSF-ID0102E18005200148",
-      "timestamp": "2024-06-29T17:57:43",
-      "messageType": "attrs",
+      "timestamp": "2024-07-01T19:18:33",
+      "topic": "attrs",
       "content": {
-        "gs_tsvalues": "1719676658",
+        "gs_tsvalues": "1719854308",
         "gs_comm": "1",
         "gs_uwa": "0",
         "gs_mrt": "0",
@@ -362,259 +265,59 @@
         "gs_regla": "0",
         "gs_stat": "1",
         "gs_pot": "100",
-        "gs_volt": "3.8",
+        "gs_volt": "3.7",
         "gs_curr": "39.3",
-        "gs_horas": "9547",
+        "gs_horas": "9583",
         "gs_numreg": "109",
-        "gs_timenextreg": "40"
+        "gs_timenextreg": "4"
       }
     },
     {
-      "id": "4032",
+      "id": "4e1a",
       "serial": "IQ0101G19014600044",
-      "timestamp": "2024-06-29T17:57:43",
-      "messageType": "attrs",
+      "timestamp": "2024-07-01T19:18:33",
+      "topic": "attrs",
       "content": {
-        "ea5": 11.84
+        "ea6": 10.22
       }
     },
     {
-      "id": "67b5",
-      "serial": "MG0101E20018500013",
-      "timestamp": "2024-06-29T17:57:44",
-      "messageType": "attrs",
-      "content": {
-        "co2": 413,
-        "tem": 27.47,
-        "hum": 45.66
-      }
-    },
-    {
-      "id": "ee06",
-      "serial": "IC0104E17000800012",
-      "timestamp": "2024-06-29T17:57:45",
-      "messageType": "attrs",
-      "content": {
-        "powfail": "0"
-      }
-    },
-    {
-      "id": "2881",
-      "serial": "MG0101E20018500014",
-      "timestamp": "2024-06-29T17:57:46",
-      "messageType": "attrs",
-      "content": {
-        "co2": 410,
-        "tem": 29.32,
-        "hum": 42.38
-      }
-    },
-    {
-      "id": "1d23",
-      "serial": "MG0101E20018500014",
-      "timestamp": "2024-06-29T17:57:46",
-      "messageType": "attrs",
-      "content": {
-        "co2": 410,
-        "tem": 29.32,
-        "hum": 42.38
-      }
-    },
-    {
-      "id": "2d55",
-      "serial": "IQ0101G19014600044",
-      "timestamp": "2024-06-29T17:57:46",
-      "messageType": "attrs",
-      "content": {
-        "ea6": 10.14
-      }
-    },
-    {
-      "id": "1258",
-      "serial": "IQ0101G19014600044",
-      "timestamp": "2024-06-29T17:57:46",
-      "messageType": "attrs",
-      "content": {
-        "ea5": 11.85
-      }
-    },
-    {
-      "id": "c4aa",
-      "serial": "IQ0101G19014600044",
-      "timestamp": "2024-06-29T17:57:48",
-      "messageType": "attrs",
-      "content": {
-        "ea6": 10.13
-      }
-    },
-    {
-      "id": "5569",
-      "serial": "IQ0101G19014600042",
-      "timestamp": "2024-06-29T17:57:55",
-      "messageType": "attrs",
-      "content": {
-        "powfail": 0
-      }
-    },
-    {
-      "id": "765b",
-      "serial": "IQ0101G19014600044",
-      "timestamp": "2024-06-29T17:57:58",
-      "messageType": "attrs",
-      "content": {
-        "ea5": 11.84
-      }
-    },
-    {
-      "id": "f082",
-      "serial": "IQ0101G19014600044",
-      "timestamp": "2024-06-29T17:57:58",
-      "messageType": "attrs",
-      "content": {
-        "ea6": 10.12
-      }
-    },
-    {
-      "id": "cc50",
-      "serial": "IQ0101G19014600041",
-      "timestamp": "2024-06-29T17:58:00",
-      "messageType": "attrs",
-      "content": {
-        "powfail": 0
-      }
-    },
-    {
-      "id": "0530",
-      "serial": "IC0104E17000800012",
-      "timestamp": "2024-06-29T17:58:00",
-      "messageType": "attrs",
-      "content": {
-        "powfail": "0"
-      }
-    },
-    {
-      "id": "a49a",
+      "id": "49dd",
       "serial": "IA0300I22002900100",
-      "timestamp": "2024-06-29T17:58:01",
-      "messageType": "attrs",
+      "timestamp": "2024-07-01T19:18:34",
+      "topic": "cmdexe",
       "content": {
-        "ucTemp": "32.100",
-        "rssi": "-94.000",
-        "hist": [
-          {
-            "n": "ucTemp",
-            "t": "1719676680",
-            "v": "32.100"
-          },
-          {
-            "n": "rssi",
-            "t": "1719676680",
-            "v": "-94.000"
-          }
-        ]
+        "ipex12": "%7b%22id%22%3a%226146%22%2c%22stat%22%3a%22Ok%22%7d"
       }
     },
     {
-      "id": "1342",
-      "serial": "IQ0101G19014600044",
-      "timestamp": "2024-06-29T17:58:01",
-      "messageType": "attrs",
+      "id": "59de",
+      "serial": "IA0300I22002900100",
+      "timestamp": "2024-07-01T19:18:34",
+      "topic": "cmd",
       "content": {
-        "ea6": 10.13
-      }
-    },
-    {
-      "id": "8edb",
-      "serial": "IQ0101G19014600044",
-      "timestamp": "2024-06-29T17:58:01",
-      "messageType": "attrs",
-      "content": {
-        "ea5": 11.85
-      }
-    },
-    {
-      "id": "eb29",
-      "serial": "MC0203J22010600009",
-      "timestamp": "2024-06-29T19:51:05",
-      "messageType": "cmd",
-      "content": {
-        "info": {}
-      }
-    },
-    {
-      "id": "17bd",
-      "serial": "IQ0101G19014600044",
-      "timestamp": "2024-06-29T19:51:05",
-      "messageType": "attrs",
-      "content": {
-        "powfail": 0
-      }
-    },
-    {
-      "id": "a97a",
-      "serial": "IQ0101G19014600044",
-      "timestamp": "2024-06-29T19:51:07",
-      "messageType": "attrs",
-      "content": {
-        "ea6": 10.11
-      }
-    },
-    {
-      "id": "b66b",
-      "serial": "IC0104E17000800012",
-      "timestamp": "2024-06-29T19:51:11",
-      "messageType": "attrs",
-      "content": {
-        "powfail": "0"
-      }
-    },
-    {
-      "id": "9398",
-      "serial": "IQ0101G19014600046",
-      "timestamp": "2024-06-29T19:51:18",
-      "messageType": "attrs",
-      "content": {
-        "cnt2": 45270,
-        "cau2": 0
-      }
-    },
-    {
-      "id": "1c0f",
-      "serial": "IQ0101G19014600046",
-      "timestamp": "2024-06-29T19:51:19",
-      "messageType": "cmd",
-      "content": {
-        "list": {
-          "offset": "0",
-          "id": 32766
+        "info": {
+          "id": 6147
         }
       }
     },
     {
-      "id": "3842",
-      "serial": "IQ0101G19014600000",
-      "timestamp": "2024-06-29T19:51:22",
-      "messageType": "attrs",
+      "id": "2614",
+      "serial": "IQ0101G19014600045",
+      "timestamp": "2024-07-01T19:18:34",
+      "topic": "attrs",
       "content": {
         "powfail": 0
       }
     },
     {
-      "id": "1bfb",
-      "serial": "IQ0101G19014600046",
-      "timestamp": "2024-06-29T19:51:23",
-      "messageType": "attrs",
+      "id": "b5e8",
+      "serial": "IC0104E17000800012",
+      "timestamp": "2024-07-01T19:18:35",
+      "topic": "attrs",
       "content": {
-        "cnt2": 45270,
-        "cau2": 5
+        "powfail": "0"
       }
-    }
-  ],
-  "users": [
-    {
-      "name": "8hHjQnvZ9TnZ3QVgrzkhnF2G4xunJW",
-      "password": "9xPkYtJ8eMBvJYNMXRd6kkMhFdZVhz",
-      "id": "1"
     }
   ]
 }

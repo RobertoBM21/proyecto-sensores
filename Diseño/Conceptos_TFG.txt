@@ -1,0 +1,45 @@
+Pasos a seguir:
+
+	- Redactar el README.md
+
+	- Pasar el frontend a Vue.js para poder usar plantillas y reestructurar el código
+
+	- Hacer el backend con express y conectarlo con la base de datos, además de crear una API REST
+
+	- Cambiar a otra base de datos (MySQL, SQLite, MongoDB)
+
+		> Una vez en la base de datos final arreglar los id de las entidades server y device
+			
+	- Realizar la paginación de resultados en el backend (como en ArSo)
+
+
+Conceptos de Diseño:
+
+	- Sustituir el filtro de Topic por Servidores, como un desplegable
+
+	- Pasar los filtros a la parte superior de la pantalla, en una línea, para facilitar su acceso
+
+	- Compactar un poco los resultados, pero sin que sea incomodo ni feo
+
+	- Botón para limpiar los filtros
+
+	- Selector de fecha mediante fechas corrientes (hoy, ayer, ultima semana, ultimo mes, etc.) y avanzado (fecha inicio y fin)
+
+	- Centrar el diseño y el desarrollo teniendo en cuenta el caso de uso, el usuario y la facilidad y velocidad para hacerlo todo (que mi abuelo lo pudiera usar)
+
+
+
+Ideas a largo plazo y consejos:
+
+	- Usar CodePen para buscar ejemplos de cualquier cosa
+
+	- Revisar Elastic Stack y Kibana para ver herramientas útiles para organizar y mostrar datos y graficas
+
+	- Convertir el proyecto en un PWA* para poder mandar notificaciones
+
+	- Emplear Flask Python y watchdog para matar y arrancar el script de Python, y para limpiar la base de datos cada cierto tiempo
+
+	- Lanzar todos los componentes con Docker
+
+
+*PWA: Convierte la pagina a una app que tiene un modulo siempre activo y puede mandar notificaciones
