@@ -4,6 +4,7 @@ La aplicación aún se encuentra en una etapa temprana de desarrollo.
 
 El objetivo de este proyecto es crear una página/app que centralice la recepción y consulta de mensajes MQTT enviados por los dispositivos de la empresa.
 De esta manera, los técnicos tendrán una platarforma en la que consultar de manera sencilla si el dispositivo que han instalado está funcionando correctamente, así como un histórico de los datos enviados por cualquier dispositivo.
+
 Este proyecto está enfocado en ser presentado como un TFG.
 
 # Organization

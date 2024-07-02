@@ -14,42 +14,42 @@
       "id": "e287",
       "serial": "MC0203J22010600009",
       "apikey": "odins",
-      "lastCommunication": "2024-07-01T19:18:10",
+      "lastCommunication": "2024-07-02T18:32:21",
       "serverId": "1"
     },
     {
       "id": "934f",
       "serial": "IQ0101G19014600046",
       "apikey": "odins",
-      "lastCommunication": "2024-07-01T19:18:32",
+      "lastCommunication": "2024-07-02T18:32:43",
       "serverId": "1"
     },
     {
       "id": "7b79",
       "serial": "IQ0101G19014600042",
       "apikey": "odins",
-      "lastCommunication": "2024-07-01T19:18:12",
+      "lastCommunication": "2024-07-02T18:32:41",
       "serverId": "1"
     },
     {
       "id": "9b5e",
       "serial": "IQ0101G19014600044",
       "apikey": "odins",
-      "lastCommunication": "2024-07-01T19:18:33",
+      "lastCommunication": "2024-07-02T18:32:42",
       "serverId": "1"
     },
     {
       "id": "cbaa",
       "serial": "IA0300I22002900100",
       "apikey": "odins",
-      "lastCommunication": "2024-07-01T19:18:34",
+      "lastCommunication": "2024-07-02T18:32:23",
       "serverId": "1"
     },
     {
       "id": "89ef",
       "serial": "IC0104E17000800012",
       "apikey": "odins",
-      "lastCommunication": "2024-07-01T19:18:35",
+      "lastCommunication": "2024-07-02T18:32:37",
       "serverId": "1"
     },
     {
@@ -63,7 +63,42 @@
       "id": "ee21",
       "serial": "IQ0101G19014600045",
       "apikey": "odins",
-      "lastCommunication": "2024-07-01T19:18:34",
+      "lastCommunication": "2024-07-02T18:32:43",
+      "serverId": "1"
+    },
+    {
+      "id": "b206",
+      "serial": "MG0101E20018500016",
+      "apikey": "odins",
+      "lastCommunication": "2024-07-02T18:32:26",
+      "serverId": "1"
+    },
+    {
+      "id": "deda",
+      "serial": "MG0101E20018500029-temp",
+      "apikey": "odins",
+      "lastCommunication": "2024-07-02T18:32:32",
+      "serverId": "1"
+    },
+    {
+      "id": "a9d0",
+      "serial": "MG0101E20018500029-hum",
+      "apikey": "odins",
+      "lastCommunication": "2024-07-02T18:32:32",
+      "serverId": "1"
+    },
+    {
+      "id": "aeb2",
+      "serial": "MG0101E20018500029-co2",
+      "apikey": "odins",
+      "lastCommunication": "2024-07-02T18:32:32",
+      "serverId": "1"
+    },
+    {
+      "id": "768b",
+      "serial": "IQ0101G19014600041",
+      "apikey": "odins",
+      "lastCommunication": "2024-07-02T18:32:41",
       "serverId": "1"
     }
   ],
@@ -317,6 +352,386 @@
       "topic": "attrs",
       "content": {
         "powfail": "0"
+      }
+    },
+    {
+      "id": "f78f",
+      "serial": "MC0203J22010600009",
+      "timestamp": "2024-07-02T13:57:32",
+      "topic": "cmd",
+      "content": {
+        "info": {}
+      }
+    },
+    {
+      "id": "feb4",
+      "serial": "IC0104E17000800012",
+      "timestamp": "2024-07-02T13:57:37",
+      "topic": "attrs",
+      "content": {
+        "powfail": "0"
+      }
+    },
+    {
+      "id": "e82a",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-02T13:57:37",
+      "topic": "attrs",
+      "content": {
+        "ea5": 12.14
+      }
+    },
+    {
+      "id": "f00a",
+      "serial": "IQ0101G19014600046",
+      "timestamp": "2024-07-02T13:57:38",
+      "topic": "attrs",
+      "content": {
+        "powfail": 0
+      }
+    },
+    {
+      "id": "a99c",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-02T13:57:39",
+      "topic": "attrs",
+      "content": {
+        "ea5": 12.15
+      }
+    },
+    {
+      "id": "1aa7",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-02T13:57:42",
+      "topic": "attrs",
+      "content": {
+        "ea6": 10.37
+      }
+    },
+    {
+      "id": "34aa",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-02T13:57:45",
+      "topic": "attrs",
+      "content": {
+        "ea6": 10.36
+      }
+    },
+    {
+      "id": "6b68",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-02T13:57:49",
+      "topic": "attrs",
+      "content": {
+        "ea5": 12.14
+      }
+    },
+    {
+      "id": "789d",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-02T13:57:50",
+      "topic": "attrs",
+      "content": {
+        "ea6": 10.37
+      }
+    },
+    {
+      "id": "5a81",
+      "serial": "IC0104E17000800012",
+      "timestamp": "2024-07-02T13:57:52",
+      "topic": "attrs",
+      "content": {
+        "powfail": "0"
+      }
+    },
+    {
+      "id": "c8ed",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-02T13:57:52",
+      "topic": "attrs",
+      "content": {
+        "ea5": 12.13
+      }
+    },
+    {
+      "id": "bf2a",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-02T13:57:52",
+      "topic": "attrs",
+      "content": {
+        "ea6": 10.36
+      }
+    },
+    {
+      "id": "70a8",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-02T13:57:55",
+      "topic": "attrs",
+      "content": {
+        "ea6": 10.38
+      }
+    },
+    {
+      "id": "0be1",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-02T13:57:57",
+      "topic": "attrs",
+      "content": {
+        "ea6": 10.37
+      }
+    },
+    {
+      "id": "8f0e",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-02T13:58:05",
+      "topic": "attrs",
+      "content": {
+        "ea6": 10.36
+      }
+    },
+    {
+      "id": "f1d0",
+      "serial": "IQ0101G19014600045",
+      "timestamp": "2024-07-02T13:58:06",
+      "topic": "attrs",
+      "content": {
+        "powfail": 0
+      }
+    },
+    {
+      "id": "f020",
+      "serial": "IA0300I22002900100",
+      "timestamp": "2024-07-02T13:58:06",
+      "topic": "attrs",
+      "content": {
+        "bat_l": "79.295",
+        "bat_v": "12.337",
+        "sp": "0.000",
+        "ucTemp": "29.900",
+        "rssi": "-90.000",
+        "ea2_hum": "-25.000",
+        "hist": [
+          {
+            "n": "ea2_hum",
+            "t": "1719921480",
+            "v": "-25.000"
+          },
+          {
+            "n": "bat_v",
+            "t": "1719921480",
+            "v": "12.337"
+          },
+          {
+            "n": "bat_l",
+            "t": "1719921480",
+            "v": "79.295"
+          },
+          {
+            "n": "sp",
+            "t": "1719921480",
+            "v": "0.000"
+          },
+          {
+            "n": "ucTemp",
+            "t": "1719921480",
+            "v": "29.900"
+          },
+          {
+            "n": "rssi",
+            "t": "1719921480",
+            "v": "-90.000"
+          }
+        ]
+      }
+    },
+    {
+      "id": "d0f6",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-02T13:58:07",
+      "topic": "attrs",
+      "content": {
+        "ea5": 12.15
+      }
+    },
+    {
+      "id": "ec36",
+      "serial": "IC0104E17000800012",
+      "timestamp": "2024-07-02T13:58:07",
+      "topic": "attrs",
+      "content": {
+        "powfail": "0"
+      }
+    },
+    {
+      "id": "144d",
+      "serial": "MC0203J22010600009",
+      "timestamp": "2024-07-02T18:32:21",
+      "topic": "cmd",
+      "content": {
+        "info": {}
+      }
+    },
+    {
+      "id": "4f8b",
+      "serial": "IC0104E17000800012",
+      "timestamp": "2024-07-02T18:32:22",
+      "topic": "attrs",
+      "content": {
+        "powfail": "0"
+      }
+    },
+    {
+      "id": "78c8",
+      "serial": "IQ0101G19014600046",
+      "timestamp": "2024-07-02T18:32:22",
+      "topic": "attrs",
+      "content": {
+        "cnt2": 201930,
+        "cau2": 10
+      }
+    },
+    {
+      "id": "c6f3",
+      "serial": "IA0300I22002900100",
+      "timestamp": "2024-07-02T18:32:23",
+      "topic": "cmdexe",
+      "content": {
+        "info": "%7b%22id%22%3a%227160%22%2c%22stat%22%3a%22Ok%22%2c%22sn%22%3a%22IA0300I22002900100%22%2c%22fw%22%3a%2204%2e37(May%2029%202024%2c14%3a09%3a38)%22%2c%22eep%22%3a%2264K%22%2c%22bat%22%3a%2212V%22%2c%22dt%22%3a%2220240702T163221Z%22%2c%22tz%22%3a%223600%22%2c%22freccomm%22%3a%220%22%2c%22histnum%22%3a%220%22%2c%22cmdexenum%22%3a%220%22%2c%22map%22%3a%220eefbc1f%22%2c%22elems%22%3a%221%2d0003%2c4%2d0001%2c5%2d0001%2c6%2d0001%2c8%2d001F%2c9%2d0001%22%2c%22exp%22%3a%22%22%2c%22rules%22%3a%2200%22%2c%22exc%22%3a%22none%22%7d"
+      }
+    },
+    {
+      "id": "b622",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-02T18:32:24",
+      "topic": "attrs",
+      "content": {
+        "ea5": 12.12
+      }
+    },
+    {
+      "id": "656d",
+      "serial": "MG0101E20018500016",
+      "timestamp": "2024-07-02T18:32:26",
+      "topic": "attrs",
+      "content": {
+        "co2": 508,
+        "tem": 26.65,
+        "hum": 47.09
+      }
+    },
+    {
+      "id": "3846",
+      "serial": "MG0101E20018500016",
+      "timestamp": "2024-07-02T18:32:26",
+      "topic": "attrs",
+      "content": {
+        "co2": 508,
+        "tem": 26.65,
+        "hum": 47.09
+      }
+    },
+    {
+      "id": "12ba",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-02T18:32:27",
+      "topic": "attrs",
+      "content": {
+        "ea5": 12.13
+      }
+    },
+    {
+      "id": "c7f1",
+      "serial": "MG0101E20018500029-temp",
+      "timestamp": "2024-07-02T18:32:32",
+      "topic": "attrs",
+      "content": {
+        "value": 26.01,
+        "dateObserved": "2024-07-02T16:32:31.000Z"
+      }
+    },
+    {
+      "id": "31a1",
+      "serial": "MG0101E20018500029-hum",
+      "timestamp": "2024-07-02T18:32:32",
+      "topic": "attrs",
+      "content": {
+        "value": 51.11,
+        "dateObserved": "2024-07-02T16:32:31.000Z"
+      }
+    },
+    {
+      "id": "4a0c",
+      "serial": "MG0101E20018500029-co2",
+      "timestamp": "2024-07-02T18:32:32",
+      "topic": "attrs",
+      "content": {
+        "value": 492,
+        "dateObserved": "2024-07-02T16:32:31.000Z"
+      }
+    },
+    {
+      "id": "3445",
+      "serial": "IQ0101G19014600046",
+      "timestamp": "2024-07-02T18:32:34",
+      "topic": "attrs",
+      "content": {
+        "cnt2": 201930,
+        "cau2": 15
+      }
+    },
+    {
+      "id": "c191",
+      "serial": "IC0104E17000800012",
+      "timestamp": "2024-07-02T18:32:37",
+      "topic": "attrs",
+      "content": {
+        "powfail": "0"
+      }
+    },
+    {
+      "id": "9e77",
+      "serial": "IQ0101G19014600042",
+      "timestamp": "2024-07-02T18:32:41",
+      "topic": "attrs",
+      "content": {
+        "powfail": 0
+      }
+    },
+    {
+      "id": "b42f",
+      "serial": "IQ0101G19014600041",
+      "timestamp": "2024-07-02T18:32:41",
+      "topic": "attrs",
+      "content": {
+        "powfail": 0
+      }
+    },
+    {
+      "id": "9ad7",
+      "serial": "IQ0101G19014600044",
+      "timestamp": "2024-07-02T18:32:42",
+      "topic": "attrs",
+      "content": {
+        "ea6": 10.35
+      }
+    },
+    {
+      "id": "a080",
+      "serial": "IQ0101G19014600045",
+      "timestamp": "2024-07-02T18:32:43",
+      "topic": "attrs",
+      "content": {
+        "powfail": 0
+      }
+    },
+    {
+      "id": "d639",
+      "serial": "IQ0101G19014600046",
+      "timestamp": "2024-07-02T18:32:43",
+      "topic": "attrs",
+      "content": {
+        "cnt2": 201940,
+        "cau2": 15
       }
     }
   ]

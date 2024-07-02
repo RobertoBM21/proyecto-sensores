@@ -105,7 +105,7 @@ main {
   padding: 20px;
 }
 
-h1 {
+#main h1 {
   font-size: 3.5rem;
   font-weight: bold;
 }
@@ -135,7 +135,6 @@ form#searchForm {
 }
 
 #filters {
-  display: none;
   flex-direction: column;
   align-items: center;
   margin-bottom: 1rem;
@@ -183,7 +182,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .result-details span {
   display: inline-block;
-  margin-right: 1rem;
+  margin-right: 1.2rem;
 }
 
 /* Paginación */
@@ -201,32 +200,37 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border: 1px solid #ccc;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  text-decoration: none; /* Para que los enlaces no tengan subrayado */
+  display: inline-block;
 }
 
-.page-button:hover {
+.page-button:hover,
+.page-button:focus {
   background-color: #79b73c;
+  outline: none; /* Quitar el contorno azul predeterminado */
+  box-shadow: none; /* Quitar el sombreado azul predeterminado */
 }
 
-.page-button.active {
+.page-item.active .page-button {
   background-color: #5bae5e;
 }
 
-.page-button.disabled {
+.page-item.disabled .page-button {
   background-color: #ccc;
   cursor: not-allowed;
 }
 
-.page-button:first-child {
+.page-item:first-child .page-button {
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 }
 
-.page-button:last-child {
+.page-item:last-child .page-button {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
 
-.page-button:not(:first-child):not(:last-child) {
+.page-item:not(:first-child):not(:last-child) .page-button {
   border-radius: 0;
 }
 
