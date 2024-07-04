@@ -1,17 +1,13 @@
 Pasos a seguir:
 
 	- Hacer el backend con express y conectarlo con la base de datos, además de crear una API REST
-
-	- Cambiar a otra base de datos (MySQL, SQLite, MongoDB)
-
-		> Una vez en la base de datos final arreglar los id de las entidades server y device
 			
 	- Realizar la paginación de resultados en el backend (como en ArSo)
 
 
 Conceptos de Diseño:
 
-	- Sustituir el filtro de Topic por Servidores, como un desplegable
+	- Convertir la seleccion de servidor en un filtro como los demas, como un desplegable
 
 	- Pasar los filtros a la parte superior de la pantalla, en una línea, para facilitar su acceso
 
@@ -41,3 +37,10 @@ Ideas a largo plazo y consejos:
 
 
 *PWA: Convierte la pagina a una app que tiene un modulo siempre activo y puede mandar notificaciones
+
+
+Dudas:
+
+	- Expongo todos los metodos CRUD en la API de Express? Yo creo que si
+
+	- Importa que haya usado Vue CLI en mi dispositivo para que alguien lo pueda iniciar? Es necesario especificar la version de Vue.js, creo que esta en el package.json
