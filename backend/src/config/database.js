@@ -9,7 +9,9 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT,
     port: process.env.DB_PORT,
-    logging: false, //* Establecer en true para ver las consultas SQL en la consola
+
+    logging: false, //* Muestra las consultas SQL en la consola para debuggear
+    logQueryParameters: false, //* Muestra los parámetros de las consultas SQL
   }
 );
 

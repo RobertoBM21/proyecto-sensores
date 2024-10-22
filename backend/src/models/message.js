@@ -25,7 +25,7 @@ const Message = sequelize.define(
     },
   },
   {
-    // Nombrar los indices de esta manera es una buena práctica
+    // Los indices se nombran así por convención
     indexes: [
       {
         name: "idx_serial",
