@@ -1,107 +1,140 @@
-# Overview
+# Proyecto Sensores
 
-La aplicación aún se encuentra en una etapa temprana de desarrollo.
+Este proyecto es una aplicación para gestionar los mensajes enviados por dispositivos IoT a través del protocolo MQTT. La aplicación recoge, estructura, almacena y muestra los servidores, dispositivos y mensajes. El backend está desarrollado utilizando **Node.js** con **Express** y **MySQL**. El frontend está desarrollado en **Vue.js**. Además, cuenta con documentación de API utilizando **Swagger**.
 
-El objetivo de este proyecto es crear una página/app que centralice la recepción y consulta de mensajes MQTT enviados por los dispositivos de la empresa.
-De esta manera, los técnicos tendrán una platarforma en la que consultar de manera sencilla si el dispositivo que han instalado está funcionando correctamente, así como un histórico de los datos enviados por cualquier dispositivo.
+Incluye un script en Python (`mqtt_daemon.py`) que se encarga de conectarse a los brokers MQTT, suscribirse a los topics y enviar los mensajes al backend.
 
-Las tecnologias empleadas para este proyecto son Vue para el frontend y, más adelante, Express junto a MySQL para el backend. Por ahora el backend emplea json-server.
+De esta manera, los técnicos tendrán una plataforma en la que consultar de manera sencilla si el dispositivo que han instalado está funcionando correctamente.
 
-Este proyecto está enfocado en ser presentado como un TFG.
+## Tabla de Contenidos
 
-# Organization
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Instalación y Configuración](#instalación-y-configuración)
+  - [Requisitos Previos](#requisitos-previos)
+  - [Configuración de Variables de Entorno](#configuración-de-variables-de-entorno)
+  - [Instalación de Dependencias](#instalación-de-dependencias)
+- [Ejecución del Proyecto](#ejecución-del-proyecto)
+  - [Backend](#backend)
+  - [Frontend](#frontend)
+  - [Script](#script)
+- [Contacto](#contacto)
 
-Esta sección detalla como esta organizado tanto el código del proyecto como los archivos relevantes del mismo. Existen dos carpetas principales: Diseño y Proyecto.
+---
 
-- `Diseño/`: contiene aclaraciones, conceptos y referencias que son claves para el desarrollo de la aplicación. Una vez haya concluido el desarrollo de este proyecto ya no será necesario.
+## Estructura del Proyecto
 
-- `Proyecto/`: el código de la aplicacion se encuentra organizado dentro de esta carpeta, dividiendose en frontend y backend.
+El proyecto está organizado de la siguiente manera:
 
-- `frontend/`: está compuesto por los archivos que constituyen el frontend de la aplicación. Se trata de un proyecto Vue.
+- **backend/**: Contiene el código fuente del backend, desarrollado con Node.js, Express y MySQL. Incluye las rutas, controladores, modelos y la configuración de la base de datos.
 
-  - `public/`: contiene los archivos estáticos del proyecto, siendo estos `index.html` y `favicon.ico`. El archivo `index.html` es donde se inyecta el código de la aplicación y el `favicon.ico` corresponde al icono que se muestra en lapestaña del navegador.
+- **frontend/**: Contiene el código fuente del frontend, desarrollado con Vue.js. Incluye los componentes, vistas y la lógica necesaria para interactuar con el backend.
 
-  - `src/`: incluye todo el código de la aplicación Vue.
+- **script/**: Contiene el script `mqtt_daemon.py`, escrito en Python. Este script se encarga de conectarse a los brokers MQTT, suscribirse a los topics y enviar los mensajes al backend para su procesamiento y almacenamiento.
 
-    - `assets/`: en esta carpeta se almacenan las imágenes y recursos empleados por los componentes de la aplicación.
+---
 
-    - `components`: contiene todos los componentes que forman parte del proyecto. Destacando `SearchComponent.vue`, que contiene la página del buscador.
+## Instalación y Configuración
 
-    - `App.vue`: componente raíz de la aplicación. Define la estructura de la página mostrada.
+### Requisitos Previos
 
-    - `main.js`: punto de entrada de la aplicación. Crea la app.
+- **Node.js** v22.10.0 o superior.
+- **MySQL** instalado y en ejecución.
+- **Python 3** para ejecutar el script MQTT Daemon.
 
-    - `styles.css`: estilos globales de todos los componentes.
+### Configuración de Variables de Entorno
 
-    - `package.json`: define la configuración y dependencias del frontend.
+Crea un archivo `.env` en la raíz del proyecto `backend/` con el siguiente contenido:
 
-- `backend/`: está compuesto por los archivos que constituyen el backend de la aplicación.
+```env
+DB_NAME=tu_nombre_de_base_de_datos
+DB_USER=tu_usuario_de_mysql
+DB_PASSWORD=tu_contraseña_de_mysql
+DB_HOST=localhost
+DB_DIALECT=mysql
+DB_PORT=3306
 
-  - `mqtt_daemon.py`: se trata de un demonio que se conecta a los brokers MQTT. Su funcionalidad consiste en realizar la conexión a cada broker, recibir mensajes, y almacenarlos de forma estructura en la base de datos.
+PORT=3000
+```
 
-  - `db.json`: base de datos basada en json-server en la que se almacenan los servidores/brokers, dispositivos y mensajes. Depende de `package.json` para su ejecución.
+Asegúrate de reemplazar los valores con tus credenciales y configuración de tu base de datos MySQL.
 
-  - `package.json`: define la configuración y dependencias de ejecución de json-server.
+### Instalación de Dependencias
 
-# Dependencies & Requirements
+**Backend**
 
-La versión de Node empleada es 20.13.1.
+Desde la carpeta `backend/`, ejecuta:
 
-Para lanzar correctamente la aplicación es necesario instalar varias dependencias. Tal como se menciona en el apartado anterior, para el backend con **npm install** sería suficiente, ya que la dependencia a json-server está definida en el archivo package.json.
+```bash
+npm install
+```
 
-Para ejecutar el frontend también es necesario instalar varias dependencias. Tal como ocurre antes esto se consigue con **npm install** gracias al archivo package.json.
+**Frontend**
 
-# Building & Running
+Desde la carpeta `frontend/`, ejecuta:
 
-- Para lanzar la aplicación primero hay que ejecutar los siguientes comandos en las carpetas que contienen los archivos correspondientes.
+```bash
+npm install
+```
 
-  - Primera ejecución. Instalar dependencias tanto en frontend como en backend:
+**Script**
 
-    ```bash
-    cd /Proyecto/frontend
-    npm install
-    cd ../backend
-    npm install
-    ```
+Desde la carpeta `script/`, instala las dependencias de Python:
 
-  - Base de datos:
+```bash
+pip install paho-mqtt requests
+```
 
-    ```bash
-    npm start
-    ```
+## Ejecución del Proyecto
 
-  - Script Python:
+### Backend
 
-    ```bash
-    python mqtt_daemon.py
-    ```
+Para iniciar el servidor en modo desarrollo, desde la carpeta `backend/`, ejecuta:
 
-  - Frontend:
+```bash
+node --run dev
+```
 
-    ```bash
-    npm start
-    ```
+O utilizando npm:
 
-# Known Issues
+```bash
+npm run dev
+```
 
-Dado que aún quedan muchos cambios tanto de arquitectura como de tecnologías por hacer esta sección será actualizada cuando el proyecto se encuentre en una fase más avanzada de desarrollo.
+Personalmente recomiendo la primera opción, ya que se ejecuta más rápido y es independiente del gestor de paquetes usado.
 
-# References
+Si quieres ejecutar el proyecto en modo normal sustituye `dev` por `start`.
 
-Vue.js: https://vuejs.org/guide/introduction.html  
-Http-Server: https://www.npmjs.com/package/http-server  
-Json-Server: https://www.npmjs.com/package/json-server
+El servidor se ejecutará en el puerto especificado en el archivo `.env` (por defecto, 3000).
 
-# Authors
+### Frontend
 
-- Roberto Burruezo Martínez \<roberto.burruezom@um.es\>
+Para lanzar la web, desde la carpeta `frontend/`, ejecuta:
 
-# TODO
+```bash
+npm run serve
+```
 
-- Hacer el backend con express y conectarlo con la base de datos correspondiente
+O también:
 
-- Cambiar a otra base de datos (MySQL, SQLite o MongoDB)
+```bash
+npm start
+```
 
-- Crear una API REST
+### Script
 
-- Muchos cambios en el diseño y funcionamiento del frontend
+Para ejecutar el script, desde la carpeta `script/`, ejecuta:
+
+```bash
+python mqtt_daemon.py
+```
+
+El backend debe estar en ejecución antes de iniciar el script.
+
+Para el correcto funcionamiento del script es necesario tener al menos un servidor almacenado en la base de datos.
+
+## Contacto
+
+Si tienes preguntas o necesitas más información, puedes contactarme a través de:
+
+- **Correo electrónico**: roberto.burruezom@um.es
+- **Github**: [RobertoBM21](https://github.com/RobertoBM21)
