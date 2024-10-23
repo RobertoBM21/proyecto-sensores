@@ -1,4 +1,6 @@
-require("dotenv").config();
+//? Cargamos las variables de entorno (prioridad absoluta)
+process.loadEnvFile("./.env");
+
 const app = require("./app");
 const { sequelize } = require("./models");
 
@@ -17,6 +19,9 @@ async function startServer() {
     // Arrancar el servidor
     app.listen(PORT, () => {
       console.log(`Servidor escuchando en el puerto ${PORT}`);
+      console.log(
+        `Swagger docs are available at http://localhost:${PORT}/api-docs`
+      );
     });
   } catch (error) {
     console.error("Error al iniciar el servidor:", error);

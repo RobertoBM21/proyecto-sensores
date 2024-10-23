@@ -29,11 +29,6 @@ exports.getDeviceBySerial = async (req, res, next) => {
   }
 };
 
-//? Tratamiento del caso /devices/serial/:serial con un serial vacío
-exports.invalidSerial = (req, res, next) => {
-  next(new BadRequestError("Serial inválido"));
-};
-
 exports.createDevice = async (req, res, next) => {
   try {
     const device = await deviceService.createDevice(req.body);

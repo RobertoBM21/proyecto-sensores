@@ -56,11 +56,6 @@ class ServerService {
 
     // Comprobar si ya existe otro servidor con el mismo endpoint
     const existingServer = await Server.findOne({ where: { endpoint } });
-    console.log(
-      `Id de existingServer: ${
-        existingServer.id
-      }, tipo: ${typeof existingServer.id}`
-    );
     if (existingServer && existingServer.id !== id) {
       throw new ConflictError("Ya existe un servidor con ese endpoint");
     }
