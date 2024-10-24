@@ -84,6 +84,8 @@ Desde la carpeta `script/`, instala las dependencias de Python:
 pip install paho-mqtt requests
 ```
 
+Es importante que la versión de `paho-mqtt` sea la **2.1.0** para su correcto funcionamiento.
+
 ## Ejecución del Proyecto
 
 ### Backend
