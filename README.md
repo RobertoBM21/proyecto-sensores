@@ -11,7 +11,9 @@ De esta manera, los técnicos tendrán una plataforma en la que consultar de man
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Instalación y Configuración](#instalación-y-configuración)
   - [Requisitos Previos](#requisitos-previos)
-  - [Configuración de Variables de Entorno](#configuración-de-variables-de-entorno)
+  - [Configuración de Variables de Entorno y Base de datos](#configuración-de-variables-de-entorno-y-base-de-datos)
+    - [Configurar la Base de Datos](#configurar-la-base-de-datos)
+    - [Configurar las Variables de Entorno](#configurar-las-variables-de-entorno)
   - [Instalación de Dependencias](#instalación-de-dependencias)
 - [Ejecución del Proyecto](#ejecución-del-proyecto)
   - [Backend](#backend)
@@ -40,10 +42,55 @@ El proyecto está organizado de la siguiente manera:
 - **Node.js** v22.10.0 o superior.
 - **MySQL** instalado y en ejecución.
 - **Python 3** para ejecutar el script MQTT Daemon.
+- **Pip** para instalar las dependencias de Python.
 
-### Configuración de Variables de Entorno
+### Configuración de Variables de Entorno y Base de datos
 
-Crea un archivo `.env` en la raíz del proyecto `backend/` con el siguiente contenido:
+#### Configurar la Base de Datos
+
+Antes de iniciarla, asegúrate de que el servidor MySQL esté en ejecución.
+
+**Iniciar el servidor MySQL:**
+
+- Abre el Panel de Servicios de Windows.
+- Busca el servicio **MySQL** o **MySQL80**.
+- Haz clic derecho y selecciona **Iniciar**.
+
+O en una terminal ejecuta:
+
+```bash
+net start MySQL
+```
+
+**Crear la base de datos**
+
+a. **Usando MySQL Workbench**
+
+1. Abre MySQL Workbench.
+
+2. Crea una nueva conexión utilizando tus credenciales de MySQL.
+
+3. Conéctate al servidor.
+
+b. **Usando Línea de Comandos**
+
+1. Abre una terminal y ejecuta:
+
+```bash
+mysql -u tu_usuario_de_mysql -p
+```
+
+2. Ingresa tu contraseña cuando se te solicite.
+
+3. Una vez dentro de la consola de MySQL, ejecuta:
+
+```bash
+CREATE DATABASE nombre_de_tu_base_de_datos;
+```
+
+#### Configurar las Variables de Entorno
+
+En la carpeta `backend/`, crea un archivo llamado `.env` con el siguiente contenido:
 
 ```env
 DB_NAME=tu_nombre_de_base_de_datos
@@ -56,7 +103,7 @@ DB_PORT=3306
 PORT=3000
 ```
 
-Asegúrate de reemplazar los valores con tus credenciales y configuración de tu base de datos MySQL.
+_Asegúrate de reemplazar los valores con tus credenciales y configuración de tu base de datos MySQL._
 
 ### Instalación de Dependencias
 
@@ -85,6 +132,8 @@ pip install paho-mqtt requests
 ```
 
 Es importante que la versión de `paho-mqtt` sea la **2.1.0** para su correcto funcionamiento.
+
+---
 
 ## Ejecución del Proyecto
 
@@ -133,6 +182,8 @@ python mqtt_daemon.py
 El backend debe estar en ejecución antes de iniciar el script.
 
 Para el correcto funcionamiento del script es necesario tener al menos un servidor almacenado en la base de datos.
+
+---
 
 ## Contacto
 
