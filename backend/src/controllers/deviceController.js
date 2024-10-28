@@ -1,5 +1,4 @@
 const deviceService = require("../services/deviceService");
-const { BadRequestError } = require("../utils/errors");
 
 exports.getAllDevices = async (req, res, next) => {
   try {

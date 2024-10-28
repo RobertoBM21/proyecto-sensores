@@ -1,5 +1,4 @@
-//? Cargamos las variables de entorno (prioridad absoluta)
-process.loadEnvFile("./.env");
+process.loadEnvFile("./.env"); //? Cargamos las variables de entorno (prioridad absoluta)
 
 const app = require("./app");
 const { sequelize } = require("./models");
@@ -20,7 +19,7 @@ async function startServer() {
     app.listen(PORT, () => {
       console.log(`Servidor escuchando en el puerto ${PORT}`);
       console.log(
-        `Swagger docs are available at http://localhost:${PORT}/api-docs`
+        `Documentación Swagger de la API disponible en http://localhost:${PORT}/api-docs`
       );
     });
   } catch (error) {

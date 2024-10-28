@@ -9,6 +9,9 @@ const errorHandler = require("./middleware/errorHandler");
 // Crear la aplicación de Express
 const app = express();
 
+// Configuración para no mostrar información sensible
+app.disable("x-powered-by");
+
 // Middleware para parsear el cuerpo de las peticiones
 app.use(express.json());
 
