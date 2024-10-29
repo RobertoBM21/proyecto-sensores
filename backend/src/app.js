@@ -1,4 +1,5 @@
 const express = require("express");
+const helmet = require("helmet");
 const serverRoutes = require("./routes/serverRoutes.js");
 const deviceRoutes = require("./routes/deviceRoutes.js");
 const messageRoutes = require("./routes/messageRoutes.js");
@@ -9,8 +10,8 @@ const errorHandler = require("./middleware/errorHandler.js");
 // Crear la aplicación de Express
 const app = express();
 
-// Configuración para no mostrar información sensible
-app.disable("x-powered-by");
+// Middleware de seguridad
+app.use(helmet());
 
 // Middleware para parsear el cuerpo de las peticiones
 app.use(express.json());
