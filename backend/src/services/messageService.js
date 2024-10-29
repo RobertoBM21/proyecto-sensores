@@ -1,5 +1,5 @@
 const { Message, Device } = require("../models");
-const { NotFoundError, BadRequestError } = require("../utils/errors");
+const { NotFoundError, BadRequestError } = require("../utils/errors.js");
 
 class MessageService {
   //* Obtener todos los mensajes
@@ -9,10 +9,6 @@ class MessageService {
 
   //* Obtener un mensaje por ID
   async getMessageById(id) {
-    if (!id || isNaN(id) || id <= 0) {
-      throw new BadRequestError("ID inválido");
-    }
-
     const message = await Message.findByPk(id);
     if (!message) {
       throw new NotFoundError("Mensaje no encontrado");
@@ -24,19 +20,13 @@ class MessageService {
   async createMessage(data) {
     const { serial, timestamp, topic, content } = data;
 
-    // Validar campos obligatorios
-    if (!serial || !timestamp || !topic || !content) {
-      throw new BadRequestError("Faltan campos obligatorios");
-    }
-
     // Comprobar si el dispositivo existe
     const device = await Device.findOne({ where: { serial } });
     if (!device) {
       throw new BadRequestError("No existe un dispositivo con ese serial");
     }
 
-    //* Crear el mensaje
-    const message = await Message.create(data);
+    const message = await Message.create({ serial, timestamp, topic, content });
     return message;
   }
 
@@ -46,18 +36,13 @@ class MessageService {
 
     const { serial, timestamp, topic, content } = data;
 
-    // Validar campos obligatorios
-    if (!serial || !timestamp || !topic || !content) {
-      throw new BadRequestError("Faltan campos obligatorios");
-    }
-
     // Comprobar si el dispositivo existe
     const device = await Device.findOne({ where: { serial } });
     if (!device) {
       throw new BadRequestError("No existe un dispositivo con ese serial");
     }
 
-    await message.update(data);
+    await message.update({ serial, timestamp, topic, content });
     return message;
   }
 

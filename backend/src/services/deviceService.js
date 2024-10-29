@@ -3,7 +3,7 @@ const {
   NotFoundError,
   BadRequestError,
   ConflictError,
-} = require("../utils/errors");
+} = require("../utils/errors.js");
 
 class DeviceService {
   //* Obtener todos los dispositivos
@@ -13,10 +13,6 @@ class DeviceService {
 
   //* Obtener un dispositivo por ID
   async getDeviceById(id) {
-    if (!id || isNaN(id) || id <= 0) {
-      throw new BadRequestError("ID inválido");
-    }
-
     const device = await Device.findByPk(id);
     if (!device) {
       throw new NotFoundError("Dispositivo no encontrado");
@@ -26,10 +22,6 @@ class DeviceService {
 
   //* Obtener un dispositivo por Serial
   async getDeviceBySerial(serial) {
-    if (!serial) {
-      throw new BadRequestError("Serial inválido");
-    }
-
     const device = await Device.findOne({ where: { serial: serial } });
     if (!device) {
       throw new NotFoundError("Dispositivo no encontrado");
@@ -40,11 +32,6 @@ class DeviceService {
   //* Crear un nuevo dispositivo
   async createDevice(data) {
     const { serial, apikey, lastCommunication, serverId } = data;
-
-    // Validar campos obligatorios
-    if (!serial || !apikey || !lastCommunication || !serverId) {
-      throw new BadRequestError("Faltan campos obligatorios");
-    }
 
     // Comprobar si ya existe un dispositivo con el mismo serial
     const existingDevice = await Device.findOne({ where: { serial } });
@@ -58,7 +45,12 @@ class DeviceService {
       throw new BadRequestError("No existe un servidor con ese ID");
     }
 
-    const device = await Device.create(data);
+    const device = await Device.create({
+      serial,
+      apikey,
+      lastCommunication,
+      serverId,
+    });
     return device;
   }
 
@@ -67,11 +59,6 @@ class DeviceService {
     const device = await this.getDeviceById(id);
 
     const { serial, apikey, lastCommunication, serverId } = data;
-
-    // Validar campos obligatorios
-    if (!serial || !apikey || !lastCommunication || !serverId) {
-      throw new BadRequestError("Faltan campos obligatorios");
-    }
 
     // Comprobar si ya existe otro dispositivo con el mismo serial
     const existingDevice = await Device.findOne({ where: { serial } });
@@ -85,7 +72,7 @@ class DeviceService {
       throw new BadRequestError("No existe un servidor con ese ID");
     }
 
-    await device.update(data);
+    await device.update({ serial, apikey, lastCommunication, serverId });
     return device;
   }
 
@@ -94,17 +81,9 @@ class DeviceService {
     const device = await this.getDeviceById(id);
 
     const fields = Object.keys(data);
-    // Si no se proporciona ningún campo a actualizar
-    if (fields.length === 0) {
-      throw new BadRequestError("No se proporcionaron campos a actualizar");
-    }
 
     // Si se está actualizando el serial
     if (fields.includes("serial")) {
-      const { serial } = data;
-      if (!serial) {
-        throw new BadRequestError("Serial inválido");
-      }
       const existingDevice = await Device.findOne({ where: { serial } });
       if (existingDevice && existingDevice.id !== id) {
         throw new ConflictError("Ya existe un dispositivo con ese serial");

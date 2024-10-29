@@ -1,4 +1,10 @@
-const deviceService = require("../services/deviceService");
+const deviceService = require("../services/deviceService.js");
+const {
+  validateDevice,
+  validateDeviceId,
+  validatePartialDevice,
+  validateSerial,
+} = require("../schemas/deviceSchema.js");
 
 exports.getAllDevices = async (req, res) => {
   const devices = await deviceService.getAllDevices();
@@ -6,35 +12,39 @@ exports.getAllDevices = async (req, res) => {
 };
 
 exports.getDeviceById = async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = validateDeviceId(req.params.id);
   const device = await deviceService.getDeviceById(id);
   res.json(device);
 };
 
 exports.getDeviceBySerial = async (req, res) => {
-  const device = await deviceService.getDeviceBySerial(req.params.serial);
+  const serial = validateSerial(req.params.serial);
+  const device = await deviceService.getDeviceBySerial(serial);
   res.json(device);
 };
 
 exports.createDevice = async (req, res) => {
-  const device = await deviceService.createDevice(req.body);
+  const data = validateDevice(req.body);
+  const device = await deviceService.createDevice(data);
   res.status(201).json(device);
 };
 
 exports.updateDevice = async (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const updatedDevice = await deviceService.updateDevice(id, req.body);
+  const id = validateDeviceId(req.params.id);
+  const data = validateDevice(req.body);
+  const updatedDevice = await deviceService.updateDevice(id, data);
   res.json(updatedDevice);
 };
 
 exports.updateDevicePartial = async (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const updatedDevice = await deviceService.updateDevicePartial(id, req.body);
+  const id = validateDeviceId(req.params.id);
+  const data = validatePartialDevice(req.body);
+  const updatedDevice = await deviceService.updateDevicePartial(id, data);
   res.json(updatedDevice);
 };
 
 exports.deleteDevice = async (req, res) => {
-  const id = parseInt(req.params.id, 10);
+  const id = validateDeviceId(req.params.id);
   const result = await deviceService.deleteDevice(id);
   res.json(result);
 };

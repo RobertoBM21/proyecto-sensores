@@ -1,9 +1,5 @@
 const { Server } = require("../models");
-const {
-  NotFoundError,
-  BadRequestError,
-  ConflictError,
-} = require("../utils/errors");
+const { NotFoundError, ConflictError } = require("../utils/errors.js");
 
 class ServerService {
   //* Obtener todos los servidores
@@ -13,10 +9,6 @@ class ServerService {
 
   //* Obtener un servidor por ID
   async getServerById(id) {
-    if (!id || isNaN(id) || id <= 0) {
-      throw new BadRequestError("ID inválido");
-    }
-
     const server = await Server.findByPk(id);
     if (!server) {
       throw new NotFoundError("Servidor no encontrado");
@@ -28,18 +20,13 @@ class ServerService {
   async createServer(data) {
     const { name, endpoint, username, password } = data;
 
-    // Validar campos obligatorios
-    if (!name || !endpoint || !username || !password) {
-      throw new BadRequestError("Faltan campos obligatorios");
-    }
-
     // Comprobar si ya existe un servidor con el mismo endpoint
     const existingServer = await Server.findOne({ where: { endpoint } });
     if (existingServer) {
       throw new ConflictError("Ya existe un servidor con ese endpoint");
     }
 
-    const server = await Server.create(data);
+    const server = await Server.create({ name, endpoint, username, password });
     return server;
   }
 
@@ -49,18 +36,13 @@ class ServerService {
 
     const { name, endpoint, username, password } = data;
 
-    // Validar campos obligatorios
-    if (!name || !endpoint || !username || !password) {
-      throw new BadRequestError("Faltan campos obligatorios");
-    }
-
     // Comprobar si ya existe otro servidor con el mismo endpoint
     const existingServer = await Server.findOne({ where: { endpoint } });
     if (existingServer && existingServer.id !== id) {
       throw new ConflictError("Ya existe un servidor con ese endpoint");
     }
 
-    await server.update(data);
+    await server.update({ name, endpoint, username, password });
     return server;
   }
 

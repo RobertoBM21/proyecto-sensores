@@ -1,7 +1,7 @@
-const sequelize = require("../config/database");
-const Server = require("./server");
-const Device = require("./device");
-const Message = require("./message");
+const sequelize = require("../config/database.js");
+const Server = require("./server.js");
+const Device = require("./device.js");
+const Message = require("./message.js");
 
 // Relaciones entre las tablas
 Server.hasMany(Device, { foreignKey: "serverId" });

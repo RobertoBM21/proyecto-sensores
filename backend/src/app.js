@@ -1,10 +1,10 @@
 const express = require("express");
-const serverRoutes = require("./routes/serverRoutes");
-const deviceRoutes = require("./routes/deviceRoutes");
-const messageRoutes = require("./routes/messageRoutes");
+const serverRoutes = require("./routes/serverRoutes.js");
+const deviceRoutes = require("./routes/deviceRoutes.js");
+const messageRoutes = require("./routes/messageRoutes.js");
 const swaggerUi = require("swagger-ui-express");
-const swaggerSpec = require("./docs/swaggerConfig");
-const errorHandler = require("./middleware/errorHandler");
+const swaggerSpec = require("./docs/swaggerConfig.js");
+const errorHandler = require("./middleware/errorHandler.js");
 
 // Crear la aplicación de Express
 const app = express();

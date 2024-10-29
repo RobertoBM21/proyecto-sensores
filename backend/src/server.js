@@ -1,6 +1,6 @@
 process.loadEnvFile("./.env"); //? Cargamos las variables de entorno (prioridad absoluta)
 
-const app = require("./app");
+const app = require("./app.js");
 const { sequelize } = require("./models");
 
 const PORT = process.env.PORT || 3000;

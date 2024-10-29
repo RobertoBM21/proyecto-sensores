@@ -9,12 +9,16 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "Backend de la aplicación",
+  "description": "Backend del proyecto sensores",
   "dependencies": {
-    "express": "^5.0.1",
-    "mysql2": "^3.11.3",
-    "sequelize": "^6.37.5",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "express": "5.0.1",
+    "joi": "17.13.3",
+    "mysql2": "3.11.3",
+    "sequelize": "6.37.5",
+    "swagger-jsdoc": "6.2.8",
+    "swagger-ui-express": "5.0.1"
+  },
+  "engines": {
+    "node": ">=22.10.0"
   }
 }
