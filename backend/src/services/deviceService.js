@@ -84,6 +84,7 @@ class DeviceService {
 
     // Si se está actualizando el serial
     if (fields.includes("serial")) {
+      const { serial } = data;
       const existingDevice = await Device.findOne({ where: { serial } });
       if (existingDevice && existingDevice.id !== id) {
         throw new ConflictError("Ya existe un dispositivo con ese serial");
