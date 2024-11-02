@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 import requests
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 import threading
 import logging
 
@@ -62,10 +62,11 @@ def on_message(client, userdata, msg):
 
         message = {
             "serial": serial,
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "topic": topic,
             "content": content
         }
+        logging.info(f"Timestamp: {message['timestamp']}")
     else:
         #! Si el formato del topic no es correcto, descartamos el mensaje al no poder identificar el dispositivo
         logging.warning("Formato de topic incorrecto. Mensaje descartado.") 
