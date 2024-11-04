@@ -1,4 +1,4 @@
-process.loadEnvFile("./.env"); //? Cargamos las variables de entorno (prioridad absoluta)
+process.loadEnvFile("./.env"); // Cargamos las variables de entorno (prioridad absoluta)
 
 const app = require("./app.js");
 const { sequelize } = require("./models");

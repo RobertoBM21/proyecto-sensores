@@ -29,6 +29,67 @@ router.get("/", messageController.getAllMessages);
 
 /**
  * @swagger
+ * /messages/search:
+ *   get:
+ *     summary: Busca mensajes mediante filtros
+ *     tags: [Messages]
+ *     parameters:
+ *       - in: query
+ *         name: serial
+ *         schema:
+ *           type: string
+ *         description: Serial del dispositivo
+ *       - in: query
+ *         name: serverId
+ *         schema:
+ *           type: integer
+ *         description: ID del servidor
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: Fecha de inicio en formato ISO
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: Fecha de fin en formato ISO
+ *       - in: query
+ *         name: dateRange
+ *         schema:
+ *           type: string
+ *           enum: [today, yesterday, last_week, last_month, last_year]
+ *         description: Rango de fecha predefinido
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Número de página
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Cantidad de mensajes por página
+ *     responses:
+ *       200:
+ *         description: Lista de mensajes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Message'
+ *       400:
+ *         description: Parámetros inválidos
+ *       404:
+ *        description: Mensajes no encontrados
+ */
+router.get("/search", messageController.searchMessages);
+
+/**
+ * @swagger
  * /messages/{id}:
  *   get:
  *     summary: Obtiene un mensaje por ID

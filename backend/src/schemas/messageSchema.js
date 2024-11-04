@@ -22,6 +22,63 @@ const messageSchema = Joi.object({
   }),
 });
 
+// Rangos de fecha válidos
+const validDateRanges = [
+  "today",
+  "yesterday",
+  "last_5_minutes",
+  "last_15_minutes",
+  "last_30_minutes",
+  "last_hour",
+  "last_24_hours",
+  "last_week",
+  "last_month",
+  "last_year",
+];
+
+// Esquema para validar los parámetros de búsqueda
+const messageSearchSchema = Joi.object({
+  serial: Joi.string(),
+  serverId: Joi.number().integer().positive().messages({
+    "number.base": 'El campo "serverId" debe ser un número entero.',
+    "number.positive": 'El campo "serverId" debe ser un número positivo.',
+  }),
+  startDate: Joi.date().iso().messages({
+    "date.base": 'El campo "startDate" debe ser una fecha válida.',
+    "date.format": 'El campo "startDate" debe estar en formato ISO.',
+  }),
+  endDate: Joi.date().iso().messages({
+    "date.base": 'El campo "endDate" debe ser una fecha válida.',
+    "date.format": 'El campo "endDate" debe estar en formato ISO.',
+  }),
+  dateRange: Joi.string()
+    .valid(...validDateRanges)
+    .messages({
+      "any.only": `El campo "dateRange" debe ser uno de los siguientes valores: ${validDateRanges.join(
+        ", "
+      )}.`,
+    }),
+  page: Joi.number().integer().positive().default(1).messages({
+    "number.base": 'El campo "page" debe ser un número entero.',
+    "number.positive": 'El campo "page" debe ser un número positivo.',
+  }),
+  limit: Joi.number().integer().positive().max(1000).default(50).messages({
+    "number.base": 'El campo "limit" debe ser un número entero.',
+    "number.positive": 'El campo "limit" debe ser un número positivo.',
+    "number.max": 'El campo "limit" no puede ser mayor a 1000.',
+  }),
+})
+  .and("startDate", "endDate") // Si se proporciona un campo, también debe estar el otro
+  .custom((value, helpers) => {
+    // Validar que startDate sea anterior a endDate
+    if (value.startDate && value.endDate && value.startDate > value.endDate) {
+      return helpers.message(
+        'El campo "startDate" debe ser anterior a "endDate".'
+      );
+    }
+    return value;
+  });
+
 // Función para validar todos los campos del mensaje
 function validateMessage(data) {
   const { error, value } = messageSchema.validate(data);
@@ -36,4 +93,13 @@ function validateMessageId(id) {
   return validateId(id);
 }
 
-module.exports = { validateMessageId, validateMessage };
+// Función para validar los parámetros de búsqueda
+function validateSearchParams(data) {
+  const { error, value } = messageSearchSchema.validate(data);
+  if (error) {
+    throw new BadRequestError(error.details[0].message);
+  }
+  return value; // Datos validados
+}
+
+module.exports = { validateMessageId, validateMessage, validateSearchParams };
