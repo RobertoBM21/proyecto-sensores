@@ -2,9 +2,7 @@
 
 Este proyecto es una aplicación para gestionar los mensajes enviados por dispositivos IoT a través del protocolo MQTT. La aplicación recoge, estructura, almacena y muestra los servidores, dispositivos y mensajes. El backend está desarrollado utilizando **Node.js** con **Express** y **MySQL**. El frontend está desarrollado en **Vue.js**. Además, cuenta con documentación de API utilizando **Swagger**.
 
-Incluye un script en Python (`mqtt_daemon.py`) que se encarga de conectarse a los brokers MQTT, suscribirse a los topics y enviar los mensajes al backend.
-
-De esta manera, los técnicos tendrán una plataforma en la que consultar de manera sencilla si el dispositivo que han instalado está funcionando correctamente.
+Incluye scripts en Python para la gestión de conexiones MQTT y una interfaz web para monitorizar el estado de las conexiones.
 
 ## Tabla de Contenidos
 
@@ -18,7 +16,8 @@ De esta manera, los técnicos tendrán una plataforma en la que consultar de man
 - [Ejecución del Proyecto](#ejecución-del-proyecto)
   - [Backend](#backend)
   - [Frontend](#frontend)
-  - [Script](#script)
+  - [Clientes MQTT](#clientes-mqtt)
+- [Documentación API](#documentación-api)
 - [Contacto](#contacto)
 
 ---
@@ -27,11 +26,28 @@ De esta manera, los técnicos tendrán una plataforma en la que consultar de man
 
 El proyecto está organizado de la siguiente manera:
 
-- **backend/**: Contiene el código fuente del backend, desarrollado con Node.js, Express y MySQL. Incluye las rutas, controladores, modelos y la configuración de la base de datos.
-
-- **frontend/**: Contiene el código fuente del frontend, desarrollado con Vue.js. Incluye los componentes, vistas y la lógica necesaria para interactuar con el backend.
-
-- **script/**: Contiene el script `mqtt_daemon.py`, escrito en Python. Este script se encarga de conectarse a los brokers MQTT, suscribirse a los topics y enviar los mensajes al backend para su procesamiento y almacenamiento.
+```
+proyecto-sensores/
+├── backend/                 # Servidor Node.js/Express
+│   ├── src/
+│   │   ├── config/         # Configuración de la base de datos
+│   │   ├── controllers/    # Controladores de la API
+│   │   ├── docs/          # Configuración de Swagger
+│   │   ├── middleware/    # Middleware de Express
+│   │   ├── models/        # Modelos Sequelize
+│   │   ├── routes/        # Rutas de la API
+│   │   ├── services/      # Servicios de negocio
+│   │   └── utils/         # Utilidades
+├── frontend/               # Aplicación Vue.js
+│   ├── public/
+│   └── src/
+│       ├── assets/
+│       └── components/
+└── script/                 # Scripts Python MQTT
+    ├── mqtt_client.py     # Cliente MQTT individual
+    ├── mqtt_daemon.py     # Cliente MQTT múltiple (legacy)
+    └── monitor.html       # Interfaz de monitorización
+```
 
 ---
 
@@ -39,58 +55,15 @@ El proyecto está organizado de la siguiente manera:
 
 ### Requisitos Previos
 
-- **Node.js** v22.10.0 o superior.
+- **Node.js** v22.11.0 o superior.
 - **MySQL** instalado y en ejecución.
-- **Python 3** para ejecutar el script MQTT Daemon.
+- **Python 3.x**
 - **Pip** para instalar las dependencias de Python.
+- **npm**/**pnpm**/**yarn** como gestor de paquetes
 
-### Configuración de Variables de Entorno y Base de datos
+### Configuración de Variables de Entorno
 
-#### Configurar la Base de Datos
-
-Antes de iniciarla, asegúrate de que el servidor MySQL esté en ejecución.
-
-**Iniciar el servidor MySQL:**
-
-- Abre el Panel de Servicios de Windows.
-- Busca el servicio **MySQL** o **MySQL80**.
-- Haz clic derecho y selecciona **Iniciar**.
-
-O en una terminal ejecuta:
-
-```bash
-net start MySQL
-```
-
-**Crear la base de datos**
-
-a. **Usando MySQL Workbench**
-
-1. Abre MySQL Workbench.
-
-2. Crea una nueva conexión utilizando tus credenciales de MySQL.
-
-3. Conéctate al servidor.
-
-b. **Usando Línea de Comandos**
-
-1. Abre una terminal y ejecuta:
-
-```bash
-mysql -u tu_usuario_de_mysql -p
-```
-
-2. Ingresa tu contraseña cuando se te solicite.
-
-3. Una vez dentro de la consola de MySQL, ejecuta:
-
-```bash
-CREATE DATABASE nombre_de_tu_base_de_datos;
-```
-
-#### Configurar las Variables de Entorno
-
-En la carpeta `backend/`, crea un archivo llamado `.env` con el siguiente contenido:
+Crea un archivo `.env` en la raíz del proyecto `backend/` con el siguiente contenido:
 
 ```env
 DB_NAME=tu_nombre_de_base_de_datos
@@ -103,87 +76,112 @@ DB_PORT=3306
 PORT=3000
 ```
 
-_Asegúrate de reemplazar los valores con tus credenciales y configuración de tu base de datos MySQL._
+Asegúrate de reemplazar los valores con tus credenciales y configuración de tu base de datos MySQL.
 
 ### Instalación de Dependencias
 
 **Backend**
 
-Desde la carpeta `backend/`, ejecuta:
-
 ```bash
+cd backend
 npm install
 ```
+
+Principales dependencias:
+
+- express: ^4.21.1
+- mysql2: ^3.11.3
+- sequelize: ^6.37.4
+- swagger-jsdoc: ^6.2.8
+- swagger-ui-express: ^5.0.1
 
 **Frontend**
 
-Desde la carpeta `frontend/`, ejecuta:
-
 ```bash
+cd frontend
 npm install
 ```
 
-**Script**
+Principales dependencias:
 
-Desde la carpeta `script/`, instala las dependencias de Python:
+- vue: ^3.2.13
+- bootstrap: ^5.1.3
+- bootstrap-icons: ^1.11.3
+
+**Script MQTT**
 
 ```bash
+cd script
 pip install paho-mqtt requests
 ```
 
-Es importante que la versión de `paho-mqtt` sea la **2.1.0** para su correcto funcionamiento.
+Requisitos Python:
 
----
+- paho-mqtt: version **2.1.0**
+- requests
+- json (incluido en Python)
+- datetime (incluido en Python)
+- logging (incluido en Python)
 
 ## Ejecución del Proyecto
 
 ### Backend
 
-Para iniciar el servidor en modo desarrollo, desde la carpeta `backend/`, ejecuta:
+Para desarrollo con recarga automática:
 
 ```bash
-node --run dev
-```
-
-O utilizando npm:
-
-```bash
+cd backend
 npm run dev
 ```
 
-Personalmente recomiendo la primera opción, ya que se ejecuta más rápido y es independiente del gestor de paquetes usado.
-
-Si quieres ejecutar el proyecto en modo normal sustituye `dev` por `start`.
-
-El servidor se ejecutará en el puerto especificado en el archivo `.env` (por defecto, 3000).
-
-### Frontend
-
-Para lanzar la web, desde la carpeta `frontend/`, ejecuta:
+Para producción:
 
 ```bash
-npm run serve
-```
-
-O también:
-
-```bash
+cd backend
 npm start
 ```
 
-### Script
+El servidor se ejecutará en `http://localhost:3000`
 
-Para ejecutar el script, desde la carpeta `script/`, ejecuta:
+### Frontend
 
 ```bash
-python mqtt_daemon.py
+cd frontend
+npm run serve
 ```
 
-El backend debe estar en ejecución antes de iniciar el script.
+La aplicación estará disponible en `http://localhost:8080`
 
-Para el correcto funcionamiento del script es necesario tener al menos un servidor almacenado en la base de datos.
+### Clientes MQTT
 
----
+El proyecto ofrece dos formas de gestionar las conexiones MQTT:
+
+1. **Cliente Individual** (Recomendado):
+
+   ```bash
+   python mqtt_client.py <server_id>
+   ```
+
+   Este script se conecta a un único servidor MQTT, permitiendo una gestión más granular y eficiente de las conexiones.
+
+2. **Monitor Web**:
+   Abre `script/monitor.html` en tu navegador para acceder a la interfaz de monitorización, donde podrás:
+   - Ver el estado de todos los servidores MQTT
+   - Iniciar/detener conexiones individuales
+   - Monitorizar el estado de las conexiones en tiempo real
+
+El cliente MQTT:
+
+- Se conectará al servidor MQTT especificado
+- Se suscribirá al topic "#" (todos los topics)
+- Procesará mensajes con formato de topic: `/apikey/serial/...`
+- Registrará dispositivos nuevos y actualizará la última comunicación
+- Almacenará todos los mensajes recibidos
+
+## Documentación API
+
+La documentación Swagger de la API está disponible en:
+`http://localhost:3000/api-docs`
 
 ## Contacto
 
