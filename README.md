@@ -44,9 +44,9 @@ proyecto-sensores/
 │       ├── assets/
 │       └── components/
 └── script/                 # Scripts Python MQTT
-    ├── mqtt_client.py     # Cliente MQTT individual
-    ├── mqtt_daemon.py     # Cliente MQTT múltiple (legacy)
-    └── monitor.html       # Interfaz de monitorización
+    ├── mqtt_client.py      # Cliente MQTT individual
+    ├── mqtt_manager.py     # Gestor de clientes MQTT
+    └── mqtt_processes.json # Estado de los procesos MQTT
 ```
 
 ---
@@ -154,29 +154,31 @@ La aplicación estará disponible en `http://localhost:8080`
 
 ### Clientes MQTT
 
-El proyecto ofrece dos formas de gestionar las conexiones MQTT:
+El proyecto utiliza un sistema de gestión de clientes MQTT que consiste en:
 
-1. **Cliente Individual** (Recomendado):
+1. **Gestor de Clientes MQTT**:
 
    ```bash
-   python mqtt_client.py <server_id>
+   python mqtt_manager.py
    ```
 
-   Este script se conecta a un único servidor MQTT, permitiendo una gestión más granular y eficiente de las conexiones.
+   Proporciona una interfaz de línea de comandos para:
 
-2. **Monitor Web**:
-   Abre `script/monitor.html` en tu navegador para acceder a la interfaz de monitorización, donde podrás:
-   - Ver el estado de todos los servidores MQTT
-   - Iniciar/detener conexiones individuales
-   - Monitorizar el estado de las conexiones en tiempo real
+   - Mostrar el estado de todos los clientes MQTT
+   - Iniciar/detener clientes individuales
+   - Verificar y actualizar automáticamente el estado de las conexiones
+   - Persistencia de estado entre reinicios
 
-El cliente MQTT:
+2. **Cliente MQTT Individual**:
+   Este script es gestionado automáticamente por el gestor y también puede ejecutarse manualmente proporcionando el id del servidor.
 
-- Se conectará al servidor MQTT especificado
-- Se suscribirá al topic "#" (todos los topics)
-- Procesará mensajes con formato de topic: `/apikey/serial/...`
-- Registrará dispositivos nuevos y actualizará la última comunicación
-- Almacenará todos los mensajes recibidos
+El sistema:
+
+- Mantiene conexiones MQTT independientes para cada servidor
+- Gestiona automáticamente la reconexión y recuperación de fallos
+- Registra y actualiza dispositivos en la base de datos
+- Procesa mensajes con formato de topic: `/apikey/serial/...`
+- Almacena todos los mensajes recibidos
 
 ## Documentación API
 

@@ -1,5 +1,6 @@
 const express = require("express");
 const helmet = require("helmet");
+const cors = require("cors");
 const serverRoutes = require("./routes/serverRoutes.js");
 const deviceRoutes = require("./routes/deviceRoutes.js");
 const messageRoutes = require("./routes/messageRoutes.js");
@@ -11,6 +12,7 @@ const errorHandler = require("./middleware/errorHandler.js");
 const app = express();
 
 // Middleware de seguridad
+app.use(cors());
 app.use(helmet());
 
 // Middleware para parsear el cuerpo de las peticiones
