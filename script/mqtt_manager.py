@@ -3,14 +3,19 @@ import requests
 import os
 import json
 from typing import Dict
-import psutil  
+import psutil
+from datetime import datetime
 
 API_URL = "http://localhost:3000"
 PROCESSES_FILE = "mqtt_processes.json"
+LOGS_DIR = "logs"  # Nueva constante para el directorio de logs
 
 class MQTTManager:
     def __init__(self):
         self.processes: Dict[str, int] = {}  # Almacenamos PIDs en lugar de objetos Popen
+        # Crear directorio de logs si no existe
+        if not os.path.exists(LOGS_DIR):
+            os.makedirs(LOGS_DIR)
         self.load_processes()
 
     def load_processes(self):
@@ -57,14 +62,23 @@ class MQTTManager:
             return False
 
         try:
-            process = subprocess.Popen(
-                ['python', 'mqtt_client.py', str(server_id)],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                text=True
-            )
+            # Crear nombre de archivo de log con timestamp
+            timestamp = datetime.now().strftime('%Y%m%d')
+            log_file = os.path.join(LOGS_DIR, f"mqtt_client_{server_id}_{timestamp}.log")
+            
+            # Abrir archivo de log
+            with open(log_file, 'a') as f:
+                f.write(f"\n--- Nueva sesión iniciada {datetime.now()} ---\n")
+                process = subprocess.Popen(
+                    ['python', 'mqtt_client.py', str(server_id)],
+                    stdout=f,
+                    stderr=subprocess.STDOUT,  # Redirigir stderr a stdout
+                    text=True
+                )
+            
             self.processes[server_id] = process.pid  # Guardamos el PID del proceso iniciado
             print(f"Cliente MQTT iniciado para servidor {server_id} con PID {process.pid}")
+            print(f"Logs disponibles en: {log_file}")
             self.save_processes()
             return True
         except Exception as e:
@@ -133,22 +147,38 @@ class MQTTManager:
         server_map = {str(server['id']): server for server in servers}
         
         print("\nEstado de los clientes MQTT:")
-        print("-" * 60)
-        print(f"{'ID':^5} | {'Nombre':^20} | {'Estado':^10} | {'PID':^10}")
-        print("-" * 60)
+        print("-" * 90)  # Aumentado para acomodar la nueva columna
+        print(f"{'ID':^5} | {'Nombre':^20} | {'Estado':^10} | {'PID':^10} | {'Log':^30}")
+        print("-" * 90)
         
         # Mostrar servidores activos
         for server_id, pid in self.processes.items():
             server = server_map.get(server_id, {'name': 'Desconocido'})
             status = "Activo" if psutil.pid_exists(pid) else "Detenido"
-            print(f"{server_id:^5} | {server['name'][:20]:^20} | {status:^10} | {pid:^10}")
+            
+            # Buscar el archivo de log más reciente para este servidor
+            log_file = self._get_latest_log(server_id)
+            log_name = os.path.basename(log_file) if log_file else '-'
+            
+            print(f"{server_id:^5} | {server['name'][:20]:^20} | {status:^10} | {pid:^10} | {log_name[:30]:^30}")
         
         # Mostrar servidores sin proceso
         for server in servers:
             server_id = str(server['id'])
             if server_id not in self.processes:
-                print(f"{server_id:^5} | {server['name'][:20]:^20} | {'Detenido':^10} | {'-':^10}")
-        print("-" * 60)
+                print(f"{server_id:^5} | {server['name'][:20]:^20} | {'Detenido':^10} | {'-':^10} | {'-':^30}")
+        print("-" * 90)
+
+    def _get_latest_log(self, server_id):
+        """Obtiene el archivo de log más reciente para un servidor específico"""
+        if not os.path.exists(LOGS_DIR):
+            return None
+            
+        logs = [f for f in os.listdir(LOGS_DIR) if f.startswith(f"mqtt_client_{server_id}_")]
+        if not logs:
+            return None
+            
+        return max([os.path.join(LOGS_DIR, f) for f in logs], key=os.path.getctime)
 
 def main():
     manager = MQTTManager()
