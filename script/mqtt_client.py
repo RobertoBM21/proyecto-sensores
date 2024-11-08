@@ -6,18 +6,18 @@ import logging
 import sys
 import signal
 
-# Configuración de logging
+# Configuración del sistema de logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
-# URL de la API
 API_URL = "http://localhost:3000"
-TOPIC = "#"  # Suscrición a todos los topics
+TOPIC = "#"  # Suscripción a todos los topics MQTT
 
 def signal_handler(sig, frame):
+    """Manejador de señales para una cierre limpia"""
     logging.info("Cerrando cliente MQTT...")
     sys.exit(0)
 
@@ -56,12 +56,13 @@ def on_disconnect(client, userdata, reasonCode, properties=None):
         logging.warning(f"Desconexión inesperada del broker, código: {reasonCode}")
 
 def on_message(client, userdata, msg):
+    """
+    Procesa los mensajes MQTT recibidos.
+    Formato esperado del topic: /apikey/serial/...
+    """
     logging.info(f"Mensaje recibido desde {client._host} con topic: {msg.topic}, y contenido: {msg.payload}")
 
-    # Procesar el topic para conseguir el apikey y serial
     parts = msg.topic.split('/')
-
-    # Comprobar si el topic tiene el formato esperado: /apikey/serial/...
     if len(parts) >= 3 and parts[0] == '' and parts[1] and parts[2]:
         apikey = parts[1]
         serial = parts[2]
@@ -70,7 +71,7 @@ def on_message(client, userdata, msg):
         try:
             content = json.loads(msg.payload.decode())
         except json.JSONDecodeError as e:
-            logging.error(f"Error al decodificar el contenido JSON: {e}")
+            logging.error(f"Error al decodificar JSON: {e}")
             return
 
         message = {
@@ -81,8 +82,7 @@ def on_message(client, userdata, msg):
         }
         logging.info(f"Timestamp: {message['timestamp']}")
     else:
-        #! Si el formato del topic no es correcto, descartamos el mensaje al no poder identificar el dispositivo
-        logging.warning("Formato de topic incorrecto. Mensaje descartado.") 
+        logging.warning(f"Mensaje descartado. Topic con formato inválido: {msg.topic}")
         return
 
     # Actualizar/crear dispositivo
@@ -126,12 +126,15 @@ def update_or_create_device(serial, apikey, last_communication, server_id):
         logging.error(f"Excepción al actualizar/crear dispositivo {serial}: {e}")
 
 def setup_client(server):
-    # Configura y retorna un cliente MQTT para el servidor especificado
+    """
+    Configura y conecta un cliente MQTT para el servidor especificado.
+    Devuelve el cliente configurado o termina el programa si hay error.
+    """
     try:
         broker, port = server["endpoint"].split(':')
         port = int(port)
     except ValueError:
-        logging.error(f"Formato de endpoint inválido: {server['endpoint']}")
+        logging.error(f"Endpoint inválido: {server['endpoint']}")
         sys.exit(1)
 
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)

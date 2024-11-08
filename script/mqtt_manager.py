@@ -8,13 +8,13 @@ from datetime import datetime
 
 API_URL = "http://localhost:3000"
 PROCESSES_FILE = "mqtt_processes.json"
-LOGS_DIR = "logs"  # Nueva constante para el directorio de logs
+LOGS_DIR = "logs" 
 
 class MQTTManager:
+    """Gestor de procesos para clientes MQTT"""
     def __init__(self):
-        self.processes: Dict[str, int] = {}  # Almacenamos PIDs en lugar de objetos Popen
-        # Crear directorio de logs si no existe
-        if not os.path.exists(LOGS_DIR):
+        self.processes: Dict[str, int] = {} # Diccionario para almacenar PIDs de procesos
+        if not os.path.exists(LOGS_DIR):    # Crear directorio de logs si no existe
             os.makedirs(LOGS_DIR)
         self.load_processes()
 
@@ -32,7 +32,7 @@ class MQTTManager:
         processes_dict = {
             server_id: pid
             for server_id, pid in self.processes.items()
-            if psutil.pid_exists(pid)  # Solo guardamos PIDs de procesos activos
+            if psutil.pid_exists(pid)
         }
         with open(PROCESSES_FILE, 'w') as f:
             json.dump(processes_dict, f)
@@ -48,8 +48,10 @@ class MQTTManager:
         return []
 
     def start_client(self, server_id):
-        """Inicia un nuevo cliente MQTT para un servidor específico"""
-        # Primero verificamos si el servidor existe
+        """
+        Inicia un nuevo cliente MQTT para un servidor específico.
+        Verifica la existencia del servidor y crea un archivo de log para el proceso.
+        """
         servers = self.get_servers()
         server_exists = any(str(server['id']) == str(server_id) for server in servers)
         
@@ -66,7 +68,7 @@ class MQTTManager:
             timestamp = datetime.now().strftime('%Y%m%d')
             log_file = os.path.join(LOGS_DIR, f"mqtt_client_{server_id}_{timestamp}.log")
             
-            # Abrir archivo de log
+            # Abrir archivo de log en modo 'append' y redirigir stdout y stderr
             with open(log_file, 'a') as f:
                 f.write(f"\n--- Nueva sesión iniciada {datetime.now()} ---\n")
                 process = subprocess.Popen(
@@ -97,9 +99,9 @@ class MQTTManager:
             if process.is_running():
                 process.terminate()  # Intenta terminar el proceso de forma segura
                 try:
-                    process.wait(timeout=5)  # Espera hasta 5 segundos
+                    process.wait(timeout=5)  # Espera hasta 5 segundos por seguridad
                 except psutil.TimeoutExpired:
-                    process.kill()  # Si no responde, lo mata forzosamente
+                    process.kill()  # Si no responde, se mata forzosamente
                 print(f"Cliente MQTT detenido para servidor {server_id}")
             else:
                 print(f"El proceso con PID {pid} no está activo")
@@ -114,8 +116,13 @@ class MQTTManager:
         return True
 
     def check_status(self):
-        """Verifica y actualiza el estado de todos los clientes MQTT"""
-        print("\nComprobando estado de los clientes MQTT...")
+        """
+        Verifica y actualiza el estado de todos los clientes MQTT.
+        1. Detiene clientes de servidores que ya no existen
+        2. Inicia clientes para nuevos servidores
+        3. Reinicia clientes que se han caído
+        """
+        print("\nVerificando estado de los clientes MQTT...")
         print("----------------------------------------")
         
         servers = self.get_servers()
@@ -147,7 +154,7 @@ class MQTTManager:
         server_map = {str(server['id']): server for server in servers}
         
         print("\nEstado de los clientes MQTT:")
-        print("-" * 90)  # Aumentado para acomodar la nueva columna
+        print("-" * 90) 
         print(f"{'ID':^5} | {'Nombre':^20} | {'Estado':^10} | {'PID':^10} | {'Log':^30}")
         print("-" * 90)
         
