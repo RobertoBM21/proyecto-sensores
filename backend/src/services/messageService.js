@@ -69,8 +69,14 @@ class MessageService {
     // Configurar condiciones de consulta (WHERE)
     const where = {};
 
-    if (serial) where.serial = serial;
+    // Busca cualquier serial que comience con el patrón proporcionado
+    if (serial) {
+      where.serial = {
+        [Op.like]: `${serial}%`,
+      };
+    }
 
+    // Filtrar por rango de fecha
     if (startDate || endDate || dateRange) {
       where.timestamp = {};
 
@@ -85,8 +91,24 @@ class MessageService {
 
     if (serverId) where["$Device.serverId$"] = serverId;
 
-    // Configurar opciones de consulta (LIMIT, OFFSET, ORDER)
-    const options = {
+    // Configurar opciones de consulta de numero de dispositivos únicos
+    const deviceQueryOptions = {
+      where,
+      include: [
+        {
+          model: Device,
+          attributes: [],
+        },
+      ],
+      distinct: true,
+      col: "serial",
+    };
+
+    //* Consulta para contar dispositivos únicos
+    const deviceCount = await Message.count(deviceQueryOptions);
+
+    // Configurar opciones de consulta de mensajes
+    const messageQueryOptions = {
       where,
       include: [
         {
@@ -99,18 +121,20 @@ class MessageService {
       offset: (page - 1) * limit,
     };
 
-    // Ejecutar la consulta
-    const { count, rows: messages } = await Message.findAndCountAll(options);
+    //* Consulta para obtener mensajes
+    const { count: messageCount, rows: messages } =
+      await Message.findAndCountAll(messageQueryOptions);
 
-    if (count === 0) {
+    if (messageCount === 0) {
       throw new NotFoundError("No se encontraron mensajes");
     }
 
     return {
       messages,
-      totalItems: count,
+      totalItems: messageCount,
+      totalDevices: deviceCount,
       page,
-      totalPages: Math.ceil(count / limit),
+      totalPages: Math.ceil(messageCount / limit),
     };
   }
 }
