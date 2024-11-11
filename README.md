@@ -159,7 +159,11 @@ El proyecto utiliza un sistema de gestión de clientes MQTT que consiste en:
 1. **Gestor de Clientes MQTT**:
 
    ```bash
+   # Ejecutar con intervalo de refresco por defecto (30 segundos)
    python mqtt_manager.py
+
+   # Ejecutar con intervalo personalizado (ejemplo: 60 segundos)
+   python mqtt_manager.py -r 60
    ```
 
    Proporciona una interfaz de línea de comandos para:
@@ -167,7 +171,9 @@ El proyecto utiliza un sistema de gestión de clientes MQTT que consiste en:
    - Mostrar el estado de todos los clientes MQTT
    - Iniciar/detener clientes individuales
    - Verificar y actualizar automáticamente el estado de las conexiones
+   - Bloquear/desbloquear reinicio automático de clientes detenidos manualmente
    - Persistencia de estado entre reinicios
+   - Refresco automático configurable
 
 2. **Cliente MQTT Individual**:
    Este script es gestionado automáticamente por el gestor y también puede ejecutarse manualmente proporcionando el id del servidor.
@@ -176,9 +182,11 @@ El sistema:
 
 - Mantiene conexiones MQTT independientes para cada servidor
 - Gestiona automáticamente la reconexión y recuperación de fallos
+- Permite bloquear el reinicio automático de servidores detenidos manualmente
 - Registra y actualiza dispositivos en la base de datos
 - Procesa mensajes con formato de topic: `/apikey/serial/...`
 - Almacena todos los mensajes recibidos
+- Mantiene logs independientes por cliente y sesión
 
 ## Documentación API
 
