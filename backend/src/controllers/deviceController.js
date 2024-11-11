@@ -4,6 +4,7 @@ const {
   validateDeviceId,
   validatePartialDevice,
   validateSerial,
+  validateActivityReportParams,
 } = require("../schemas/deviceSchema.js");
 
 // Obtener todos los dispositivos
@@ -54,4 +55,11 @@ exports.deleteDevice = async (req, res) => {
   const id = validateDeviceId(req.params.id); //* Validación
   const result = await deviceService.deleteDevice(id);
   res.json(result);
+};
+
+// Obtener reporte de actividad de dispositivos
+exports.getDeviceActivityReport = async (req, res) => {
+  const params = validateActivityReportParams(req.query); //* Validación
+  const report = await deviceService.getDeviceActivityReport(params);
+  res.json(report);
 };

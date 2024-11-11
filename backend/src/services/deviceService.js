@@ -4,6 +4,7 @@ const {
   BadRequestError,
   ConflictError,
 } = require("../utils/errors.js");
+const { Op } = require("sequelize");
 
 class DeviceService {
   //* Obtener todos los dispositivos
@@ -109,6 +110,84 @@ class DeviceService {
     const device = await this.getDeviceById(id);
     await device.destroy();
     return { message: "Dispositivo eliminado correctamente" };
+  }
+
+  //* Analizar estado de comunicación de los dispositivos
+  async getDeviceActivityReport(params) {
+    const { serverIds, beforeDate, afterDate } = params;
+
+    // Verificar que los servidores existen
+    const servers = await Server.findAll({
+      where: { id: { [Op.in]: serverIds } },
+    });
+
+    if (servers.length !== serverIds.length) {
+      const existingIds = servers.map((s) => s.id);
+      const missingIds = serverIds.filter((id) => !existingIds.includes(id));
+      throw new NotFoundError(
+        `No se encontraron los servidores con IDs: ${missingIds.join(", ")}`
+      );
+    }
+
+    // Consulta base con filtro de servidores
+    const baseQuery = {
+      attributes: ["serial"],
+      where: {
+        serverId: { [Op.in]: serverIds },
+      },
+    };
+
+    //* Dispositivos que comunicaron antes de beforeDate
+    const devicesBefore = beforeDate
+      ? await Device.findAll({
+          ...baseQuery,
+          where: {
+            ...baseQuery.where,
+            lastCommunication: { [Op.lt]: beforeDate },
+          },
+        })
+      : [];
+
+    //* Dispositivos que comunicaron después de afterDate
+    const devicesAfter = afterDate
+      ? await Device.findAll({
+          ...baseQuery,
+          where: {
+            ...baseQuery.where,
+            lastCommunication: { [Op.gt]: afterDate },
+          },
+        })
+      : [];
+
+    //* Dispositivos que comunicaron entre las fechas
+    const devicesBetween =
+      beforeDate && afterDate
+        ? await Device.findAll({
+            ...baseQuery,
+            where: {
+              ...baseQuery.where,
+              lastCommunication: { [Op.between]: [afterDate, beforeDate] },
+            },
+          })
+        : [];
+
+    // Convertir resultados a arrays de seriales
+    const serialsBefore = devicesBefore.map((d) => d.serial);
+    const serialsAfter = devicesAfter.map((d) => d.serial);
+    const serialsBetween = devicesBetween.map((d) => d.serial);
+
+    return {
+      summary: {
+        devicesBeforeCount: serialsBefore.length,
+        devicesAfterCount: serialsAfter.length,
+        devicesBetweenCount: serialsBetween.length,
+      },
+      devices: {
+        before: serialsBefore,
+        after: serialsAfter,
+        between: serialsBetween,
+      },
+    };
   }
 }
 

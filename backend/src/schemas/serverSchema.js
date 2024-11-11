@@ -26,7 +26,7 @@ const serverSchema = Joi.object({
   }),
 });
 
-// Función para validar todos los campos del servidor
+//* Función para validar todos los campos del servidor
 function validateServer(data) {
   const { error, value } = serverSchema.validate(data);
   if (error) {
@@ -35,7 +35,7 @@ function validateServer(data) {
   return value; // Datos validados
 }
 
-// Función para validar solo el ID del servidor
+//* Función para validar solo el ID del servidor
 function validateServerId(id) {
   return validateId(id);
 }

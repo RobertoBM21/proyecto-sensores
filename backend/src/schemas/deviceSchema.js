@@ -34,6 +34,44 @@ const partialDeviceSchema = deviceSchema
     "object.min": "Se requiere al menos un campo para actualizar.",
   });
 
+// Esquema para reporte de actividad de dispositivos
+const deviceActivityReportSchema = Joi.object({
+  serverIds: Joi.array()
+    .items(Joi.number().integer().positive())
+    .required()
+    .messages({
+      "array.base": 'El campo "serverIds" debe ser un array.',
+      "number.base": "Los IDs de servidor deben ser números.",
+      "number.integer": "Los IDs de servidor deben ser números enteros.",
+      "number.positive": "Los IDs de servidor deben ser números positivos.",
+      "any.required": 'El campo "serverIds" es obligatorio.',
+    }),
+  beforeDate: Joi.date().iso().messages({
+    "date.base": 'El campo "beforeDate" debe ser una fecha válida.',
+    "date.format": 'El campo "beforeDate" debe estar en formato ISO.',
+  }),
+  afterDate: Joi.date().iso().messages({
+    "date.base": 'El campo "afterDate" debe ser una fecha válida.',
+    "date.format": 'El campo "afterDate" debe estar en formato ISO.',
+  }),
+}).custom((value, helpers) => {
+  // Validar que al menos una fecha esté presente
+  if (!value.beforeDate && !value.afterDate) {
+    return helpers.message("Se requiere al menos una fecha de referencia");
+  }
+  // Validar que beforeDate sea posterior a afterDate
+  if (
+    value.beforeDate &&
+    value.afterDate &&
+    value.beforeDate < value.afterDate
+  ) {
+    return helpers.message(
+      "El campo beforeDate debe ser posterior a afterDate"
+    );
+  }
+  return value;
+});
+
 //* Función para validar todos los campos del dispositivo
 function validateDevice(data) {
   const { error, value } = deviceSchema.validate(data);
@@ -67,7 +105,16 @@ function validateSerial(serial) {
   if (error) {
     throw new BadRequestError(error.details[0].message);
   }
-  return value;
+  return value; // Serial validado
+}
+
+//* Función para validar los parámetros del reporte de actividad
+function validateActivityReportParams(data) {
+  const { error, value } = deviceActivityReportSchema.validate(data);
+  if (error) {
+    throw new BadRequestError(error.details[0].message);
+  }
+  return value; // Datos validados
 }
 
 module.exports = {
@@ -75,4 +122,5 @@ module.exports = {
   validateDeviceId,
   validatePartialDevice,
   validateSerial,
+  validateActivityReportParams,
 };

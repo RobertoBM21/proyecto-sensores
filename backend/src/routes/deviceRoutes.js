@@ -29,6 +29,106 @@ router.get("/", deviceController.getAllDevices);
 
 /**
  * @swagger
+ * /devices:
+ *   post:
+ *     summary: Crea un nuevo dispositivo
+ *     tags: [Devices]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Device'
+ *     responses:
+ *       201:
+ *         description: Dispositivo creado exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Device'
+ *       400:
+ *         description: Error en la solicitud
+ *       409:
+ *         description: Ya existe un dispositivo con ese serial
+ */
+router.post("/", deviceController.createDevice);
+
+/**
+ * @swagger
+ * /devices/activity:
+ *   get:
+ *     summary: Obtiene un reporte de los dispositivos que han comunicado dado un rango de fechas
+ *     tags: [Devices]
+ *     parameters:
+ *       - in: query
+ *         name: serverIds
+ *         required: true
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: integer
+ *         style: form
+ *         explode: false
+ *         description: Array de IDs de servidores a consultar
+ *       - in: query
+ *         name: beforeDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: Fecha límite superior (debe ser posterior a afterDate)
+ *       - in: query
+ *         name: afterDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: Fecha límite inferior (debe ser anterior a beforeDate)
+ *     responses:
+ *       200:
+ *         description: Reporte de actividad obtenido exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 summary:
+ *                   type: object
+ *                   properties:
+ *                     devicesBeforeCount:
+ *                       type: integer
+ *                       description: Número de dispositivos que comunicaron antes de beforeDate
+ *                     devicesAfterCount:
+ *                       type: integer
+ *                       description: Número de dispositivos que comunicaron después de afterDate
+ *                     devicesBetweenCount:
+ *                       type: integer
+ *                       description: Número de dispositivos que comunicaron entre las fechas
+ *                 devices:
+ *                   type: object
+ *                   properties:
+ *                     before:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       description: Seriales de dispositivos que comunicaron antes de beforeDate
+ *                     after:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       description: Seriales de dispositivos que comunicaron después de afterDate
+ *                     between:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                       description: Seriales de dispositivos que comunicaron entre las fechas
+ *       400:
+ *         description: Parámetros inválidos
+ *       404:
+ *         description: Uno o más servidores especificados no fueron encontrados
+ */
+router.get("/activity", deviceController.getDeviceActivityReport);
+
+/**
+ * @swagger
  * /devices/serial/{serial}:
  *   get:
  *     summary: Obtiene un dispositivo por su serial
@@ -52,7 +152,8 @@ router.get("/", deviceController.getAllDevices);
  *       404:
  *         description: Dispositivo no encontrado
  */
-//* La ruta se coloca antes de la ruta /:id para que se procese correctamente
+
+//? La ruta se coloca antes de la ruta /:id para que se procese correctamente
 router.get("/serial/:serial", deviceController.getDeviceBySerial);
 
 /**
@@ -81,32 +182,6 @@ router.get("/serial/:serial", deviceController.getDeviceBySerial);
  *         description: Dispositivo no encontrado
  */
 router.get("/:id", deviceController.getDeviceById);
-
-/**
- * @swagger
- * /devices:
- *   post:
- *     summary: Crea un nuevo dispositivo
- *     tags: [Devices]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Device'
- *     responses:
- *       201:
- *         description: Dispositivo creado exitosamente
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Device'
- *       400:
- *         description: Error en la solicitud
- *       409:
- *         description: Ya existe un dispositivo con ese serial
- */
-router.post("/", deviceController.createDevice);
 
 /**
  * @swagger

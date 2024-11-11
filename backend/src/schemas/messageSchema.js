@@ -79,7 +79,7 @@ const messageSearchSchema = Joi.object({
     return value;
   });
 
-// Función para validar todos los campos del mensaje
+//* Función para validar todos los campos del mensaje
 function validateMessage(data) {
   const { error, value } = messageSchema.validate(data);
   if (error) {
@@ -88,12 +88,12 @@ function validateMessage(data) {
   return value; // Datos validados
 }
 
-// Función para validar solo el ID del mensaje
+//* Función para validar solo el ID del mensaje
 function validateMessageId(id) {
   return validateId(id);
 }
 
-// Función para validar los parámetros de búsqueda
+//* Función para validar los parámetros de búsqueda
 function validateSearchParams(data) {
   const { error, value } = messageSearchSchema.validate(data);
   if (error) {
