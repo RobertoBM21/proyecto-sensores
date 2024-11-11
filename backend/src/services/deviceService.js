@@ -131,63 +131,98 @@ class DeviceService {
 
     // Consulta base con filtro de servidores
     const baseQuery = {
-      attributes: ["serial"],
       where: {
         serverId: { [Op.in]: serverIds },
       },
+      attributes: ["serial"],
+      distinct: true,
     };
 
-    //* Dispositivos que comunicaron antes de beforeDate
-    const devicesBefore = beforeDate
-      ? await Device.findAll({
+    // Preparar queries para cada rango de tiempo
+    const queries = [];
+
+    if (beforeDate) {
+      queries.push(
+        Device.findAndCountAll({
           ...baseQuery,
           where: {
             ...baseQuery.where,
             lastCommunication: { [Op.lt]: beforeDate },
           },
-        })
-      : [];
+        }).then((result) => ({
+          type: "before",
+          count: result.count,
+          serials: result.rows.map((d) => d.serial),
+        }))
+      );
+    }
 
-    //* Dispositivos que comunicaron después de afterDate
-    const devicesAfter = afterDate
-      ? await Device.findAll({
+    if (afterDate) {
+      queries.push(
+        Device.findAndCountAll({
           ...baseQuery,
           where: {
             ...baseQuery.where,
             lastCommunication: { [Op.gt]: afterDate },
           },
-        })
-      : [];
+        }).then((result) => ({
+          type: "after",
+          count: result.count,
+          serials: result.rows.map((d) => d.serial),
+        }))
+      );
+    }
 
-    //* Dispositivos que comunicaron entre las fechas
-    const devicesBetween =
-      beforeDate && afterDate
-        ? await Device.findAll({
-            ...baseQuery,
-            where: {
-              ...baseQuery.where,
-              lastCommunication: { [Op.between]: [afterDate, beforeDate] },
-            },
-          })
-        : [];
+    if (beforeDate && afterDate) {
+      queries.push(
+        Device.findAndCountAll({
+          ...baseQuery,
+          where: {
+            ...baseQuery.where,
+            lastCommunication: { [Op.between]: [afterDate, beforeDate] },
+          },
+        }).then((result) => ({
+          type: "between",
+          count: result.count,
+          serials: result.rows.map((d) => d.serial),
+        }))
+      );
+    }
 
-    // Convertir resultados a arrays de seriales
-    const serialsBefore = devicesBefore.map((d) => d.serial);
-    const serialsAfter = devicesAfter.map((d) => d.serial);
-    const serialsBetween = devicesBetween.map((d) => d.serial);
+    // Ejecutar todas las consultas en paralelo
+    const results = await Promise.all(queries);
 
-    return {
-      summary: {
-        devicesBeforeCount: serialsBefore.length,
-        devicesAfterCount: serialsAfter.length,
-        devicesBetweenCount: serialsBetween.length,
-      },
-      devices: {
-        before: serialsBefore,
-        after: serialsAfter,
-        between: serialsBetween,
-      },
+    // Procesar resultados
+    const summary = {
+      devicesBeforeCount: 0,
+      devicesAfterCount: 0,
+      devicesBetweenCount: 0,
     };
+
+    const devices = {
+      before: [],
+      after: [],
+      between: [],
+    };
+
+    results.forEach((result) => {
+      switch (result.type) {
+        case "before":
+          summary.devicesBeforeCount = result.count;
+          devices.before = result.serials;
+          break;
+        case "after":
+          summary.devicesAfterCount = result.count;
+          devices.after = result.serials;
+          break;
+        case "between":
+          summary.devicesBetweenCount = result.count;
+          devices.between = result.serials;
+          break;
+      }
+    });
+
+    return { summary, devices };
   }
 }
 
