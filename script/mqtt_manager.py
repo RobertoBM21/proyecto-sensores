@@ -5,18 +5,23 @@ import json
 from typing import Dict
 import psutil
 from datetime import datetime
+import threading
+import argparse
 
 API_URL = "http://localhost:3000"
 PROCESSES_FILE = "mqtt_processes.json"
 LOGS_DIR = "logs" 
+REFRESH_INTERVAL = 30  # Intervalo de refresco en segundos
 
 class MQTTManager:
     """Gestor de procesos para clientes MQTT"""
-    def __init__(self):
+    def __init__(self, refresh_interval=REFRESH_INTERVAL):
+        self.refresh_interval = refresh_interval  # Añadir el intervalo como atributo
         self.processes: Dict[str, int] = {} # Diccionario para almacenar PIDs de procesos
         if not os.path.exists(LOGS_DIR):    # Crear directorio de logs si no existe
             os.makedirs(LOGS_DIR)
         self.load_processes()
+        self._setup_auto_refresh()
 
     def load_processes(self):
         """Carga los PIDs guardados de procesos anteriores y verifica si siguen activos"""
@@ -47,20 +52,23 @@ class MQTTManager:
             print(f"Error al obtener servidores: {e}")
         return []
 
-    def start_client(self, server_id):
+    def start_client(self, server_id, verbose=True):
         """
         Inicia un nuevo cliente MQTT para un servidor específico.
         Verifica la existencia del servidor y crea un archivo de log para el proceso.
+        Args:
+            server_id: ID del servidor
+            verbose (bool): Si es True, muestra mensajes en consola
         """
         servers = self.get_servers()
         server_exists = any(str(server['id']) == str(server_id) for server in servers)
         
         if not server_exists:
-            print(f"No existe ningún servidor con ID {server_id}")
+            if verbose: print(f"No existe ningún servidor con ID {server_id}")
             return False
 
         if server_id in self.processes and psutil.pid_exists(self.processes[server_id]):
-            print(f"El cliente para el servidor {server_id} ya está en ejecución")
+            if verbose: print(f"El cliente para el servidor {server_id} ya está en ejecución")
             return False
 
         try:
@@ -74,79 +82,91 @@ class MQTTManager:
                 process = subprocess.Popen(
                     ['python', 'mqtt_client.py', str(server_id)],
                     stdout=f,
-                    stderr=subprocess.STDOUT,  # Redirigir stderr a stdout
+                    stderr=subprocess.STDOUT,   # Redirigir stderr a stdout
                     text=True
                 )
             
-            self.processes[server_id] = process.pid  # Guardamos el PID del proceso iniciado
-            print(f"Cliente MQTT iniciado para servidor {server_id} con PID {process.pid}")
-            print(f"Logs disponibles en: {log_file}")
+            self.processes[server_id] = process.pid
+            if verbose:
+                print(f"Cliente MQTT iniciado para servidor {server_id} con PID {process.pid}")
+                print(f"Logs disponibles en: {log_file}")
             self.save_processes()
             return True
         except Exception as e:
-            print(f"Error al iniciar cliente para servidor {server_id}: {e}")
+            if verbose: print(f"Error al iniciar cliente para servidor {server_id}: {e}")
             return False
 
-    def stop_client(self, server_id):
-        """Detiene un cliente MQTT específico"""
+    def stop_client(self, server_id, verbose=True):
+        """
+        Detiene un cliente MQTT específico
+        Args:
+            server_id: ID del servidor
+            verbose (bool): Si es True, muestra mensajes en consola
+        """
         if server_id not in self.processes:
-            print(f"No se encontró cliente para el servidor {server_id}")
+            if verbose: print(f"No se encontró cliente para el servidor {server_id}")
             return False
 
         pid = self.processes[server_id]
         try:
             process = psutil.Process(pid)
             if process.is_running():
-                process.terminate()  # Intenta terminar el proceso de forma segura
+                process.terminate() # Intenta terminar el proceso de forma segura
                 try:
-                    process.wait(timeout=5)  # Espera hasta 5 segundos por seguridad
+                    process.wait(timeout=5) # Espera hasta 5 segundos por seguridad
                 except psutil.TimeoutExpired:
                     process.kill()  # Si no responde, se mata forzosamente
-                print(f"Cliente MQTT detenido para servidor {server_id}")
+                if verbose: print(f"Cliente MQTT detenido para servidor {server_id}")
             else:
-                print(f"El proceso con PID {pid} no está activo")
+                if verbose: print(f"El proceso con PID {pid} no está activo")
         except psutil.NoSuchProcess:
-            print(f"El proceso con PID {pid} no existe")
+            if verbose: print(f"El proceso con PID {pid} no existe")
         except Exception as e:
-            print(f"Error al detener cliente para servidor {server_id}: {e}")
+            if verbose: print(f"Error al detener cliente para servidor {server_id}: {e}")
             return False
 
         del self.processes[server_id]
         self.save_processes()
         return True
 
-    def check_status(self):
+    def check_status(self, verbose=True):
         """
         Verifica y actualiza el estado de todos los clientes MQTT.
-        1. Detiene clientes de servidores que ya no existen
-        2. Inicia clientes para nuevos servidores
-        3. Reinicia clientes que se han caído
+        Args:
+            verbose (bool): Si es True, muestra mensajes en consola
         """
-        print("\nVerificando estado de los clientes MQTT...")
-        print("----------------------------------------")
+        if verbose:
+            print("\nVerificando estado de los clientes MQTT...")
+            print("----------------------------------------")
         
         servers = self.get_servers()
         server_ids = {str(server['id']) for server in servers}
         
-        print("1. Verificando clientes que deben detenerse...")
+        if verbose:
+            print("1. Verificando clientes que deben detenerse...")
         for server_id in list(self.processes.keys()):
             if server_id not in server_ids:
-                print(f"  → Deteniendo cliente {self.processes[server_id]} (servidor {server_id} ya no existe)")
-                self.stop_client(server_id)
+                if verbose:
+                    print(f"  → Deteniendo cliente {self.processes[server_id]} (servidor {server_id} ya no existe)")
+                self.stop_client(server_id, verbose=verbose)
         
-        print("\n2. Verificando clientes que deben iniciarse o reiniciarse...")
+        if verbose:
+            print("\n2. Verificando clientes que deben iniciarse o reiniciarse...")
         for server in servers:
             server_id = str(server['id'])
             if server_id not in self.processes:
-                print(f"  → Iniciando nuevo cliente para servidor {server_id} ({server['name']})")
-                self.start_client(server_id)
+                if verbose:
+                    print(f"  → Iniciando nuevo cliente para servidor {server_id} ({server['name']})")
+                self.start_client(server_id, verbose=verbose)
             elif not psutil.pid_exists(self.processes[server_id]):
-                print(f"  → Reiniciando cliente caído para servidor {server_id} ({server['name']})")
-                self.stop_client(server_id)
-                self.start_client(server_id)
+                if verbose:
+                    print(f"  → Reiniciando cliente caído para servidor {server_id} ({server['name']})")
+                self.stop_client(server_id, verbose=verbose)
+                self.start_client(server_id, verbose=verbose)
         
-        print("\n3. Actualización completada.")
-        print("----------------------------------------")
+        if verbose:
+            print("\n3. Actualización completada.")
+            print("----------------------------------------")
 
     def show_status(self):
         """Muestra el estado actual de todos los procesos"""
@@ -187,8 +207,29 @@ class MQTTManager:
             
         return max([os.path.join(LOGS_DIR, f) for f in logs], key=os.path.getctime)
 
+    def _setup_auto_refresh(self):
+        """Configura el refresco automático usando un temporizador"""
+        def timer_thread():
+            while True:
+                self.check_status(verbose=False)  # Llamada silenciosa
+                threading.Event().wait(self.refresh_interval)
+        
+        # Iniciar el hilo del temporizador
+        thread = threading.Thread(target=timer_thread, daemon=True)
+        thread.start()
+
 def main():
-    manager = MQTTManager()
+    # Configurar el parser de argumentos
+    parser = argparse.ArgumentParser(description='Gestor de Clientes MQTT')
+    parser.add_argument('-r', '--refresh', 
+                       type=int, 
+                       metavar='SEGUNDOS',  
+                       default=REFRESH_INTERVAL,
+                       help=f'Intervalo de refresco en segundos (por defecto: {REFRESH_INTERVAL})')
+    args = parser.parse_args()
+
+    # Crear el gestor con el intervalo especificado
+    manager = MQTTManager(refresh_interval=args.refresh)
     
     while True:
         print("\nGestor de Clientes MQTT")
