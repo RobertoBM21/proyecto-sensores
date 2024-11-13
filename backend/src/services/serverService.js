@@ -1,5 +1,6 @@
 const { Server } = require("../models");
 const { NotFoundError, ConflictError } = require("../utils/errors.js");
+const { encrypt } = require("../utils/crypto.js");
 
 class ServerService {
   //* Obtener todos los servidores
@@ -26,7 +27,13 @@ class ServerService {
       throw new ConflictError("Ya existe un servidor con ese endpoint");
     }
 
-    const server = await Server.create({ name, endpoint, username, password });
+    const server = await Server.create({
+      name,
+      endpoint,
+      username,
+      password: encrypt(password),
+    });
+
     return server;
   }
 
@@ -42,7 +49,13 @@ class ServerService {
       throw new ConflictError("Ya existe un servidor con ese endpoint");
     }
 
-    await server.update({ name, endpoint, username, password });
+    await server.update({
+      name,
+      endpoint,
+      username,
+      password: encrypt(password),
+    });
+
     return server;
   }
 
