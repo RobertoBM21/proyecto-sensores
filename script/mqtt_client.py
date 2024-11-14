@@ -100,11 +100,15 @@ def signal_handler(sig, frame):
         except Exception as e:
             logging.error(f"Error al cerrar el cliente MQTT: {e}")
     logging.info("Saliendo del programa...")
+    logging.shutdown()
     sys.exit(0)
 
 # Configuración de señales
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
+if os.name == 'nt':
+    # En Windows, manejar SIGBREAK
+    signal.signal(signal.SIGBREAK, signal_handler)
 
 # Funciones de API
 def get_server(server_id):

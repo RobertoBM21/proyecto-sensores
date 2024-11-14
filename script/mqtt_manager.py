@@ -22,11 +22,12 @@ ENV_VARS = {
     'API_URL': 'http://localhost:3000',
     'LOGS_DIR': 'logs',
     'PROCESSES_FILE': 'mqtt_processes.json',
-    'REFRESH_INTERVAL': '60',  # En segundos
+    'REFRESH_INTERVAL': '60',  # Segundos
 }
 
 # Constantes internas
 PROCESS_WAIT_TIME = 1  # Tiempo de espera para verificación de proceso (segundos)
+TIMEOUT = 5            # Tiempo de espera para detener el proceso (segundos)
 
 def validate_environment():
     """Valida y devuelve la configuración de variables de entorno"""
@@ -157,13 +158,17 @@ class MQTTManager:
             log_file = os.path.join(self.config['LOGS_DIR'], f"mqtt_client_{server_id}_{timestamp}.log")
             
             # Abrir archivo de log en modo 'append' y redirigir stdout y stderr
-            with open(log_file, 'a') as f:
+            creationflags = 0
+            if os.name == 'nt':
+                creationflags = subprocess.CREATE_NEW_PROCESS_GROUP  # Solo en Windows
+            with open(log_file, 'a', encoding='utf-8') as f:
                 f.write(f"\n--- Nueva sesión iniciada {datetime.now()} ---\n")
                 process = subprocess.Popen(
                     ['python', 'mqtt_client.py', str(server_id)],
                     stdout=f,
                     stderr=subprocess.STDOUT,   # Redirigir stderr a stdout
-                    text=True
+                    text=True,
+                    creationflags=creationflags  # Usar variable
                 )
                 
             # Esperar y verificar el proceso
@@ -201,16 +206,32 @@ class MQTTManager:
         try:
             process = psutil.Process(pid)
             if process.is_running():
-                # Enviar SIGTERM al proceso
-                process.send_signal(signal.SIGTERM)
-                try:
-                    process.wait(timeout=5) # Espera hasta 5 segundos a que el proceso termine
+                signal_sent = False
+                if os.name == 'nt':
+                    # En Windows, enviar CTRL_BREAK_EVENT
+                    process.send_signal(signal.CTRL_BREAK_EVENT)
+                    signal_sent = True
+                elif os.name == 'posix':
+                    # En Unix, enviar SIGTERM
+                    process.send_signal(signal.SIGTERM)
+                    signal_sent = True
+                else:
+                    if verbose:
+                        print(f"No se puede enviar señal para el sistema operativo {os.name}")
+                        
+                if signal_sent:
+                    try:
+                        process.wait(timeout=TIMEOUT)
+                        process_stopped = True
+                    except psutil.TimeoutExpired:
+                        if verbose: print(f"El proceso {pid} no respondió a la señal, forzando la terminación...")
+                        process.kill()  # Si no responde, se mata forzosamente
+                        process_stopped = True
+                else:
+                    # Si no se pudo enviar la señal, matar directamente
+                    if verbose: print(f"Señal no enviada para el proceso {pid}, forzando la terminación...")
+                    process.kill()
                     process_stopped = True
-                except psutil.TimeoutExpired:
-                    if verbose: print(f"El proceso {pid} no respondió a SIGTERM, forzando terminación")
-                    process.kill()  # Si no responde, se mata forzosamente
-                    process_stopped = True
-                if verbose: print(f"Cliente MQTT detenido para servidor {server_id}")
             else:
                 if verbose: print(f"El proceso con PID {pid} no está activo")
                 process_stopped = True
@@ -227,6 +248,7 @@ class MQTTManager:
                 self.blocked_servers.add(str(server_id))
                 if verbose: print(f"Servidor {server_id} bloqueado para reinicios automáticos")
             self.save_processes()
+            if verbose: print(f"Cliente MQTT detenido para servidor {server_id}")
             return True
         
         return False
