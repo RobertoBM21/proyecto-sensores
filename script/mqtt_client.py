@@ -54,9 +54,12 @@ def signal_handler(sig, frame):
     """Manejador de señales para un cierre limpio."""
     global client
     if client:
-        logging.info("Cerrando cliente MQTT...")
-        client.loop_stop() 
-        client.disconnect()
+        try:
+            logging.info("Cerrando cliente MQTT...")
+            client.loop_stop() 
+            client.disconnect()
+        except Exception as e:
+            logging.error(f"Error al cerrar el cliente MQTT: {e}")
     logging.info("Saliendo del programa...")
     sys.exit(0)
 

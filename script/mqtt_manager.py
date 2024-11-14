@@ -12,7 +12,8 @@ import signal
 API_URL = "http://localhost:3000"
 PROCESSES_FILE = "mqtt_processes.json"
 LOGS_DIR = "logs" 
-REFRESH_INTERVAL = 30  # Intervalo de refresco en segundos
+REFRESH_INTERVAL = 60  # Intervalo de refresco (segundos)
+PROCESS_WAIT_TIME = 1  # Tiempo de espera para verificar proceso nuevo (segundos)
 
 class MQTTManager:
     """Gestor de procesos para clientes MQTT"""
@@ -90,6 +91,13 @@ class MQTTManager:
                     stderr=subprocess.STDOUT,   # Redirigir stderr a stdout
                     text=True
                 )
+                
+            # Esperar y verificar el proceso
+            threading.Event().wait(PROCESS_WAIT_TIME)
+            if not psutil.pid_exists(process.pid) or process.poll() is not None:
+                if verbose:
+                    print(f"El cliente para servidor {server_id} falló al iniciar")
+                return False
             
             self.processes[server_id] = process.pid
             if verbose:
@@ -114,6 +122,8 @@ class MQTTManager:
             return False
 
         pid = self.processes[server_id]
+        process_stopped = False
+        
         try:
             process = psutil.Process(pid)
             if process.is_running():
@@ -121,24 +131,31 @@ class MQTTManager:
                 process.send_signal(signal.SIGTERM)
                 try:
                     process.wait(timeout=5) # Espera hasta 5 segundos a que el proceso termine
+                    process_stopped = True
                 except psutil.TimeoutExpired:
                     if verbose: print(f"El proceso {pid} no respondió a SIGTERM, forzando terminación")
                     process.kill()  # Si no responde, se mata forzosamente
+                    process_stopped = True
                 if verbose: print(f"Cliente MQTT detenido para servidor {server_id}")
             else:
                 if verbose: print(f"El proceso con PID {pid} no está activo")
+                process_stopped = True
         except psutil.NoSuchProcess:
             if verbose: print(f"El proceso con PID {pid} no existe")
+            process_stopped = True
         except Exception as e:
             if verbose: print(f"Error al detener cliente para servidor {server_id}: {e}")
-            return False
-
-        del self.processes[server_id]
-        if block:
-            self.blocked_servers.add(str(server_id))
-            if verbose: print(f"Servidor {server_id} bloqueado para reinicios automáticos")
-        self.save_processes()
-        return True
+        
+        # Siempre eliminar el proceso del diccionario si se detuvo o no existe
+        if process_stopped:
+            del self.processes[server_id]
+            if block:
+                self.blocked_servers.add(str(server_id))
+                if verbose: print(f"Servidor {server_id} bloqueado para reinicios automáticos")
+            self.save_processes()
+            return True
+        
+        return False
 
     def check_status(self, verbose=True):
         """
@@ -150,6 +167,19 @@ class MQTTManager:
             print("\nVerificando estado de los clientes MQTT...")
             print("----------------------------------------")
         
+        # Primero, limpiar procesos muertos del diccionario
+        dead_processes = [
+            server_id for server_id, pid in self.processes.items()
+            if not psutil.pid_exists(pid)
+        ]
+        for server_id in dead_processes:
+            if verbose:
+                print(f"Removiendo proceso muerto {self.processes[server_id]} del servidor {server_id}")
+            del self.processes[server_id]
+        
+        # Actualizar archivo JSON después de limpiar procesos muertos
+        self.save_processes()
+        
         servers = self.get_servers()
         server_ids = {str(server['id']) for server in servers}
         
@@ -159,7 +189,7 @@ class MQTTManager:
             if server_id not in server_ids:
                 if verbose:
                     print(f"  → Deteniendo cliente {self.processes[server_id]} (servidor {server_id} ya no existe)")
-                self.stop_client(server_id, verbose=verbose)
+                self.stop_client(server_id, verbose=verbose, block=False)
         
         if verbose:
             print("\n2. Verificando clientes que deben iniciarse o reiniciarse...")
@@ -167,16 +197,16 @@ class MQTTManager:
             server_id = str(server['id'])
             if server_id in self.blocked_servers:
                 if verbose:
-                    print(f"  → Omitiendo servidor {server_id} (bloqueado por usuario)")
+                    print(f"\n  → Omitiendo servidor {server_id} (bloqueado por usuario)")
                 continue
             
             if server_id not in self.processes:
                 if verbose:
-                    print(f"  → Iniciando nuevo cliente para servidor {server_id} ({server['name']})")
+                    print(f"\n  → Iniciando nuevo cliente para servidor {server_id} ({server['name']})")
                 self.start_client(server_id, verbose=verbose)
             elif not psutil.pid_exists(self.processes[server_id]):
                 if verbose:
-                    print(f"  → Reiniciando cliente caído para servidor {server_id} ({server['name']})")
+                    print(f"\n  → Reiniciando cliente caído para servidor {server_id} ({server['name']})")
                 self.stop_client(server_id, verbose=verbose, block=False)
                 self.start_client(server_id, verbose=verbose)
         
