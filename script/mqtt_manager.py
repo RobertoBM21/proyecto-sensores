@@ -1,35 +1,96 @@
-import subprocess
-import requests
+# Importaciones de la biblioteca estándar
 import os
+import sys
 import json
-from typing import Dict
-import psutil
-from datetime import datetime
-import threading
-import argparse
 import signal
+import argparse
+import threading
+import subprocess
+from typing import Dict
+from datetime import datetime
 
-API_URL = "http://localhost:3000"
-PROCESSES_FILE = "mqtt_processes.json"
-LOGS_DIR = "logs" 
-REFRESH_INTERVAL = 60  # Intervalo de refresco (segundos)
-PROCESS_WAIT_TIME = 1  # Tiempo de espera para verificar proceso nuevo (segundos)
+# Importaciones de terceros
+import psutil
+import requests
+from dotenv import load_dotenv
+
+# Carga las variables de entorno
+load_dotenv()
+
+# Variables de entorno y valores por defecto
+ENV_VARS = {
+    'API_URL': 'http://localhost:3000',
+    'LOGS_DIR': 'logs',
+    'PROCESSES_FILE': 'mqtt_processes.json',
+    'REFRESH_INTERVAL': '60',  # En segundos
+}
+
+# Constantes internas
+PROCESS_WAIT_TIME = 1  # Tiempo de espera para verificación de proceso (segundos)
+
+def validate_environment():
+    """Valida y devuelve la configuración de variables de entorno"""
+    config = {}
+    missing_vars = []
+    
+    for var_name, default_value in ENV_VARS.items():
+        value = os.getenv(var_name, default_value)
+        if value is None:
+            missing_vars.append(var_name)
+        config[var_name] = value
+            
+    if missing_vars:
+        print(f"ERROR: Faltan las siguientes variables de entorno requeridas: {', '.join(missing_vars)}")
+        sys.exit(1)
+    
+    return config
+
+# Funciones de configuración
+def parse_arguments():
+    """Procesa los argumentos de línea de comandos"""
+    parser = argparse.ArgumentParser(description='Gestor de Clientes MQTT')
+    parser.add_argument('-r', '--refresh',
+                       type=int,
+                       metavar='SEGUNDOS',
+                       help='Intervalo de refresco en segundos')
+    return parser.parse_args()
 
 class MQTTManager:
     """Gestor de procesos para clientes MQTT"""
-    def __init__(self, refresh_interval=REFRESH_INTERVAL):
-        self.refresh_interval = refresh_interval  # Añadir el intervalo como atributo
-        self.processes: Dict[str, int] = {} # Diccionario para almacenar PIDs de procesos
-        self.blocked_servers = set()  # Conjunto para almacenar IDs de servidores bloqueados
-        if not os.path.exists(LOGS_DIR):    # Crear directorio de logs si no existe
-            os.makedirs(LOGS_DIR)
+    
+    # Inicialización y configuración básica
+    def __init__(self, refresh_interval):
+        # Cargar configuración de entorno
+        self.config = validate_environment()
+        
+        # Configuración inicial
+        self.refresh_interval = refresh_interval or int(self.config['REFRESH_INTERVAL'])
+        self.processes: Dict[str, int] = {}
+        self.blocked_servers = set()
+        
+        # Inicialización del directorio de logs y carga de procesos
+        if not os.path.exists(self.config['LOGS_DIR']):
+            os.makedirs(self.config['LOGS_DIR'])
+            
         self.load_processes()
         self._setup_auto_refresh()
 
+    def _setup_auto_refresh(self):
+        """Configura el refresco automático usando un temporizador"""
+        def timer_thread():
+            while True:
+                self.check_status(verbose=False)  # Llamada silenciosa
+                threading.Event().wait(self.refresh_interval)
+        
+        # Iniciar el hilo del temporizador
+        thread = threading.Thread(target=timer_thread, daemon=True)
+        thread.start()
+
+    # Funciones de gestión de procesos
     def load_processes(self):
         """Carga los PIDs guardados de procesos anteriores y verifica si siguen activos"""
-        if os.path.exists(PROCESSES_FILE):
-            with open(PROCESSES_FILE, 'r') as f:
+        if os.path.exists(self.config['PROCESSES_FILE']):
+            with open(self.config['PROCESSES_FILE'], 'r') as f:
                 saved_processes = json.load(f)
                 for server_id, pid in saved_processes.items():
                     if psutil.pid_exists(pid):
@@ -42,19 +103,32 @@ class MQTTManager:
             for server_id, pid in self.processes.items()
             if psutil.pid_exists(pid)
         }
-        with open(PROCESSES_FILE, 'w') as f:
+        with open(self.config['PROCESSES_FILE'], 'w') as f:
             json.dump(processes_dict, f)
 
+    def _get_latest_log(self, server_id):
+        """Obtiene el archivo de log más reciente para un servidor específico"""
+        if not os.path.exists(self.config['LOGS_DIR']):
+            return None
+            
+        logs = [f for f in os.listdir(self.config['LOGS_DIR']) if f.startswith(f"mqtt_client_{server_id}_")]
+        if not logs:
+            return None
+            
+        return max([os.path.join(self.config['LOGS_DIR'], f) for f in logs], key=os.path.getctime)
+
+    # Funciones de API
     def get_servers(self):
         """Obtiene la lista de servidores desde la API"""
         try:
-            response = requests.get(f"{API_URL}/servers")
+            response = requests.get(f"{self.config['API_URL']}/servers")
             if response.status_code == 200:
                 return response.json()
         except requests.RequestException as e:
             print(f"Error al obtener servidores: {e}")
         return []
 
+    # Funciones principales de gestión de clientes
     def start_client(self, server_id, verbose=True):
         """
         Inicia un nuevo cliente MQTT para un servidor específico.
@@ -80,7 +154,7 @@ class MQTTManager:
         try:
             # Crear nombre de archivo de log con timestamp
             timestamp = datetime.now().strftime('%Y%m%d')
-            log_file = os.path.join(LOGS_DIR, f"mqtt_client_{server_id}_{timestamp}.log")
+            log_file = os.path.join(self.config['LOGS_DIR'], f"mqtt_client_{server_id}_{timestamp}.log")
             
             # Abrir archivo de log en modo 'append' y redirigir stdout y stderr
             with open(log_file, 'a') as f:
@@ -157,6 +231,7 @@ class MQTTManager:
         
         return False
 
+    # Funciones de monitoreo y estado
     def check_status(self, verbose=True):
         """
         Verifica y actualiza el estado de todos los clientes MQTT.
@@ -245,41 +320,15 @@ class MQTTManager:
                 print(f"{server_id:^5} | {server['name'][:20]:^20} | {status:^15} | {'-':^10} | {'-':^30}")
         print("-" * 100)
 
-    def _get_latest_log(self, server_id):
-        """Obtiene el archivo de log más reciente para un servidor específico"""
-        if not os.path.exists(LOGS_DIR):
-            return None
-            
-        logs = [f for f in os.listdir(LOGS_DIR) if f.startswith(f"mqtt_client_{server_id}_")]
-        if not logs:
-            return None
-            
-        return max([os.path.join(LOGS_DIR, f) for f in logs], key=os.path.getctime)
-
-    def _setup_auto_refresh(self):
-        """Configura el refresco automático usando un temporizador"""
-        def timer_thread():
-            while True:
-                self.check_status(verbose=False)  # Llamada silenciosa
-                threading.Event().wait(self.refresh_interval)
-        
-        # Iniciar el hilo del temporizador
-        thread = threading.Thread(target=timer_thread, daemon=True)
-        thread.start()
-
 def main():
-    # Configurar el parser de argumentos
-    parser = argparse.ArgumentParser(description='Gestor de Clientes MQTT')
-    parser.add_argument('-r', '--refresh', 
-                       type=int, 
-                       metavar='SEGUNDOS',  
-                       default=REFRESH_INTERVAL,
-                       help=f'Intervalo de refresco en segundos (por defecto: {REFRESH_INTERVAL})')
-    args = parser.parse_args()
+    """Función principal del gestor"""
+    # Procesar argumentos
+    args = parse_arguments()
 
-    # Crear el gestor con el intervalo especificado
+    # Crear y configurar el gestor
     manager = MQTTManager(refresh_interval=args.refresh)
     
+    # Menú principal
     while True:
         print("\nGestor de Clientes MQTT")
         print("1. Mostrar estado")
@@ -318,12 +367,12 @@ def main():
                 print("Opción no válida")
                 
         except KeyboardInterrupt:
-            print("\nDeteniendo el gestor...")
+            print("\nDeteniendo solicitada por el usuario...")
             for server_id in list(manager.processes.keys()):
                 manager.stop_client(server_id)
             break
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"Error inesperado: {e}")
 
 if __name__ == "__main__":
     main()

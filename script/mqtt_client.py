@@ -4,6 +4,7 @@ import sys
 import json
 import signal
 import logging
+import argparse
 from datetime import datetime, timezone
 from binascii import unhexlify
 
@@ -15,29 +16,67 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 
-# Cargar variables de entorno al inicio
+# Carga las variables de entorno
 load_dotenv()
 
-# Configuración del logging y constantes
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
+# Variables de entorno y valores por defecto
+ENV_VARS = {
+    'API_URL': 'http://localhost:3000',
+    'MQTT_TOPIC': '#',
+    'ENCRYPTION_KEY': None,  # Requerida, sin valor por defecto
+    'LOG_LEVEL': 'INFO'      # Se puede sobrescribir con --debug
+}
 
-# Usar variables de entorno
-API_URL = os.getenv('API_URL', 'http://localhost:3000')
-TOPIC = os.getenv('MQTT_TOPIC', '#')
-ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY')
+# Variables globales
+client = None  # Cliente MQTT (para manejo de señales)
+config = None  # Configuración validada de variables de entorno
 
-#* Variable global para el cliente MQTT (para manejar señales)
-client = None
+# Funciones de configuración y logging
+def setup_logging():
+    """Configura el sistema de logging según variables de entorno"""
+    log_level = os.environ.get('LOG_LEVEL', ENV_VARS['LOG_LEVEL'])
+    logging.basicConfig(
+        level=getattr(logging, log_level),
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+
+def validate_environment():
+    """Valida y devuelve la configuración de variables de entorno"""
+    config = {}
+    missing_vars = []
+    
+    for var_name, default_value in ENV_VARS.items():
+        value = os.getenv(var_name, default_value)
+        if value is None:
+            missing_vars.append(var_name)
+        config[var_name] = value
+            
+    if missing_vars:
+        print(f"ERROR: Faltan las siguientes variables de entorno requeridas: {', '.join(missing_vars)}")
+        sys.exit(1)
+    
+    return config
+
+def parse_arguments():
+    """Procesa los argumentos de línea de comandos"""
+    parser = argparse.ArgumentParser(
+        description='Cliente MQTT para recolección de datos de sensores',
+        epilog='Ejemplo: python mqtt_client.py 1 --debug'
+    )
+    parser.add_argument('server_id', 
+                       type=int,
+                       help='ID del servidor MQTT al que conectarse')
+    parser.add_argument('--debug', 
+                       action='store_true',
+                       help='Activa el modo debug (sobrescribe LOG_LEVEL)')
+    return parser.parse_args()
 
 # Funciones de utilidad
 def decrypt(encrypted_text):
     """Descifra un texto cifrado con AES-CBC."""
     encrypted, iv_hex = encrypted_text.split(':')
-    key = unhexlify(ENCRYPTION_KEY)
+    key = unhexlify(config['ENCRYPTION_KEY'])
     iv = unhexlify(iv_hex)
     ciphertext = unhexlify(encrypted)
     
@@ -70,7 +109,7 @@ signal.signal(signal.SIGTERM, signal_handler)
 # Funciones de API
 def get_server(server_id):
     try:
-        response = requests.get(f"{API_URL}/servers/{server_id}")
+        response = requests.get(f"{config['API_URL']}/servers/{server_id}")
         if response.status_code == 200:
             server = response.json()
             if not server:
@@ -86,11 +125,11 @@ def get_server(server_id):
 
 def update_or_create_device(serial, apikey, last_communication, server_id):
     try:
-        response = requests.get(f"{API_URL}/devices/serial/{serial}")
+        response = requests.get(f"{config['API_URL']}/devices/serial/{serial}")
         if response.status_code == 200 and response.json():
             device = response.json()
             update_payload = {"lastCommunication": last_communication}
-            patch_response = requests.patch(f"{API_URL}/devices/{device['id']}", json=update_payload)
+            patch_response = requests.patch(f"{config['API_URL']}/devices/{device['id']}", json=update_payload)
             if patch_response.status_code == 200:
                 logging.info(f"Dispositivo {serial} actualizado en la base de datos")
             else:
@@ -102,7 +141,7 @@ def update_or_create_device(serial, apikey, last_communication, server_id):
                 "lastCommunication": last_communication,
                 "serverId": server_id
             }
-            post_response = requests.post(f"{API_URL}/devices", json=new_device)
+            post_response = requests.post(f"{config['API_URL']}/devices", json=new_device)
             if post_response.status_code == 201:
                 logging.info(f"Dispositivo {serial} guardado en la base de datos")
             else:
@@ -114,7 +153,7 @@ def update_or_create_device(serial, apikey, last_communication, server_id):
 def on_connect(client, userdata, flags, reasonCode, properties=None):
     if reasonCode == mqtt.CONNACK_ACCEPTED:
         logging.info(f"Conectado a {client._host}")
-        client.subscribe(TOPIC)
+        client.subscribe(config['MQTT_TOPIC'])
     else:
         reason = mqtt.reason_codes.ConnectReasonCode.to_str(reasonCode)
         logging.error(f"Error en la conexión a {client._host}: {reasonCode} - {reason}")
@@ -155,7 +194,7 @@ def on_message(client, userdata, msg):
 
     # Enviar mensaje a la API
     try:
-        response = requests.post(f"{API_URL}/messages", json=message)
+        response = requests.post(f"{config['API_URL']}/messages", json=message)
         if response.status_code == 201:
             logging.info("Mensaje guardado en la base de datos")
         else:
@@ -197,27 +236,30 @@ def setup_client(server):
         sys.exit(1)
 
 def main():
-    # Verificar todas las variables de entorno necesarias
-    required_env_vars = ['ENCRYPTION_KEY']
-    missing_vars = [var for var in required_env_vars if not os.getenv(var)]
+    """Función principal con mejor manejo de configuración"""
+    # Procesar argumentos
+    args = parse_arguments()
     
-    if missing_vars:
-        logging.error(f"Faltan las siguientes variables de entorno: {', '.join(missing_vars)}")
-        sys.exit(1)
+    # Establecer configuración global
+    if args.debug:
+        os.environ['LOG_LEVEL'] = 'DEBUG'
+    
+    global config
+    config = validate_environment()
+    
+    # Configurar logging
+    setup_logging()
         
-    if len(sys.argv) != 2:
-        logging.error("Uso: python mqtt_client.py <server_id>")
-        sys.exit(1)
-
-    server_id = sys.argv[1]
-    server = get_server(server_id)
-    
+    # Obtener configuración del servidor
+    server = get_server(args.server_id)
     if not server:
-        logging.error(f"No se pudo obtener el servidor {server_id}")
+        logging.error(f"No se pudo obtener el servidor {args.server_id}")
         sys.exit(1)
 
+    # Configurar y ejecutar cliente
     global client
-    client = setup_client(server)
+    client = setup_client(server)    
+    logging.info("Cliente MQTT iniciado correctamente")
     client.loop_forever(retry_first_connection=True)
 
 if __name__ == "__main__":
