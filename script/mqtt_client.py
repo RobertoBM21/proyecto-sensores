@@ -30,6 +30,9 @@ API_URL = os.getenv('API_URL', 'http://localhost:3000')
 TOPIC = os.getenv('MQTT_TOPIC', '#')
 ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY')
 
+#* Variable global para el cliente MQTT (para manejar señales)
+client = None
+
 # Funciones de utilidad
 def decrypt(encrypted_text):
     """Descifra un texto cifrado con AES-CBC."""
@@ -49,7 +52,12 @@ def decrypt(encrypted_text):
 
 def signal_handler(sig, frame):
     """Manejador de señales para un cierre limpio."""
-    logging.info("Cerrando cliente MQTT...")
+    global client
+    if client:
+        logging.info("Cerrando cliente MQTT...")
+        client.loop_stop() 
+        client.disconnect()
+    logging.info("Saliendo del programa...")
     sys.exit(0)
 
 # Configuración de señales
@@ -107,13 +115,6 @@ def on_connect(client, userdata, flags, reasonCode, properties=None):
     else:
         reason = mqtt.reason_codes.ConnectReasonCode.to_str(reasonCode)
         logging.error(f"Error en la conexión a {client._host}: {reasonCode} - {reason}")
-        
-def on_disconnect(client, userdata, reasonCode, properties=None):
-    """Callback para manejar desconexiones"""
-    if reasonCode == 0:
-        logging.info("Desconexión limpia del broker")
-    else:
-        logging.warning(f"Desconexión inesperada del broker, código: {reasonCode}")
 
 def on_message(client, userdata, msg):
     """
@@ -181,7 +182,6 @@ def setup_client(server):
         sys.exit(1)
     
     client.on_connect = on_connect
-    client.on_disconnect = on_disconnect
     client.on_message = on_message
     client.user_data_set({"server_id": server["id"]})
     
@@ -213,6 +213,7 @@ def main():
         logging.error(f"No se pudo obtener el servidor {server_id}")
         sys.exit(1)
 
+    global client
     client = setup_client(server)
     client.loop_forever(retry_first_connection=True)
 

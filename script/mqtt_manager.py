@@ -7,6 +7,7 @@ import psutil
 from datetime import datetime
 import threading
 import argparse
+import signal
 
 API_URL = "http://localhost:3000"
 PROCESSES_FILE = "mqtt_processes.json"
@@ -18,11 +19,11 @@ class MQTTManager:
     def __init__(self, refresh_interval=REFRESH_INTERVAL):
         self.refresh_interval = refresh_interval  # Añadir el intervalo como atributo
         self.processes: Dict[str, int] = {} # Diccionario para almacenar PIDs de procesos
+        self.blocked_servers = set()  # Conjunto para almacenar IDs de servidores bloqueados
         if not os.path.exists(LOGS_DIR):    # Crear directorio de logs si no existe
             os.makedirs(LOGS_DIR)
         self.load_processes()
         self._setup_auto_refresh()
-        self.blocked_servers = set()  # Conjunto para almacenar IDs de servidores bloqueados
 
     def load_processes(self):
         """Carga los PIDs guardados de procesos anteriores y verifica si siguen activos"""
@@ -116,10 +117,12 @@ class MQTTManager:
         try:
             process = psutil.Process(pid)
             if process.is_running():
-                process.terminate() # Intenta terminar el proceso de forma segura
+                # Enviar SIGTERM al proceso
+                process.send_signal(signal.SIGTERM)
                 try:
-                    process.wait(timeout=5) # Espera hasta 5 segundos por seguridad
+                    process.wait(timeout=5) # Espera hasta 5 segundos a que el proceso termine
                 except psutil.TimeoutExpired:
+                    if verbose: print(f"El proceso {pid} no respondió a SIGTERM, forzando terminación")
                     process.kill()  # Si no responde, se mata forzosamente
                 if verbose: print(f"Cliente MQTT detenido para servidor {server_id}")
             else:
@@ -278,7 +281,7 @@ def main():
             elif option == '5':
                 print("Deteniendo todos los clientes...")
                 for server_id in list(manager.processes.keys()):
-                    manager.stop_client(server_id)
+                    manager.stop_client(server_id, block=False)
                 break
             
             else:
