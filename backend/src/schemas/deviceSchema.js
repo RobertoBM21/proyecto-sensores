@@ -59,15 +59,13 @@ const deviceActivityReportSchema = Joi.object({
   if (!value.beforeDate && !value.afterDate) {
     return helpers.message("Se requiere al menos una fecha de referencia");
   }
-  // Validar que beforeDate sea posterior a afterDate
+  // Validar que beforeDate sea anterior a afterDate
   if (
     value.beforeDate &&
     value.afterDate &&
-    value.beforeDate < value.afterDate
+    value.beforeDate > value.afterDate
   ) {
-    return helpers.message(
-      "El campo beforeDate debe ser posterior a afterDate"
-    );
+    return helpers.message("El campo beforeDate debe ser anterior a afterDate");
   }
   return value;
 });

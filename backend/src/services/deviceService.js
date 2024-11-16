@@ -129,103 +129,66 @@ class DeviceService {
       );
     }
 
-    // Consulta base
+    // Query base
     const baseQuery = {
-      where: {
-        serverId: { [Op.in]: serverIds },
-      },
-      attributes: ["serial"],
+      where: { serverId: { [Op.in]: serverIds } },
+      attributes: ["serial", "lastCommunication"],
+      order: [["lastCommunication", "DESC"]],
       distinct: true,
     };
 
-    // Preparar queries para cada rango de tiempo
-    const queries = [];
+    // Ejecutar consultas en paralelo con promesas
+    const [beforeResults, afterResults, betweenResults] = await Promise.all([
+      beforeDate
+        ? Device.findAndCountAll({
+            ...baseQuery,
+            where: {
+              ...baseQuery.where,
+              lastCommunication: { [Op.lt]: beforeDate },
+            },
+          })
+        : Promise.resolve({ count: 0, rows: [] }),
+      afterDate
+        ? Device.findAndCountAll({
+            ...baseQuery,
+            where: {
+              ...baseQuery.where,
+              lastCommunication: { [Op.gt]: afterDate },
+            },
+          })
+        : Promise.resolve({ count: 0, rows: [] }),
+      beforeDate && afterDate
+        ? Device.findAndCountAll({
+            ...baseQuery,
+            where: {
+              ...baseQuery.where,
+              lastCommunication: { [Op.between]: [beforeDate, afterDate] },
+            },
+          })
+        : Promise.resolve({ count: 0, rows: [] }),
+    ]);
 
-    // Si se especificó una fecha antes
-    if (beforeDate) {
-      queries.push(
-        Device.findAndCountAll({
-          ...baseQuery,
-          where: {
-            ...baseQuery.where,
-            lastCommunication: { [Op.lt]: beforeDate },
-          },
-        }).then((result) => ({
-          type: "before",
-          count: result.count,
-          serials: result.rows.map((d) => d.serial),
-        }))
-      );
-    }
-
-    // Si se especificó una fecha después
-    if (afterDate) {
-      queries.push(
-        Device.findAndCountAll({
-          ...baseQuery,
-          where: {
-            ...baseQuery.where,
-            lastCommunication: { [Op.gt]: afterDate },
-          },
-        }).then((result) => ({
-          type: "after",
-          count: result.count,
-          serials: result.rows.map((d) => d.serial),
-        }))
-      );
-    }
-
-    // Si se especificaron ambas fechas
-    if (beforeDate && afterDate) {
-      queries.push(
-        Device.findAndCountAll({
-          ...baseQuery,
-          where: {
-            ...baseQuery.where,
-            lastCommunication: { [Op.between]: [afterDate, beforeDate] },
-          },
-        }).then((result) => ({
-          type: "between",
-          count: result.count,
-          serials: result.rows.map((d) => d.serial),
-        }))
-      );
-    }
-
-    //* Ejecutar todas las consultas en paralelo
-    const results = await Promise.all(queries);
-
-    // Procesar resultados
-    const summary = {
-      devicesBeforeCount: 0,
-      devicesAfterCount: 0,
-      devicesBetweenCount: 0,
+    return {
+      summary: {
+        devicesBeforeCount: beforeResults.count,
+        devicesAfterCount: afterResults.count,
+        devicesBetweenCount: betweenResults.count,
+      },
+      devices: {
+        before: beforeResults.rows.map((d) => ({
+          serial: d.serial,
+          lastCommunication: d.lastCommunication,
+        })),
+        after: afterResults.rows.map((d) => ({
+          serial: d.serial,
+          lastCommunication: d.lastCommunication,
+        })),
+        between: betweenResults.rows.map((d) => ({
+          serial: d.serial,
+          lastCommunication: d.lastCommunication,
+        })),
+      },
     };
-
-    const devices = {
-      before: [],
-      after: [],
-      between: [],
-    };
-
-    results.forEach((result) => {
-      switch (result.type) {
-        case "before":
-          summary.devicesBeforeCount = result.count;
-          devices.before = result.serials;
-          break;
-        case "after":
-          summary.devicesAfterCount = result.count;
-          devices.after = result.serials;
-          break;
-        case "between":
-          summary.devicesBetweenCount = result.count;
-          devices.between = result.serials;
-          break;
-      }
-    });
-
-    return { summary, devices };
   }
 }
 
