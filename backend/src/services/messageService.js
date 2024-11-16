@@ -67,64 +67,45 @@ class MessageService {
       limit = 50,
     } = params;
 
-    // Configurar condiciones de consulta (WHERE)
-    const where = {};
+    // Filtros de búsqueda
+    const baseWhere = {};
 
-    // Busca cualquier serial que comience con el patrón proporcionado
     if (serial) {
-      where.serial = {
-        [Op.like]: `${serial}%`,
-      };
+      baseWhere.serial = { [Op.like]: `${serial}%` };
     }
-
-    // Filtrar por rango de fecha
+    if (serverId) baseWhere["$Device.serverId$"] = serverId;
     if (startDate || endDate || dateRange) {
-      where.timestamp = {};
-
+      baseWhere.timestamp = {};
       if (dateRange) {
         const { start, end } = getDateRange(dateRange);
-        where.timestamp[Op.between] = [start, end];
+        baseWhere.timestamp[Op.between] = [start, end];
       } else {
-        if (startDate) where.timestamp[Op.gte] = startDate;
-        if (endDate) where.timestamp[Op.lte] = endDate;
+        if (startDate) baseWhere.timestamp[Op.gte] = startDate;
+        if (endDate) baseWhere.timestamp[Op.lte] = endDate;
       }
     }
 
-    if (serverId) where["$Device.serverId$"] = serverId;
-
-    // Configurar opciones de consulta de numero de dispositivos únicos
-    const deviceQueryOptions = {
-      where,
-      include: [
-        {
-          model: Device,
-          attributes: [],
-        },
-      ],
-      distinct: true,
-      col: "serial",
+    // Consulta base
+    const baseOptions = {
+      where: baseWhere,
+      include: [{ model: Device, attributes: [] }],
     };
 
-    //* Consulta para contar dispositivos únicos
-    const deviceCount = await Message.count(deviceQueryOptions);
-
-    // Configurar opciones de consulta de mensajes
-    const messageQueryOptions = {
-      where,
-      include: [
-        {
-          model: Device,
-          attributes: [],
-        },
-      ],
-      order: [["timestamp", "DESC"]],
-      limit: limit,
-      offset: (page - 1) * limit,
-    };
-
-    //* Consulta para obtener mensajes
-    const { count: messageCount, rows: messages } =
-      await Message.findAndCountAll(messageQueryOptions);
+    // Ejecutar consultas en paralelo con promesas
+    const [{ count: messageCount, rows: messages }, deviceCount] =
+      await Promise.all([
+        Message.findAndCountAll({
+          ...baseOptions,
+          order: [["timestamp", "DESC"]],
+          limit,
+          offset: (page - 1) * limit,
+        }),
+        Message.count({
+          ...baseOptions,
+          distinct: true,
+          col: "serial",
+        }),
+      ]);
 
     if (messageCount === 0) {
       throw new NotFoundError("No se encontraron mensajes");
@@ -136,6 +117,9 @@ class MessageService {
       totalDevices: deviceCount,
       page,
       totalPages: Math.ceil(messageCount / limit),
+      limit,
+      hasNextPage: page < Math.ceil(messageCount / limit),
+      hasPreviousPage: page > 1,
     };
   }
 }

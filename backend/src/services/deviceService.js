@@ -129,7 +129,7 @@ class DeviceService {
       );
     }
 
-    // Query base
+    // Consulta base
     const baseQuery = {
       where: { serverId: { [Op.in]: serverIds } },
       attributes: ["serial", "lastCommunication"],
