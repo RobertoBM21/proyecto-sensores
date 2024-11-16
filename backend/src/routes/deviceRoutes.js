@@ -108,18 +108,33 @@ router.post("/", deviceController.createDevice);
  *                     before:
  *                       type: array
  *                       items:
- *                         type: string
- *                       description: Seriales de dispositivos que comunicaron antes de beforeDate
+ *                         type: object
+ *                         properties:
+ *                           serial:
+ *                             type: string
+ *                           lastCommunication:
+ *                             type: string
+ *                             format: date-time
  *                     after:
  *                       type: array
  *                       items:
- *                         type: string
- *                       description: Seriales de dispositivos que comunicaron después de afterDate
+ *                         type: object
+ *                         properties:
+ *                           serial:
+ *                             type: string
+ *                           lastCommunication:
+ *                             type: string
+ *                             format: date-time
  *                     between:
  *                       type: array
  *                       items:
- *                         type: string
- *                       description: Seriales de dispositivos que comunicaron entre las fechas
+ *                         type: object
+ *                         properties:
+ *                           serial:
+ *                             type: string
+ *                           lastCommunication:
+ *                             type: string
+ *                             format: date-time
  *       400:
  *         description: Parámetros inválidos
  *       404:

@@ -74,13 +74,37 @@ router.get("/", messageController.getAllMessages);
  *         description: Cantidad de mensajes por página
  *     responses:
  *       200:
- *         description: Lista de mensajes
+ *         description: Resultado de búsqueda paginado
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Message'
+ *               type: object
+ *               properties:
+ *                 messages:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Message'
+ *                 totalItems:
+ *                   type: integer
+ *                   description: Total de mensajes encontrados
+ *                 totalDevices:
+ *                   type: integer
+ *                   description: Total de dispositivos únicos encontrados
+ *                 page:
+ *                   type: integer
+ *                   description: Página actual
+ *                 totalPages:
+ *                   type: integer
+ *                   description: Total de páginas
+ *                 limit:
+ *                   type: integer
+ *                   description: Cantidad de items por página
+ *                 hasNextPage:
+ *                   type: boolean
+ *                   description: Indica si hay más páginas después
+ *                 hasPreviousPage:
+ *                   type: boolean
+ *                   description: Indica si hay páginas anteriores
  *       400:
  *         description: Parámetros inválidos
  *       404:

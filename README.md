@@ -218,16 +218,6 @@ El proyecto utiliza un sistema de gestión de clientes MQTT que consiste en:
    - **Gestión de reconexión automática** y recuperación ante fallos.
    - **Manejo de logs detallados**, con opción de nivel de log dinámico mediante el argumento `--debug`.
 
-El sistema:
-
-- Mantiene conexiones MQTT independientes para cada servidor
-- Gestiona automáticamente la reconexión y recuperación de fallos
-- Permite bloquear el reinicio automático de servidores detenidos manualmente
-- Registra y actualiza dispositivos en la base de datos
-- Procesa mensajes con formato de topic: `/apikey/serial/...`
-- Almacena todos los mensajes recibidos
-- Mantiene logs independientes por cliente y sesión
-
 ## Documentación API
 
 La documentación Swagger de la API está disponible en:
