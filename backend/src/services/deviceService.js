@@ -129,7 +129,7 @@ class DeviceService {
       );
     }
 
-    // Consulta base con filtro de servidores
+    // Consulta base
     const baseQuery = {
       where: {
         serverId: { [Op.in]: serverIds },
@@ -141,6 +141,7 @@ class DeviceService {
     // Preparar queries para cada rango de tiempo
     const queries = [];
 
+    // Si se especificó una fecha antes
     if (beforeDate) {
       queries.push(
         Device.findAndCountAll({
@@ -157,6 +158,7 @@ class DeviceService {
       );
     }
 
+    // Si se especificó una fecha después
     if (afterDate) {
       queries.push(
         Device.findAndCountAll({
@@ -173,6 +175,7 @@ class DeviceService {
       );
     }
 
+    // Si se especificaron ambas fechas
     if (beforeDate && afterDate) {
       queries.push(
         Device.findAndCountAll({
@@ -189,7 +192,7 @@ class DeviceService {
       );
     }
 
-    // Ejecutar todas las consultas en paralelo
+    //* Ejecutar todas las consultas en paralelo
     const results = await Promise.all(queries);
 
     // Procesar resultados

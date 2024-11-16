@@ -59,7 +59,16 @@ exports.deleteDevice = async (req, res) => {
 
 // Obtener reporte de actividad de dispositivos
 exports.getDeviceActivityReport = async (req, res) => {
-  const params = validateActivityReportParams(req.query); //* Validación
+  // Parsear serverIds solo si existe
+  const query = {
+    ...req.query,
+    serverIds: req.query.serverIds
+      ? Array.isArray(req.query.serverIds)
+        ? req.query.serverIds
+        : req.query.serverIds.split(",").map(Number)
+      : undefined,
+  };
+  const params = validateActivityReportParams(query); //* Validación
   const report = await deviceService.getDeviceActivityReport(params);
   res.json(report);
 };

@@ -52,7 +52,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='Gestor de Clientes MQTT')
     parser.add_argument('-r', '--refresh',
                        type=int,
-                       metavar='SEGUNDOS',
+                       metavar='<segundos>',
                        help='Intervalo de refresco en segundos')
     return parser.parse_args()
 
@@ -126,7 +126,7 @@ class MQTTManager:
             if response.status_code == 200:
                 return response.json()
         except requests.RequestException as e:
-            print(f"Error al obtener servidores: {e}")
+            print(f"\nError al obtener servidores: {e}\n")
         return []
 
     # Funciones principales de gestión de clientes
