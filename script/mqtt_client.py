@@ -35,11 +35,19 @@ config = None  # Configuración validada de variables de entorno
 def setup_logging():
     """Configura el sistema de logging según variables de entorno"""
     log_level = os.environ.get('LOG_LEVEL', ENV_VARS['LOG_LEVEL'])
-    logging.basicConfig(
-        level=getattr(logging, log_level),
-        format='%(asctime)s - %(levelname)s - %(message)s',
+    
+    # Crear handler con UTF-8
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(logging.Formatter(
+        '%(asctime)s - %(levelname)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
-    )
+    ))
+    handler.stream.reconfigure(encoding='utf-8')
+    
+    # Configurar logger raíz
+    root_logger = logging.getLogger()
+    root_logger.setLevel(getattr(logging, log_level))
+    root_logger.addHandler(handler)
 
 def validate_environment():
     """Valida y devuelve la configuración de variables de entorno"""
@@ -89,6 +97,33 @@ def decrypt(encrypted_text):
     
     return data.decode('utf-8')
 
+def parse_topic(topic_str, format_str):
+    """
+    Parsea un topic basado en un formato específico.
+    Ejemplo:
+        topic_str: "/abc123/dev001/temperature"
+        format_str: "/{apikey}/{serial}/{type}"
+        returns: {'apikey': 'abc123', 'serial': 'dev001', 'type': 'temperature'}
+    """
+    # Eliminar las barras inicial/final si existen
+    topic_str = topic_str.strip('/')
+    format_str = format_str.strip('/')
+    
+    # Dividir tanto el topic como el formato en partes
+    topic_parts = topic_str.split('/')
+    format_parts = format_str.split('/')
+    
+    if len(topic_parts) != len(format_parts):
+        return None
+        
+    result = {}
+    for topic_part, format_part in zip(topic_parts, format_parts):
+        if format_part.startswith('{') and format_part.endswith('}'):
+            key = format_part[1:-1]  # Eliminar los {} para obtener el nombre de la variable
+            result[key] = topic_part
+            
+    return result
+
 def signal_handler(sig, frame):
     """Manejador de señales para un cierre limpio."""
     global client
@@ -127,7 +162,7 @@ def get_server(server_id):
         logging.error(f"Excepción al obtener el servidor {server_id}: {e}")
     return None
 
-def update_or_create_device(serial, apikey, last_communication, server_id):
+def update_or_create_device(serial, last_communication, server_id):
     """Actualiza o crea un dispositivo en la base de datos."""
     try:
         response = requests.get(f"{config['API_URL']}/devices/serial/{serial}")
@@ -142,7 +177,6 @@ def update_or_create_device(serial, apikey, last_communication, server_id):
         else:
             new_device = {
                 "serial": serial,
-                "apikey": apikey,
                 "lastCommunication": last_communication,
                 "serverId": server_id
             }
@@ -165,38 +199,35 @@ def on_connect(client, userdata, flags, reasonCode, properties=None):
         logging.error(f"Error en la conexión a {client._host}: {reasonCode} - {reason}")
 
 def on_message(client, userdata, msg):
-    """
-    Procesa los mensajes MQTT recibidos.
-    Formato esperado del topic: /apikey/serial/...
-    """
-    logging.info(f"Mensaje recibido desde {client._host} con topic: {msg.topic}, y contenido: {msg.payload}")
-
-    parts = msg.topic.split('/')
-    if len(parts) >= 3 and parts[0] == '' and parts[1] and parts[2]:
-        apikey = parts[1]
-        serial = parts[2]
-        topic = '/'.join(parts[3:])
-
-        try:
-            content = json.loads(msg.payload.decode())
-        except json.JSONDecodeError as e:
-            logging.error(f"Error al decodificar JSON: {e}")
-            return
-
-        message = {
-            "serial": serial,
-            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-            "topic": topic,
-            "content": content
-        }
-        logging.info(f"Timestamp: {message['timestamp']}")
-    else:
-        logging.warning(f"Mensaje descartado. Topic con formato inválido: {msg.topic}")
+    """Procesa los mensajes MQTT recibidos usando el formato especificado en el servidor."""
+    logging.info(f"Mensaje recibido desde {client._host} con topic: {msg.topic}")
+    
+    # Parsear el topic según el formato del servidor
+    topic_data = parse_topic(msg.topic, userdata["topic_format"])
+    if not topic_data or 'serial' not in topic_data:
+        logging.warning(f"Mensaje descartado. El topic no coincide con el formato esperado o no contiene serial: {msg.topic}")
         return
 
+    try:
+        content = json.loads(msg.payload.decode())
+    except json.JSONDecodeError as e:
+        logging.error(f"Error al decodificar JSON: {e}")
+        return
+
+    message = {
+        "serial": topic_data['serial'],
+        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "topic": msg.topic,
+        "content": content
+    }
+
     # Actualizar/crear dispositivo
-    if 'serial' in message and message['serial']:
-        update_or_create_device(message['serial'], apikey, message["timestamp"], userdata["server_id"])
+    if message['serial']:
+        update_or_create_device(
+            message['serial'],
+            message["timestamp"],
+            userdata["server_id"]
+        )
 
     # Enviar mensaje a la API
     try:
@@ -231,7 +262,10 @@ def setup_client(server):
     
     client.on_connect = on_connect
     client.on_message = on_message
-    client.user_data_set({"server_id": server["id"]})
+    client.user_data_set({
+        "server_id": server["id"],
+        "topic_format": server["topicFormat"]
+    })
     
     try:
         client.connect(broker, port, 60)
@@ -265,7 +299,7 @@ def main():
     # Configurar y ejecutar cliente
     global client
     client = setup_client(server)    
-    logging.info("Cliente MQTT iniciado correctamente")
+    logging.info("Cliente MQTT iniciado correctamente...")
     client.loop_forever(retry_first_connection=True)
 
 if __name__ == "__main__":

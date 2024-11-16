@@ -19,7 +19,7 @@ class ServerService {
 
   //* Crear un nuevo servidor
   async createServer(data) {
-    const { name, endpoint, username, password } = data;
+    const { name, endpoint, username, password, topicFormat } = data;
 
     // Comprobar si ya existe un servidor con el mismo endpoint
     const existingServer = await Server.findOne({ where: { endpoint } });
@@ -32,6 +32,7 @@ class ServerService {
       endpoint,
       username,
       password: encrypt(password),
+      ...(topicFormat && { topicFormat }), // Solo incluir si se proporciona
     });
 
     return server;
@@ -41,7 +42,7 @@ class ServerService {
   async updateServer(id, data) {
     const server = await this.getServerById(id);
 
-    const { name, endpoint, username, password } = data;
+    const { name, endpoint, username, password, topicFormat } = data;
 
     // Comprobar si ya existe otro servidor con el mismo endpoint
     const existingServer = await Server.findOne({ where: { endpoint } });
@@ -54,6 +55,7 @@ class ServerService {
       endpoint,
       username,
       password: encrypt(password),
+      ...(topicFormat && { topicFormat }), // Solo incluir si se proporciona
     });
 
     return server;

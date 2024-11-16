@@ -33,11 +33,16 @@ const sequelize = require("../config/database.js");
  *           type: string
  *           description: Contraseña para autenticación
  *           example: "contraseña_1"
+ *         topicFormat:
+ *           type: string
+ *           description: Formato del topic MQTT (usando {variable})
+ *           example: "/{apikey}/{serial}/{type}"
  *       example:
- *         name: "Servidor de Murcia"
+ *         name: "OdinS"
  *         endpoint: "agriculture-dev.odins.es:11883"
  *         username: "usuario_1"
  *         password: "contraseña_1"
+ *         topicFormat: "/{apikey}/{serial}/{type}"
  */
 const Server = sequelize.define("Server", {
   id: {
@@ -57,6 +62,11 @@ const Server = sequelize.define("Server", {
   },
   password: {
     type: DataTypes.STRING,
+  },
+  topicFormat: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: "/{apikey}/{serial}/{type}",
   },
 });
 

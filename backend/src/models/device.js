@@ -9,7 +9,6 @@ const sequelize = require("../config/database.js");
  *       type: object
  *       required:
  *         - serial
- *         - apikey
  *         - lastCommunication
  *         - serverId
  *       properties:
@@ -23,7 +22,7 @@ const sequelize = require("../config/database.js");
  *           example: "IC0104E17000800012"
  *         apikey:
  *           type: string
- *           description: Clave API del dispositivo
+ *           description: (Deprecated) Clave API del dispositivo
  *           example: "odins"
  *         lastCommunication:
  *           type: string
@@ -53,6 +52,7 @@ const Device = sequelize.define("Device", {
   },
   apikey: {
     type: DataTypes.STRING,
+    allowNull: true,
   },
   lastCommunication: {
     type: DataTypes.DATE,

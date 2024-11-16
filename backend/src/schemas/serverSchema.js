@@ -24,6 +24,14 @@ const serverSchema = Joi.object({
     "string.empty": 'El campo "password" no puede estar vacío.',
     "any.required": 'El campo "password" es obligatorio.',
   }),
+  topicFormat: Joi.string()
+    .pattern(
+      /^\/(\{[a-zA-Z_][a-zA-Z0-9_]*\}|\w+)(\/(\{[a-zA-Z_][a-zA-Z0-9_]*\}|\w+))*$/
+    )
+    .messages({
+      "string.pattern.base":
+        'El campo "topicFormat" debe tener un formato válido (ej: "/{apikey}/{serial}/{type}").',
+    }),
 });
 
 //* Función para validar todos los campos del servidor
