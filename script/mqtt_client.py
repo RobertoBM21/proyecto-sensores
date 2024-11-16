@@ -103,7 +103,7 @@ def signal_handler(sig, frame):
     logging.shutdown()
     sys.exit(0)
 
-# Configuración de señales
+#! Configuración de señales
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 if os.name == 'nt':
@@ -112,6 +112,7 @@ if os.name == 'nt':
 
 # Funciones de API
 def get_server(server_id):
+    """Obtiene la configuración de un servidor MQTT desde la API."""
     try:
         response = requests.get(f"{config['API_URL']}/servers/{server_id}")
         if response.status_code == 200:
@@ -122,12 +123,12 @@ def get_server(server_id):
             return server
         else:
             logging.error(f"Error al obtener el servidor {server_id}: {response.status_code}")
-            return None
     except requests.exceptions.RequestException as e:
         logging.error(f"Excepción al obtener el servidor {server_id}: {e}")
-        return None
+    return None
 
 def update_or_create_device(serial, apikey, last_communication, server_id):
+    """Actualiza o crea un dispositivo en la base de datos."""
     try:
         response = requests.get(f"{config['API_URL']}/devices/serial/{serial}")
         if response.status_code == 200 and response.json():
@@ -155,11 +156,12 @@ def update_or_create_device(serial, apikey, last_communication, server_id):
 
 # Callbacks MQTT
 def on_connect(client, userdata, flags, reasonCode, properties=None):
+    """Callback de conexión MQTT."""
     if reasonCode == mqtt.CONNACK_ACCEPTED:
         logging.info(f"Conectado a {client._host}")
         client.subscribe(config['MQTT_TOPIC'])
     else:
-        reason = mqtt.reason_codes.ConnectReasonCode.to_str(reasonCode)
+        reason = mqtt.connack_string(reasonCode)
         logging.error(f"Error en la conexión a {client._host}: {reasonCode} - {reason}")
 
 def on_message(client, userdata, msg):

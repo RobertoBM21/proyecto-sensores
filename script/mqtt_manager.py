@@ -125,8 +125,10 @@ class MQTTManager:
             response = requests.get(f"{self.config['API_URL']}/servers")
             if response.status_code == 200:
                 return response.json()
-        except requests.RequestException as e:
-            print(f"\nError al obtener servidores: {e}\n")
+            else:
+                print(f"\nError al obtener servidores: {response.status_code} - {response.text}\n")
+        except requests.exceptions.RequestException as e:
+            print(f"\nExcepción al obtener servidores: {e}\n")
         return []
 
     # Funciones principales de gestión de clientes
