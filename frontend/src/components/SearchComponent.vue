@@ -1,3 +1,125 @@
+<script>
+import HeaderComponent from "./HeaderComponent.vue";
+import FooterComponent from "./FooterComponent.vue";
+import { useConfigStore } from "../stores/config";
+
+export default {
+  components: {
+    HeaderComponent,
+    FooterComponent,
+  },
+  setup() {
+    const config = useConfigStore();
+    const apiUrl = config.getApiUrl;
+
+    return {
+      apiUrl,
+    };
+  },
+  data() {
+    return {
+      servers: [],
+      selectedServers: [],
+      dropdownVisible: false,
+      dropdownIconClass: "bi bi-chevron-up",
+      serial: "",
+      dateRange: "",
+      searchResults: [],
+      currentPage: 1,
+      resultsPerPage: 10,
+      selectedServerNames: "",
+    };
+  },
+  computed: {
+    paginatedResults() {
+      const start = (this.currentPage - 1) * this.resultsPerPage;
+      const end = start + this.resultsPerPage;
+      return this.searchResults.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.searchResults.length / this.resultsPerPage);
+    },
+  },
+  methods: {
+    fetchServers() {
+      fetch(`${this.apiUrl}/servers`)
+        .then((response) => response.json())
+        .then((data) => {
+          this.servers = data;
+        })
+        .catch((error) => {
+          console.error("Error fetching servers:", error);
+        });
+    },
+    toggleDropdown() {
+      this.dropdownVisible = !this.dropdownVisible;
+      this.updateDropdownIcon();
+    },
+    updateDropdownIcon() {
+      this.dropdownIconClass = this.dropdownVisible
+        ? "bi bi-chevron-down"
+        : "bi bi-chevron-up";
+    },
+    toggleFilters() {
+      this.showFilters = !this.showFilters;
+    },
+    searchDevices() {
+      let url = new URL(`${this.apiUrl}/messages/search`);
+      let params = new URLSearchParams();
+
+      if (this.serial) params.append("serial", this.serial);
+      if (this.dateRange) params.append("dateRange", this.dateRange);
+      if (this.selectedServers.length > 0) {
+        this.selectedServers.forEach((serverId) => {
+          params.append("serverId", serverId); // Cambiado a serverId en singular
+        });
+      }
+
+      url.search = params.toString();
+
+      fetch(url)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          this.searchResults = data.messages || []; // Cambiado a messages
+          this.currentPage = 1;
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+          this.searchResults = [];
+        });
+    },
+    changePage(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
+    },
+    updateSelectedServerNames() {
+      const selectedNames = this.servers
+        .filter((server) => this.selectedServers.includes(server.id))
+        .map((server) => server.name);
+
+      this.selectedServerNames = selectedNames.length
+        ? selectedNames.join(", ")
+        : "";
+    },
+  },
+  watch: {
+    servers: {
+      handler: "updateSelectedServerNames",
+      immediate: true,
+    },
+  },
+  created() {
+    this.fetchServers();
+  },
+};
+</script>
+
 <template>
   <div>
     <HeaderComponent />
@@ -185,125 +307,3 @@
     <FooterComponent />
   </div>
 </template>
-
-<script>
-import HeaderComponent from "./HeaderComponent.vue";
-import FooterComponent from "./FooterComponent.vue";
-import { useConfigStore } from "../stores/config";
-
-export default {
-  components: {
-    HeaderComponent,
-    FooterComponent,
-  },
-  setup() {
-    const config = useConfigStore();
-    const apiUrl = config.getApiUrl;
-
-    return {
-      apiUrl,
-    };
-  },
-  data() {
-    return {
-      servers: [],
-      selectedServers: [],
-      dropdownVisible: false,
-      dropdownIconClass: "bi bi-chevron-up",
-      serial: "",
-      dateRange: "",
-      searchResults: [],
-      currentPage: 1,
-      resultsPerPage: 10,
-      selectedServerNames: "",
-    };
-  },
-  computed: {
-    paginatedResults() {
-      const start = (this.currentPage - 1) * this.resultsPerPage;
-      const end = start + this.resultsPerPage;
-      return this.searchResults.slice(start, end);
-    },
-    totalPages() {
-      return Math.ceil(this.searchResults.length / this.resultsPerPage);
-    },
-  },
-  methods: {
-    fetchServers() {
-      fetch(`${this.apiUrl}/servers`)
-        .then((response) => response.json())
-        .then((data) => {
-          this.servers = data;
-        })
-        .catch((error) => {
-          console.error("Error fetching servers:", error);
-        });
-    },
-    toggleDropdown() {
-      this.dropdownVisible = !this.dropdownVisible;
-      this.updateDropdownIcon();
-    },
-    updateDropdownIcon() {
-      this.dropdownIconClass = this.dropdownVisible
-        ? "bi bi-chevron-down"
-        : "bi bi-chevron-up";
-    },
-    toggleFilters() {
-      this.showFilters = !this.showFilters;
-    },
-    searchDevices() {
-      let url = new URL(`${this.apiUrl}/messages/search`);
-      let params = new URLSearchParams();
-
-      if (this.serial) params.append("serial", this.serial);
-      if (this.dateRange) params.append("dateRange", this.dateRange);
-      if (this.selectedServers.length > 0) {
-        this.selectedServers.forEach((serverId) => {
-          params.append("serverId", serverId); // Cambiado a serverId en singular
-        });
-      }
-
-      url.search = params.toString();
-
-      fetch(url)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          this.searchResults = data.messages || []; // Cambiado a messages
-          this.currentPage = 1;
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-          this.searchResults = [];
-        });
-    },
-    changePage(page) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page;
-      }
-    },
-    updateSelectedServerNames() {
-      const selectedNames = this.servers
-        .filter((server) => this.selectedServers.includes(server.id))
-        .map((server) => server.name);
-
-      this.selectedServerNames = selectedNames.length
-        ? selectedNames.join(", ")
-        : "";
-    },
-  },
-  watch: {
-    servers: {
-      handler: "updateSelectedServerNames",
-      immediate: true,
-    },
-  },
-  created() {
-    this.fetchServers();
-  },
-};
-</script>

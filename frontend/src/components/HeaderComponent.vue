@@ -1,3 +1,9 @@
+<script>
+export default {
+  name: "HeaderComponent",
+};
+</script>
+
 <template>
   <header class="bg-gray-50 border-b-2 border-primary">
     <div class="px-4 py-2 flex justify-between items-center">
@@ -9,9 +15,3 @@
     </div>
   </header>
 </template>
-
-<script>
-export default {
-  name: "HeaderComponent",
-};
-</script>

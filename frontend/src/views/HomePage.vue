@@ -1,3 +1,32 @@
+<script>
+import HeaderComponent from "../components/HeaderComponent.vue";
+import FooterComponent from "../components/FooterComponent.vue";
+
+export default {
+  name: "HomePage",
+  components: {
+    HeaderComponent,
+    FooterComponent,
+  },
+  data() {
+    return {
+      email: "",
+      password: "",
+    };
+  },
+  methods: {
+    handleLogin() {
+      // Mock login
+      this.$router.push("/search");
+    },
+    handleGoogleLogin() {
+      // Mock Google login
+      this.$router.push("/search");
+    },
+  },
+};
+</script>
+
 <template>
   <div class="min-h-screen flex flex-col">
     <HeaderComponent />
@@ -76,32 +105,3 @@
     <FooterComponent />
   </div>
 </template>
-
-<script>
-import HeaderComponent from "../components/HeaderComponent.vue";
-import FooterComponent from "../components/FooterComponent.vue";
-
-export default {
-  name: "HomePage",
-  components: {
-    HeaderComponent,
-    FooterComponent,
-  },
-  data() {
-    return {
-      email: "",
-      password: "",
-    };
-  },
-  methods: {
-    handleLogin() {
-      // Mock login
-      this.$router.push("/search");
-    },
-    handleGoogleLogin() {
-      // Mock Google login
-      this.$router.push("/search");
-    },
-  },
-};
-</script>
