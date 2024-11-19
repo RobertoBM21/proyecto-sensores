@@ -177,12 +177,20 @@
 <script>
 import HeaderComponent from "./HeaderComponent.vue";
 import FooterComponent from "./FooterComponent.vue";
-import { API_BASE_URL } from "../config.js";
+import { useConfigStore } from "../stores/config";
 
 export default {
   components: {
     HeaderComponent,
     FooterComponent,
+  },
+  setup() {
+    const config = useConfigStore();
+    const apiUrl = config.getApiUrl;
+
+    return {
+      apiUrl,
+    };
   },
   data() {
     return {
@@ -210,7 +218,7 @@ export default {
   },
   methods: {
     fetchServers() {
-      fetch(`${API_BASE_URL}/servers`)
+      fetch(`${this.apiUrl}/servers`)
         .then((response) => response.json())
         .then((data) => {
           this.servers = data;
@@ -232,7 +240,7 @@ export default {
       this.showFilters = !this.showFilters;
     },
     searchDevices() {
-      let url = new URL(`${API_BASE_URL}/messages/search`); // Cambiado a messages/search
+      let url = new URL(`${this.apiUrl}/messages/search`);
       let params = new URLSearchParams();
 
       if (this.serial) params.append("serial", this.serial);
