@@ -8,22 +8,6 @@ export default {
     HeaderComponent,
     FooterComponent,
   },
-  data() {
-    return {
-      email: "",
-      password: "",
-    };
-  },
-  methods: {
-    handleLogin() {
-      // Mock login
-      this.$router.push("/search");
-    },
-    handleGoogleLogin() {
-      // Mock Google login
-      this.$router.push("/search");
-    },
-  },
 };
 </script>
 
@@ -31,73 +15,60 @@ export default {
   <div class="min-h-screen flex flex-col">
     <HeaderComponent />
     <main class="flex-grow flex items-center">
-      <div class="container mx-auto px-4">
-        <div class="flex justify-center">
-          <div class="w-full max-w-md">
-            <div class="card">
-              <div class="p-6">
-                <h2 class="text-2xl font-bold text-center mb-6">
-                  Iniciar Sesión
-                </h2>
-                <form @submit.prevent="handleLogin">
-                  <div class="mb-6">
-                    <div class="relative">
-                      <input
-                        type="email"
-                        class="form-input peer"
-                        id="email"
-                        placeholder=" "
-                        v-model="email"
-                      />
-                      <label
-                        for="email"
-                        class="absolute left-4 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm"
-                      >
-                        Correo electrónico
-                      </label>
-                    </div>
-                  </div>
+      <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-12">
+          <h1 class="text-3xl font-bold mb-6">Panel de Control</h1>
+          <p class="text-gray-600 max-w-2xl mx-auto">
+            Bienvenido al sistema de gestión de sensores OdinS. Desde aquí
+            podrás acceder a todas las funcionalidades del sistema.
+          </p>
+        </div>
 
-                  <div class="mb-6">
-                    <div class="relative">
-                      <input
-                        type="password"
-                        class="form-input peer"
-                        id="password"
-                        placeholder=" "
-                        v-model="password"
-                      />
-                      <label
-                        for="password"
-                        class="absolute left-4 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm"
-                      >
-                        Contraseña
-                      </label>
-                    </div>
-                  </div>
+        <div
+          class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12"
+        >
+          <div class="card p-6 md:col-span-3">
+            <h2 class="text-xl font-bold mb-4">Búsqueda de Sensores</h2>
+            <p class="text-gray-600 mb-4">
+              Accede a la información de los sensores OdinS
+            </p>
+            <router-link to="/search" class="boton inline-block"
+              >Ir a búsqueda</router-link
+            >
+          </div>
 
-                  <button type="submit" class="boton w-full mb-2">
-                    Iniciar Sesión
-                  </button>
-                </form>
+          <div
+            class="card p-6 md:col-span-3 lg:col-span-1 lg:col-start-1 lg:col-end-2"
+          >
+            <h2 class="text-lg font-bold mb-3">Búsqueda de Mensajes</h2>
+            <p class="text-gray-600 mb-4 text-sm">
+              El endpoint
+              <code class="bg-gray-100 px-1 rounded">/messages/search</code>
+              permite filtrar mensajes por:
+            </p>
+            <ul class="text-sm text-gray-600 list-disc list-inside mb-4">
+              <li>Número de serie</li>
+              <li>Servidor específico</li>
+              <li>Rango de fechas personalizado</li>
+              <li>Rangos predefinidos (última hora, día, etc.)</li>
+            </ul>
+          </div>
 
-                <div class="text-center mb-2">
-                  <span class="text-gray-500">o</span>
-                </div>
-
-                <button
-                  @click="handleGoogleLogin"
-                  class="w-full flex items-center justify-center gap-2 py-2 px-8 rounded-full border-2 border-gray-800 text-gray-800 font-bold hover:bg-gray-50 transition-colors duration-300"
-                >
-                  <img
-                    src="@/assets/icons/google.svg"
-                    alt="Google"
-                    class="w-5 h-5"
-                  />
-                  Continuar con Google
-                </button>
-              </div>
-            </div>
+          <div
+            class="card p-6 md:col-span-3 lg:col-span-1 lg:col-start-2 lg:col-end-3"
+          >
+            <h2 class="text-lg font-bold mb-3">Reporte de Actividad</h2>
+            <p class="text-gray-600 mb-4 text-sm">
+              El endpoint
+              <code class="bg-gray-100 px-1 rounded">/devices/activity</code>
+              proporciona informes detallados de:
+            </p>
+            <ul class="text-sm text-gray-600 list-disc list-inside mb-4">
+              <li>Dispositivos activos por período</li>
+              <li>Última comunicación</li>
+              <li>Estadísticas por servidor</li>
+              <li>Resumen de actividad</li>
+            </ul>
           </div>
         </div>
       </div>

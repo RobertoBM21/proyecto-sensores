@@ -167,10 +167,10 @@ El servidor se ejecutará en `http://localhost:3000` por defecto
 
 ```bash
 cd frontend
-npm run serve
+npm run dev
 ```
 
-La aplicación estará disponible en `http://localhost:8080` por defecto
+La aplicación estará disponible en `http://localhost:5173` por defecto
 
 ### Clientes MQTT
 
