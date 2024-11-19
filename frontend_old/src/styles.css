@@ -58,6 +58,9 @@ header img {
 
 #dropdownMenuButton {
   padding: 8px 30px;
+  background: none;
+  border: none;
+  color: #92d050;
 }
 
 #dropdownMenuButton:focus {
@@ -73,24 +76,48 @@ header img {
 }
 
 .dropdown-container {
+  position: relative;
   margin-right: 10px;
 }
 
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
 .dropdown-menu {
+  position: absolute;
+  right: 0;
+  z-index: 1000;
+  min-width: 200px;
+  background-color: white;
   border: 1px solid #92d050;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0;
   border-radius: 0.5rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .dropdown-item {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item label {
   display: flex;
   align-items: center;
+  margin: 0;
+  cursor: pointer;
+  width: 100%;
 }
 
 .form-check-input {
   width: 1.25em;
   height: 1.25em;
-  margin-right: 0.5em;
+  margin-right: 8px;
   border: 2px solid #92d050;
   border-radius: 0.25em;
 }

@@ -8,15 +8,15 @@
           type="button"
           id="dropdownMenuButton"
           @click="toggleDropdown"
-          aria-expanded="false"
         >
-          <span id="serverName">Servidores</span>
-          <i :class="dropdownIconClass" id="dropdownIcon"></i>
+          <span id="serverName">
+            {{ selectedServerNames || "Servidores" }}
+          </span>
+          <i :class="dropdownIconClass"></i>
         </button>
         <ul
-          class="dropdown-menu mt-2"
-          aria-labelledby="dropdownMenuButton"
-          v-show="dropdownVisible"
+          class="dropdown-menu"
+          :class="{ show: dropdownVisible }"
           id="serverDropdown"
         >
           <li v-if="servers.length === 0" class="dropdown-item text-center">
@@ -25,15 +25,16 @@
           <li
             v-else
             v-for="server in servers"
-            :key="server.serverId"
+            :key="server.id"
             class="dropdown-item"
           >
-            <label class="dropdown-item">
+            <label>
               <input
                 type="checkbox"
-                :value="server.serverId"
-                class="form-check-input me-1"
+                :value="server.id"
+                class="form-check-input"
                 v-model="selectedServers"
+                @change="updateSelectedServerNames"
               />
               {{ server.name }}
             </label>
@@ -54,7 +55,7 @@
           </div>
           <form id="searchForm" @submit.prevent="searchDevices">
             <div class="row mb-3 justify-content-center">
-              <div class="col-md-11 mb-3">
+              <div class="col-md-8">
                 <div class="form-floating">
                   <input
                     type="text"
@@ -66,64 +67,26 @@
                   <label for="serial">Número de serie</label>
                 </div>
               </div>
-              <div id="filterButtonContainer" class="col-md-1 mb-3">
-                <button
-                  type="button"
-                  id="filterButton"
-                  class="btn btn-secondary labeled-icon"
-                  @click="toggleFilters"
-                >
-                  <i class="bi bi-filter icon"></i>
-                </button>
-              </div>
-            </div>
-            <div v-show="showFilters" id="filters" class="row mb-3">
-              <div class="col-md-6 mt-4 mb-4">
+              <div class="col-md-4">
                 <div class="form-floating">
-                  <input
-                    type="text"
-                    v-model="apikey"
-                    id="apikey"
+                  <select
+                    v-model="dateRange"
                     class="form-control"
-                    placeholder="API Key"
-                  />
-                  <label for="apikey">API Key</label>
-                </div>
-              </div>
-              <div class="col-md-6 mb-4">
-                <div class="form-floating">
-                  <input
-                    type="text"
-                    v-model="topic"
-                    id="topic"
-                    class="form-control"
-                    placeholder="Topic"
-                  />
-                  <label for="topic">Topic</label>
-                </div>
-              </div>
-              <div class="col-md-6 mb-4">
-                <div class="form-floating">
-                  <input
-                    type="date"
-                    v-model="startDate"
-                    id="startDate"
-                    class="form-control"
-                    placeholder="Fecha Inicio"
-                  />
-                  <label for="startDate">Fecha Inicio</label>
-                </div>
-              </div>
-              <div class="col-md-6 mb-4">
-                <div class="form-floating">
-                  <input
-                    type="date"
-                    v-model="endDate"
-                    id="endDate"
-                    class="form-control"
-                    placeholder="Fecha Fin"
-                  />
-                  <label for="endDate">Fecha Fin</label>
+                    id="dateRange"
+                  >
+                    <option value="">Sin filtro de fecha</option>
+                    <option value="last_5_minutes">Últimos 5 minutos</option>
+                    <option value="last_15_minutes">Últimos 15 minutos</option>
+                    <option value="last_30_minutes">Últimos 30 minutos</option>
+                    <option value="last_hour">Última hora</option>
+                    <option value="last_24_hours">Últimas 24 horas</option>
+                    <option value="today">Hoy</option>
+                    <option value="yesterday">Ayer</option>
+                    <option value="last_week">Última semana</option>
+                    <option value="last_month">Último mes</option>
+                    <option value="last_year">Último año</option>
+                  </select>
+                  <label for="dateRange">Rango de fecha</label>
                 </div>
               </div>
             </div>
@@ -138,19 +101,16 @@
           <div id="results" class="container">
             <div
               v-for="result in paginatedResults"
-              :key="result.serial"
+              :key="result.id"
               class="result-item"
             >
               <div class="result-header">Serial: {{ result.serial }}</div>
               <div class="result-details">
-                <span>API Key: {{ result.apikey || "N/A" }}</span>
-                <span>Servidor: {{ result.name || "N/A" }}</span>
-                <span>ServerId: {{ result.serverId || "N/A" }}</span>
+                <span>Topic: {{ result.topic || "N/A" }}</span>
+                <span>Contenido: {{ result.content || "N/A" }}</span>
                 <span
-                  >Última Comunicación:
-                  {{
-                    new Date(result.lastCommunication).toLocaleString()
-                  }}</span
+                  >Timestamp:
+                  {{ new Date(result.timestamp).toLocaleString() }}</span
                 >
               </div>
             </div>
@@ -217,6 +177,7 @@
 <script>
 import HeaderComponent from "./HeaderComponent.vue";
 import FooterComponent from "./FooterComponent.vue";
+import { API_BASE_URL } from "../config.js";
 
 export default {
   components: {
@@ -230,14 +191,11 @@ export default {
       dropdownVisible: false,
       dropdownIconClass: "bi bi-chevron-up",
       serial: "",
-      apikey: "",
-      topic: "",
-      startDate: "",
-      endDate: "",
-      showFilters: false,
+      dateRange: "",
       searchResults: [],
       currentPage: 1,
       resultsPerPage: 10,
+      selectedServerNames: "",
     };
   },
   computed: {
@@ -252,7 +210,7 @@ export default {
   },
   methods: {
     fetchServers() {
-      fetch("http://localhost:3000/servers")
+      fetch(`${API_BASE_URL}/servers`)
         .then((response) => response.json())
         .then((data) => {
           this.servers = data;
@@ -274,34 +232,54 @@ export default {
       this.showFilters = !this.showFilters;
     },
     searchDevices() {
-      let url = `http://localhost:3000/devices?`;
-      if (this.serial) url += `serial_like=^${this.serial}&`;
-      if (this.apikey) url += `apikey=${this.apikey}&`;
-      if (this.startDate)
-        url += `lastCommunication_gte=${new Date(
-          this.startDate
-        ).toISOString()}&`;
-      if (this.endDate)
-        url += `lastCommunication_lte=${new Date(this.endDate).toISOString()}&`;
+      let url = new URL(`${API_BASE_URL}/messages/search`); // Cambiado a messages/search
+      let params = new URLSearchParams();
 
-      this.selectedServers.forEach((serverId) => {
-        url += `serverId=${serverId}&`;
-      });
+      if (this.serial) params.append("serial", this.serial);
+      if (this.dateRange) params.append("dateRange", this.dateRange);
+      if (this.selectedServers.length > 0) {
+        this.selectedServers.forEach((serverId) => {
+          params.append("serverId", serverId); // Cambiado a serverId en singular
+        });
+      }
 
-      url = url.endsWith("&") ? url.slice(0, -1) : url;
+      url.search = params.toString();
 
       fetch(url)
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
         .then((data) => {
-          this.searchResults = data;
+          this.searchResults = data.messages || []; // Cambiado a messages
           this.currentPage = 1;
         })
-        .catch((error) => console.error("Error fetching data:", error));
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+          this.searchResults = [];
+        });
     },
     changePage(page) {
       if (page >= 1 && page <= this.totalPages) {
         this.currentPage = page;
       }
+    },
+    updateSelectedServerNames() {
+      const selectedNames = this.servers
+        .filter((server) => this.selectedServers.includes(server.id))
+        .map((server) => server.name);
+
+      this.selectedServerNames = selectedNames.length
+        ? selectedNames.join(", ")
+        : "";
+    },
+  },
+  watch: {
+    servers: {
+      handler: "updateSelectedServerNames",
+      immediate: true,
     },
   },
   created() {

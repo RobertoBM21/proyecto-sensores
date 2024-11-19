@@ -12,7 +12,7 @@ async function startServer() {
     console.log("Conexión a la base de datos establecida correctamente.");
 
     // Sincronizar los modelos con la base de datos
-    await sequelize.sync({ force: true }); //! En producción, eliminar el parámetro
+    await sequelize.sync(); //! En producción, eliminar el parámetro
     console.log("Tablas sincronizadas.");
 
     // Arrancar el servidor

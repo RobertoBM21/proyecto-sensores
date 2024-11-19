@@ -4,10 +4,9 @@
       class="container-fluid d-flex justify-content-between align-items-center px-5"
     >
       <div class="d-flex align-items-center">
-        <img src="@/assets/logo.png" alt="OdinS" class="me-3" />
-      </div>
-      <div>
-        <button @click="login" id="loginButton" class="boton">Login</button>
+        <router-link to="/">
+          <img src="@/assets/logo.png" alt="OdinS" class="me-3" />
+        </router-link>
       </div>
     </div>
   </header>
@@ -15,10 +14,6 @@
 
 <script>
 export default {
-  methods: {
-    login() {
-      // Funcionalidad de login
-    },
-  },
+  name: "HeaderComponent",
 };
 </script>
