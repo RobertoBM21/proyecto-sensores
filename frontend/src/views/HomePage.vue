@@ -1,46 +1,70 @@
 <template>
-  <div class="home min-vh-100 d-flex flex-column">
+  <div class="min-h-screen flex flex-col">
     <HeaderComponent />
-    <main class="flex-grow-1 d-flex align-items-center">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-md-6 col-lg-4">
-            <div class="card shadow-sm">
-              <div class="card-body p-4">
-                <h2 class="text-center mb-4">Iniciar Sesión</h2>
+    <main class="flex-grow flex items-center">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-center">
+          <div class="w-full max-w-md">
+            <div class="card">
+              <div class="p-6">
+                <h2 class="text-2xl font-bold text-center mb-6">
+                  Iniciar Sesión
+                </h2>
                 <form @submit.prevent="handleLogin">
-                  <div class="form-floating mb-3">
-                    <input
-                      type="email"
-                      class="form-control"
-                      id="email"
-                      placeholder="nombre@ejemplo.com"
-                      v-model="email"
-                    />
-                    <label for="email">Correo electrónico</label>
+                  <div class="mb-6">
+                    <div class="relative">
+                      <input
+                        type="email"
+                        class="form-input peer"
+                        id="email"
+                        placeholder=" "
+                        v-model="email"
+                      />
+                      <label
+                        for="email"
+                        class="absolute left-4 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm"
+                      >
+                        Correo electrónico
+                      </label>
+                    </div>
                   </div>
-                  <div class="form-floating mb-4">
-                    <input
-                      type="password"
-                      class="form-control"
-                      id="password"
-                      placeholder="Contraseña"
-                      v-model="password"
-                    />
-                    <label for="password">Contraseña</label>
+
+                  <div class="mb-6">
+                    <div class="relative">
+                      <input
+                        type="password"
+                        class="form-input peer"
+                        id="password"
+                        placeholder=" "
+                        v-model="password"
+                      />
+                      <label
+                        for="password"
+                        class="absolute left-4 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm"
+                      >
+                        Contraseña
+                      </label>
+                    </div>
                   </div>
-                  <button type="submit" class="boton w-100 mb-3">
+
+                  <button type="submit" class="boton w-full mb-2">
                     Iniciar Sesión
                   </button>
                 </form>
-                <div class="text-center my-3">
-                  <span class="text-muted">o</span>
+
+                <div class="text-center mb-2">
+                  <span class="text-gray-500">o</span>
                 </div>
+
                 <button
                   @click="handleGoogleLogin"
-                  class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center gap-2"
+                  class="w-full flex items-center justify-center gap-2 py-2 px-8 rounded-full border-2 border-gray-800 text-gray-800 font-bold hover:bg-gray-50 transition-colors duration-300"
                 >
-                  <i class="bi bi-google"></i>
+                  <img
+                    src="@/assets/icons/google.svg"
+                    alt="Google"
+                    class="w-5 h-5"
+                  />
                   Continuar con Google
                 </button>
               </div>
@@ -81,30 +105,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.card {
-  border-radius: 15px;
-  border: none;
-}
-
-.btn-outline-dark {
-  border-radius: 30px;
-  padding: 8px 30px;
-  transition: all 0.3s ease;
-}
-
-.btn-outline-dark:hover {
-  background-color: #f8f9fa;
-  color: #000;
-}
-
-.form-control {
-  border-radius: 10px;
-}
-
-.form-control:focus {
-  border-color: #92d050;
-  box-shadow: 0 0 0 0.2rem rgba(146, 208, 80, 0.25);
-}
-</style>

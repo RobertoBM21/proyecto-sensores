@@ -1,4 +1,4 @@
-process.loadEnvFile("../.env"); // Cargamos las variables de entorno (prioridad absoluta)
+process.loadEnvFile("../.env"); //! Cargamos las variables de entorno (prioridad absoluta)
 
 const app = require("./app.js");
 const { sequelize } = require("./models");
@@ -12,7 +12,7 @@ async function startServer() {
     console.log("Conexión a la base de datos establecida correctamente.");
 
     // Sincronizar los modelos con la base de datos
-    await sequelize.sync(); //! En producción, eliminar el parámetro
+    await sequelize.sync();
     console.log("Tablas sincronizadas.");
 
     // Arrancar el servidor
