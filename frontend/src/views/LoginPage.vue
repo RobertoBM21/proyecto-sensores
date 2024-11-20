@@ -1,12 +1,32 @@
 <script>
 import HeaderComponent from "../components/HeaderComponent.vue";
 import FooterComponent from "../components/FooterComponent.vue";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
 
 export default {
   name: "LoginPage",
   components: {
     HeaderComponent,
     FooterComponent,
+    Card,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    CardContent,
+    CardFooter,
+    Button,
+    Input,
+    Label,
   },
   data() {
     return {
@@ -23,6 +43,10 @@ export default {
       // Mock Google login
       this.$router.push("/home");
     },
+    handleGithubLogin() {
+      // Mock Github login
+      this.$router.push("/home");
+    },
   },
 };
 </script>
@@ -30,77 +54,58 @@ export default {
 <template>
   <div class="min-h-screen flex flex-col">
     <HeaderComponent />
-    <main class="flex-grow flex items-center">
-      <div class="container mx-auto px-4">
-        <div class="flex justify-center">
-          <div class="w-full max-w-md">
-            <div class="card">
-              <div class="p-6">
-                <h2 class="text-2xl font-bold text-center mb-6">
-                  Iniciar Sesión
-                </h2>
-                <form @submit.prevent="handleLogin">
-                  <div class="mb-6">
-                    <div class="relative">
-                      <input
-                        type="email"
-                        class="form-input peer"
-                        id="email"
-                        placeholder=" "
-                        v-model="email"
-                      />
-                      <label
-                        for="email"
-                        class="absolute left-4 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm"
-                      >
-                        Correo electrónico
-                      </label>
-                    </div>
-                  </div>
+    <main class="flex-grow flex items-center justify-center">
+      <Card class="w-full max-w-md">
+        <CardHeader>
+          <CardTitle class="text-center">Iniciar Sesión</CardTitle>
+          <CardDescription class="text-center mt-2">
+            Para usar la aplicación es necesario iniciar sesión
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form @submit.prevent="handleLogin" class="space-y-4">
+            <div class="space-y-2">
+              <Label for="email">Correo electrónico</Label>
+              <Input id="email" type="email" v-model="email" />
+            </div>
+            <div class="space-y-2">
+              <Label for="password">Contraseña</Label>
+              <Input id="password" type="password" v-model="password" />
+            </div>
+            <Button type="submit" class="w-full">Iniciar Sesión</Button>
+          </form>
 
-                  <div class="mb-6">
-                    <div class="relative">
-                      <input
-                        type="password"
-                        class="form-input peer"
-                        id="password"
-                        placeholder=" "
-                        v-model="password"
-                      />
-                      <label
-                        for="password"
-                        class="absolute left-4 -top-2.5 bg-white px-1 text-sm text-gray-600 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-focus:-top-2.5 peer-focus:text-sm"
-                      >
-                        Contraseña
-                      </label>
-                    </div>
-                  </div>
-
-                  <button type="submit" class="boton w-full mb-2">
-                    Iniciar Sesión
-                  </button>
-                </form>
-
-                <div class="text-center mb-2">
-                  <span class="text-gray-500">o</span>
-                </div>
-
-                <button
-                  @click="handleGoogleLogin"
-                  class="w-full flex items-center justify-center gap-2 py-2 px-8 rounded-full border-2 border-gray-800 text-gray-800 font-bold hover:bg-gray-50 transition-colors duration-300"
-                >
-                  <img
-                    src="@/assets/icons/google.svg"
-                    alt="Google"
-                    class="w-5 h-5"
-                  />
-                  Continuar con Google
-                </button>
-              </div>
+          <div class="relative my-4">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="bg-background px-2 text-muted-foreground"
+                >o continua con</span
+              >
             </div>
           </div>
-        </div>
-      </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <Button @click="handleGoogleLogin" variant="outline">
+              <img
+                src="@/assets/icons/google.svg"
+                alt="Google"
+                class="w-5 h-5 mr-2"
+              />
+              Google
+            </Button>
+            <Button @click="handleGithubLogin" variant="outline">
+              <img
+                src="@/assets/icons/github-light.svg"
+                alt="GitHub"
+                class="w-5 h-5 mr-2"
+              />
+              GitHub
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </main>
     <FooterComponent />
   </div>
