@@ -1,12 +1,36 @@
 <script>
 import HeaderComponent from "./HeaderComponent.vue";
 import FooterComponent from "./FooterComponent.vue";
+import ResultsComponent from "./ResultsComponent.vue";
 import { useConfigStore } from "../stores/config";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 export default {
   components: {
     HeaderComponent,
     FooterComponent,
+    ResultsComponent,
+    Button,
+    Input,
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuItem,
+    Checkbox,
+    Label,
   },
   setup() {
     const config = useConfigStore();
@@ -20,13 +44,9 @@ export default {
     return {
       servers: [],
       selectedServers: [],
-      dropdownVisible: false,
-      dropdownIconClass: "bi bi-chevron-up",
       serial: "",
       dateRange: "",
       searchResults: [],
-      currentPage: 1,
-      resultsPerPage: 10,
       selectedServerNames: "",
     };
   },
@@ -93,11 +113,6 @@ export default {
           this.searchResults = [];
         });
     },
-    changePage(page) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page;
-      }
-    },
     updateSelectedServerNames() {
       const selectedNames = this.servers
         .filter((server) => this.selectedServers.includes(server.id))
@@ -124,69 +139,64 @@ export default {
   <div>
     <HeaderComponent />
     <div class="mt-2 text-right px-4">
-      <div class="relative inline-block text-left">
-        <button
-          class="inline-flex items-center text-primary font-bold hover:text-primary-dark"
-          @click="toggleDropdown"
-        >
-          <span class="px-2">
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Button variant="outline">
             {{ selectedServerNames || "Servidores" }}
-          </span>
-          <i :class="dropdownIconClass"></i>
-        </button>
-        <ul
-          v-show="dropdownVisible"
-          class="absolute right-0 w-48 mt-2 bg-white border border-primary rounded-lg shadow-card"
-        >
-          <li
-            v-if="servers.length === 0"
-            class="px-4 py-2 text-center text-gray-600"
-          >
-            No hay servidores disponibles
-          </li>
-          <li
+            <i class="bi bi-chevron-down ml-2"></i>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent class="w-48">
+          <DropdownMenuLabel>Servidores disponibles</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <div class="px-2 py-1.5" v-if="servers.length === 0">
+            <p class="text-sm text-muted-foreground text-center">
+              No hay servidores disponibles
+            </p>
+          </div>
+          <div
             v-else
             v-for="server in servers"
             :key="server.id"
-            class="px-4 py-2 hover:bg-gray-50"
+            class="flex items-center space-x-2 px-2 py-1.5"
           >
-            <label class="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="checkbox"
-                :value="server.id"
-                class="w-4 h-4 border-2 border-primary rounded text-primary focus:ring-primary"
-                v-model="selectedServers"
-                @change="updateSelectedServerNames"
-              />
-              <span>{{ server.name }}</span>
-            </label>
-          </li>
-        </ul>
-      </div>
+            <Checkbox
+              :id="'server-' + server.id"
+              :value="server.id"
+              v-model="selectedServers"
+              @change="updateSelectedServerNames"
+            />
+            <Label :for="'server-' + server.id">{{ server.name }}</Label>
+          </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
 
     <div class="min-h-screen flex flex-col">
       <main class="flex-grow">
         <div class="container mx-auto px-4 my-20">
           <div class="text-center mb-20">
-            <h1 class="text-5xl font-bold mb-6">Sensores</h1>
-            <p class="text-gray-600 font-bold leading-relaxed">
+            <h1
+              class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-6"
+            >
+              Sensores
+            </h1>
+            <p class="text-xl text-muted-foreground">
               Aquí podrás acceder a la información transmitida por los sensores
-              de <br />
-              OdinS distribuidos por todo el país.
+              de OdinS distribuidos por todo el país.
             </p>
           </div>
 
           <form class="max-w-4xl mx-auto" @submit.prevent="searchDevices">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
               <div class="md:col-span-8">
-                <div class="relative">
-                  <input
+                <div class="space-y-2">
+                  <Label for="serial">Número de serie</Label>
+                  <Input
                     type="text"
-                    v-model="serial"
                     id="serial"
-                    class="w-full p-4 border border-gray-300 rounded-lg focus:ring-[#92d050] focus:border-[#92d050]"
-                    placeholder="Número de serie"
+                    v-model="serial"
+                    placeholder="Introduce el número de serie"
                   />
                 </div>
               </div>
@@ -211,96 +221,11 @@ export default {
             </div>
 
             <div class="text-center mb-20">
-              <button type="submit" class="boton px-16">Buscar</button>
+              <Button type="submit" size="lg">Buscar</Button>
             </div>
           </form>
 
-          <div class="max-w-4xl mx-auto space-y-4">
-            <div
-              v-for="result in paginatedResults"
-              :key="result.id"
-              class="bg-gray-50 p-6 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
-            >
-              <div class="font-bold text-lg mb-3">
-                Serial: {{ result.serial }}
-              </div>
-              <div class="text-gray-600 grid gap-4 md:grid-cols-3">
-                <span class="truncate">Topic: {{ result.topic || "N/A" }}</span>
-                <span class="truncate"
-                  >Contenido: {{ result.content || "N/A" }}</span
-                >
-                <span class="truncate">
-                  Timestamp: {{ new Date(result.timestamp).toLocaleString() }}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <nav v-if="searchResults.length > 0" class="mt-8">
-            <ul class="flex justify-center space-x-1">
-              <li>
-                <a
-                  href="#"
-                  @click.prevent="changePage(1)"
-                  :class="[
-                    'px-4 py-2 bg-[#92d050] text-white rounded-l-lg hover:bg-[#79b73c] transition-colors',
-                    { 'opacity-50 cursor-not-allowed': currentPage === 1 },
-                  ]"
-                  >&laquo;&laquo;</a
-                >
-              </li>
-              <li>
-                <a
-                  href="#"
-                  @click.prevent="changePage(currentPage - 1)"
-                  :class="[
-                    'px-4 py-2 bg-[#92d050] text-white hover:bg-[#79b73c] transition-colors',
-                    { 'opacity-50 cursor-not-allowed': currentPage === 1 },
-                  ]"
-                  >&laquo;</a
-                >
-              </li>
-              <li v-for="page in totalPages" :key="page">
-                <a
-                  href="#"
-                  @click.prevent="changePage(page)"
-                  :class="[
-                    'px-4 py-2 bg-[#92d050] text-white hover:bg-[#79b73c] transition-colors',
-                    { 'bg-[#5bae5e]': page === currentPage },
-                  ]"
-                  >{{ page }}</a
-                >
-              </li>
-              <li>
-                <a
-                  href="#"
-                  @click.prevent="changePage(currentPage + 1)"
-                  :class="[
-                    'px-4 py-2 bg-[#92d050] text-white hover:bg-[#79b73c] transition-colors',
-                    {
-                      'opacity-50 cursor-not-allowed':
-                        currentPage === totalPages,
-                    },
-                  ]"
-                  >&raquo;</a
-                >
-              </li>
-              <li>
-                <a
-                  href="#"
-                  @click.prevent="changePage(totalPages)"
-                  :class="[
-                    'px-4 py-2 bg-[#92d050] text-white rounded-r-lg hover:bg-[#79b73c] transition-colors',
-                    {
-                      'opacity-50 cursor-not-allowed':
-                        currentPage === totalPages,
-                    },
-                  ]"
-                  >&raquo;&raquo;</a
-                >
-              </li>
-            </ul>
-          </nav>
+          <ResultsComponent :search-results="searchResults" />
         </div>
       </main>
     </div>
