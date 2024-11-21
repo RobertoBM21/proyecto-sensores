@@ -11,6 +11,7 @@ import {
   PaginationNext,
   PaginationPrev,
 } from "@/components/ui/pagination";
+import { useSearchStore } from "../stores/search";
 
 export default {
   name: "ResultsComponent",
@@ -29,12 +30,9 @@ export default {
     PaginationNext,
     PaginationPrev,
   },
-  props: {
-    searchResults: {
-      type: Array,
-      required: true,
-      default: () => [],
-    },
+  setup() {
+    const search = useSearchStore();
+    return { search };
   },
   data() {
     return {
@@ -43,16 +41,14 @@ export default {
     };
   },
   computed: {
-    paginatedResults() {
-      const start = (this.currentPage - 1) * this.resultsPerPage;
-      const end = start + this.resultsPerPage;
-      return this.searchResults.slice(start, end);
+    results() {
+      return this.search.results;
     },
     totalPages() {
-      return Math.ceil(this.searchResults.length / this.resultsPerPage);
+      return Math.ceil(this.search.results.length / this.resultsPerPage);
     },
     totalResults() {
-      return this.searchResults.length;
+      return this.search.results.length;
     },
   },
   methods: {
@@ -63,6 +59,8 @@ export default {
     },
     onPageChange(page) {
       this.currentPage = page;
+      this.search.setPage(page);
+      this.$parent.searchDevices();
     },
   },
 };
@@ -70,8 +68,42 @@ export default {
 
 <template>
   <div class="max-w-4xl mx-auto space-y-4">
+    <div
+      v-if="search.metadata && search.results.length > 0"
+      class="flex flex-wrap gap-4 mb-4 text-sm text-muted-foreground"
+    >
+      <Card class="flex-1">
+        <CardHeader>
+          <CardTitle class="text-sm">Dispositivos únicos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p class="text-2xl font-bold">{{ search.metadata.totalDevices }}</p>
+        </CardContent>
+      </Card>
+
+      <Card class="flex-1">
+        <CardHeader>
+          <CardTitle class="text-sm">Total mensajes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p class="text-2xl font-bold">{{ search.metadata.totalItems }}</p>
+        </CardContent>
+      </Card>
+
+      <Card class="flex-1">
+        <CardHeader>
+          <CardTitle class="text-sm">Página actual</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p class="text-2xl font-bold">
+            {{ search.metadata.page }} / {{ search.metadata.totalPages }}
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+
     <Card
-      v-for="result in paginatedResults"
+      v-for="result in results"
       :key="result.id"
       class="hover:bg-accent transition-colors"
     >
@@ -98,11 +130,11 @@ export default {
       </CardContent>
     </Card>
 
-    <nav v-if="searchResults.length > 0" class="mt-8">
+    <nav v-if="search.metadata" class="mt-8">
       <Pagination
-        :total="totalResults"
-        :per-page="resultsPerPage"
-        :default-page="currentPage"
+        :total="search.metadata.totalItems"
+        :per-page="search.metadata.limit"
+        :default-page="search.metadata.page"
         :sibling-count="1"
         show-edges
         @update:page="onPageChange"

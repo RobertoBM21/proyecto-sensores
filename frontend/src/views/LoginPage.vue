@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
@@ -23,28 +22,25 @@ export default {
     CardTitle,
     CardDescription,
     CardContent,
-    CardFooter,
     Button,
     Input,
     Label,
   },
   data() {
     return {
-      email: "",
+      username: "",
       password: "",
     };
   },
+  // Mock metodos de login
   methods: {
     handleLogin() {
-      // Mock login
       this.$router.push("/home");
     },
     handleGoogleLogin() {
-      // Mock Google login
       this.$router.push("/home");
     },
     handleGithubLogin() {
-      // Mock Github login
       this.$router.push("/home");
     },
   },
@@ -57,16 +53,16 @@ export default {
     <main class="flex-grow flex items-center justify-center">
       <Card class="w-full max-w-md">
         <CardHeader>
-          <CardTitle class="text-center">Iniciar Sesión</CardTitle>
-          <CardDescription class="text-center mt-2">
-            Para usar la aplicación es necesario iniciar sesión
+          <CardTitle class="text-2xl">Iniciar Sesión</CardTitle>
+          <CardDescription>
+            Introduce tus credenciales para acceder al sistema
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form @submit.prevent="handleLogin" class="space-y-4">
             <div class="space-y-2">
-              <Label for="email">Correo electrónico</Label>
-              <Input id="email" type="email" v-model="email" />
+              <Label for="username">Usuario</Label>
+              <Input id="username" type="text" v-model="username" />
             </div>
             <div class="space-y-2">
               <Label for="password">Contraseña</Label>
@@ -81,7 +77,7 @@ export default {
             </div>
             <div class="relative flex justify-center text-sm">
               <span class="bg-background px-2 text-muted-foreground"
-                >o continua con</span
+                >O CONTINUA CON</span
               >
             </div>
           </div>

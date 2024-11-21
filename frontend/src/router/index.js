@@ -21,7 +21,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  // history: createWebHistory(import.meta.env.BASE_URL),
+  // history: createWebHistory(import.meta.env.BASE_URL), //? Que diferencia hay con la linea anterior?
   routes,
 });
 

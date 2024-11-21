@@ -3,6 +3,7 @@ import HeaderComponent from "./HeaderComponent.vue";
 import FooterComponent from "./FooterComponent.vue";
 import ResultsComponent from "./ResultsComponent.vue";
 import { useConfigStore } from "../stores/config";
+import { useSearchStore } from "../stores/search";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,6 +16,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default {
   components: {
@@ -31,13 +41,22 @@ export default {
     DropdownMenuItem,
     Checkbox,
     Label,
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
   },
   setup() {
     const config = useConfigStore();
+    const search = useSearchStore();
     const apiUrl = config.getApiUrl;
 
     return {
       apiUrl,
+      search,
     };
   },
   data() {
@@ -46,7 +65,6 @@ export default {
       selectedServers: [],
       serial: "",
       dateRange: "",
-      searchResults: [],
       selectedServerNames: "",
     };
   },
@@ -71,19 +89,13 @@ export default {
           console.error("Error fetching servers:", error);
         });
     },
-    toggleDropdown() {
-      this.dropdownVisible = !this.dropdownVisible;
-      this.updateDropdownIcon();
-    },
-    updateDropdownIcon() {
-      this.dropdownIconClass = this.dropdownVisible
-        ? "bi bi-chevron-down"
-        : "bi bi-chevron-up";
-    },
-    toggleFilters() {
-      this.showFilters = !this.showFilters;
-    },
     searchDevices() {
+      this.search.setFilters({
+        serial: this.serial,
+        dateRange: this.dateRange,
+        selectedServers: this.selectedServers,
+      });
+
       let url = new URL(`${this.apiUrl}/messages/search`);
       let params = new URLSearchParams();
 
@@ -91,26 +103,27 @@ export default {
       if (this.dateRange) params.append("dateRange", this.dateRange);
       if (this.selectedServers.length > 0) {
         this.selectedServers.forEach((serverId) => {
-          params.append("serverId", serverId); // Cambiado a serverId en singular
+          params.append("serverId", serverId);
         });
       }
+
+      // Añadir parámetros de paginación
+      params.append("page", this.search.filters.page.toString());
+      params.append("limit", this.search.filters.limit.toString());
 
       url.search = params.toString();
 
       fetch(url)
         .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
+          if (!response.ok) throw new Error("Network response was not ok");
           return response.json();
         })
         .then((data) => {
-          this.searchResults = data.messages || []; // Cambiado a messages
-          this.currentPage = 1;
+          this.search.setResults(data);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
-          this.searchResults = [];
+          this.search.clearResults();
         });
     },
     updateSelectedServerNames() {
@@ -201,22 +214,38 @@ export default {
                 </div>
               </div>
               <div class="md:col-span-4">
-                <select
-                  v-model="dateRange"
-                  class="w-full p-4 border border-gray-300 rounded-lg focus:ring-[#92d050] focus:border-[#92d050]"
-                >
-                  <option value="">Sin filtro de fecha</option>
-                  <option value="last_5_minutes">Últimos 5 minutos</option>
-                  <option value="last_15_minutes">Últimos 15 minutos</option>
-                  <option value="last_30_minutes">Últimos 30 minutos</option>
-                  <option value="last_hour">Última hora</option>
-                  <option value="last_24_hours">Últimas 24 horas</option>
-                  <option value="today">Hoy</option>
-                  <option value="yesterday">Ayer</option>
-                  <option value="last_week">Última semana</option>
-                  <option value="last_month">Último mes</option>
-                  <option value="last_year">Último año</option>
-                </select>
+                <div class="space-y-2">
+                  <Label for="dateRange">Rango de fecha</Label>
+                  <Select v-model="dateRange">
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona un rango de fecha" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Rangos de fecha</SelectLabel>
+                        <SelectItem value="">Sin filtro de fecha</SelectItem>
+                        <SelectItem value="last_5_minutes"
+                          >Últimos 5 minutos</SelectItem
+                        >
+                        <SelectItem value="last_15_minutes"
+                          >Últimos 15 minutos</SelectItem
+                        >
+                        <SelectItem value="last_30_minutes"
+                          >Últimos 30 minutos</SelectItem
+                        >
+                        <SelectItem value="last_hour">Última hora</SelectItem>
+                        <SelectItem value="last_24_hours"
+                          >Últimas 24 horas</SelectItem
+                        >
+                        <SelectItem value="today">Hoy</SelectItem>
+                        <SelectItem value="yesterday">Ayer</SelectItem>
+                        <SelectItem value="last_week">Última semana</SelectItem>
+                        <SelectItem value="last_month">Último mes</SelectItem>
+                        <SelectItem value="last_year">Último año</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
 
@@ -225,7 +254,7 @@ export default {
             </div>
           </form>
 
-          <ResultsComponent :search-results="searchResults" />
+          <ResultsComponent />
         </div>
       </main>
     </div>
