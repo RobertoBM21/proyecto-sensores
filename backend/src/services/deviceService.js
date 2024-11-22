@@ -114,7 +114,7 @@ class DeviceService {
 
   //* Analizar estado de comunicación de los dispositivos
   async getDeviceActivityReport(params) {
-    const { serverIds, beforeDate, afterDate } = params;
+    const { serverIds, startDate, endDate, page = 1, limit = 50 } = params;
 
     // Verificar que los servidores existen
     const servers = await Server.findAll({
@@ -129,65 +129,31 @@ class DeviceService {
       );
     }
 
-    // Consulta base
-    const baseQuery = {
-      where: { serverId: { [Op.in]: serverIds } },
+    const { count: totalItems, rows: devices } = await Device.findAndCountAll({
+      where: {
+        serverId: { [Op.in]: serverIds },
+        lastCommunication: { [Op.between]: [startDate, endDate] },
+      },
       attributes: ["serial", "lastCommunication"],
       order: [["lastCommunication", "DESC"]],
+      limit,
+      offset: (page - 1) * limit,
       distinct: true,
-    };
+    });
 
-    // Ejecutar consultas en paralelo con promesas
-    const [beforeResults, afterResults, betweenResults] = await Promise.all([
-      beforeDate
-        ? Device.findAndCountAll({
-            ...baseQuery,
-            where: {
-              ...baseQuery.where,
-              lastCommunication: { [Op.lt]: beforeDate },
-            },
-          })
-        : Promise.resolve({ count: 0, rows: [] }),
-      afterDate
-        ? Device.findAndCountAll({
-            ...baseQuery,
-            where: {
-              ...baseQuery.where,
-              lastCommunication: { [Op.gt]: afterDate },
-            },
-          })
-        : Promise.resolve({ count: 0, rows: [] }),
-      beforeDate && afterDate
-        ? Device.findAndCountAll({
-            ...baseQuery,
-            where: {
-              ...baseQuery.where,
-              lastCommunication: { [Op.between]: [beforeDate, afterDate] },
-            },
-          })
-        : Promise.resolve({ count: 0, rows: [] }),
-    ]);
+    const totalPages = Math.ceil(totalItems / limit);
 
     return {
-      summary: {
-        devicesBeforeCount: beforeResults.count,
-        devicesAfterCount: afterResults.count,
-        devicesBetweenCount: betweenResults.count,
-      },
-      devices: {
-        before: beforeResults.rows.map((d) => ({
-          serial: d.serial,
-          lastCommunication: d.lastCommunication,
-        })),
-        after: afterResults.rows.map((d) => ({
-          serial: d.serial,
-          lastCommunication: d.lastCommunication,
-        })),
-        between: betweenResults.rows.map((d) => ({
-          serial: d.serial,
-          lastCommunication: d.lastCommunication,
-        })),
-      },
+      devices: devices.map((d) => ({
+        serial: d.serial,
+        lastCommunication: d.lastCommunication,
+      })),
+      totalItems,
+      page,
+      totalPages,
+      itemsPerPage: limit,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
     };
   }
 }

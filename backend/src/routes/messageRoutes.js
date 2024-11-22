@@ -31,7 +31,7 @@ router.get("/", messageController.getAllMessages);
  * @swagger
  * /messages/search:
  *   get:
- *     summary: Busca mensajes mediante filtros
+ *     summary: Obtiene una lista de mensajes paginada según los filtros aplicados
  *     tags: [Messages]
  *     parameters:
  *       - in: query
@@ -66,15 +66,17 @@ router.get("/", messageController.getAllMessages);
  *         name: page
  *         schema:
  *           type: integer
+ *           default: 1
  *         description: Número de página
  *       - in: query
  *         name: limit
  *         schema:
  *           type: integer
+ *           default: 50
  *         description: Cantidad de mensajes por página
  *     responses:
  *       200:
- *         description: Resultado de búsqueda paginado
+ *         description: Lista de mensajes paginada
  *         content:
  *           application/json:
  *             schema:
@@ -96,7 +98,7 @@ router.get("/", messageController.getAllMessages);
  *                 totalPages:
  *                   type: integer
  *                   description: Total de páginas
- *                 limit:
+ *                 itemsPerPage:
  *                   type: integer
  *                   description: Cantidad de items por página
  *                 hasNextPage:

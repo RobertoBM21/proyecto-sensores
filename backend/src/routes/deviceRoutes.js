@@ -57,7 +57,7 @@ router.post("/", deviceController.createDevice);
  * @swagger
  * /devices/activity:
  *   get:
- *     summary: Obtiene un reporte de los dispositivos que han comunicado dado un rango de fechas
+ *     summary: Obtiene un reporte paginado de los dispositivos que han comunicado en un rango de fechas
  *     tags: [Devices]
  *     parameters:
  *       - in: query
@@ -71,70 +71,67 @@ router.post("/", deviceController.createDevice);
  *         explode: false
  *         description: Array de IDs de servidores a consultar
  *       - in: query
- *         name: beforeDate
+ *         name: startDate
+ *         required: true
  *         schema:
  *           type: string
  *           format: date-time
- *         description: Fecha límite superior (debe ser posterior a afterDate)
+ *         description: Fecha inicial del rango
  *       - in: query
- *         name: afterDate
+ *         name: endDate
+ *         required: true
  *         schema:
  *           type: string
  *           format: date-time
- *         description: Fecha límite inferior (debe ser anterior a beforeDate)
+ *         description: Fecha final del rango
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Número de página
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 50
+ *         description: Cantidad de dispositivos por página
  *     responses:
  *       200:
- *         description: Reporte de actividad obtenido exitosamente
+ *         description: Reporte de actividad paginado obtenido exitosamente
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 summary:
- *                   type: object
- *                   properties:
- *                     devicesBeforeCount:
- *                       type: integer
- *                       description: Número de dispositivos que comunicaron antes de beforeDate
- *                     devicesAfterCount:
- *                       type: integer
- *                       description: Número de dispositivos que comunicaron después de afterDate
- *                     devicesBetweenCount:
- *                       type: integer
- *                       description: Número de dispositivos que comunicaron entre las fechas
  *                 devices:
- *                   type: object
- *                   properties:
- *                     before:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           serial:
- *                             type: string
- *                           lastCommunication:
- *                             type: string
- *                             format: date-time
- *                     after:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           serial:
- *                             type: string
- *                           lastCommunication:
- *                             type: string
- *                             format: date-time
- *                     between:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           serial:
- *                             type: string
- *                           lastCommunication:
- *                             type: string
- *                             format: date-time
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       serial:
+ *                         type: string
+ *                       lastCommunication:
+ *                         type: string
+ *                         format: date-time
+ *                 totalItems:
+ *                   type: integer
+ *                   description: Total de dispositivos encontrados
+ *                 page:
+ *                   type: integer
+ *                   description: Página actual
+ *                 totalPages:
+ *                   type: integer
+ *                   description: Total de páginas
+ *                 itemsPerPage:
+ *                   type: integer
+ *                   description: Cantidad de items por página
+ *                 hasNextPage:
+ *                   type: boolean
+ *                   description: Indica si hay más páginas después
+ *                 hasPreviousPage:
+ *                   type: boolean
+ *                   description: Indica si hay páginas anteriores
  *       400:
  *         description: Parámetros inválidos
  *       404:

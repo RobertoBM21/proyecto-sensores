@@ -46,26 +46,30 @@ const deviceActivityReportSchema = Joi.object({
       "number.positive": "Los IDs de servidor deben ser números positivos.",
       "any.required": 'El campo "serverIds" es obligatorio.',
     }),
-  beforeDate: Joi.date().iso().messages({
-    "date.base": 'El campo "beforeDate" debe ser una fecha válida.',
-    "date.format": 'El campo "beforeDate" debe estar en formato ISO.',
+  startDate: Joi.date().iso().required().messages({
+    "date.base": 'El campo "startDate" debe ser una fecha válida.',
+    "date.format": 'El campo "startDate" debe estar en formato ISO.',
+    "any.required": 'El campo "startDate" es obligatorio.',
   }),
-  afterDate: Joi.date().iso().messages({
-    "date.base": 'El campo "afterDate" debe ser una fecha válida.',
-    "date.format": 'El campo "afterDate" debe estar en formato ISO.',
+  endDate: Joi.date().iso().required().messages({
+    "date.base": 'El campo "endDate" debe ser una fecha válida.',
+    "date.format": 'El campo "endDate" debe estar en formato ISO.',
+    "any.required": 'El campo "endDate" es obligatorio.',
+  }),
+  page: Joi.number().integer().positive().default(1).messages({
+    "number.base": 'El campo "page" debe ser un número entero.',
+    "number.positive": 'El campo "page" debe ser un número positivo.',
+  }),
+  limit: Joi.number().integer().positive().max(1000).default(50).messages({
+    "number.base": 'El campo "limit" debe ser un número entero.',
+    "number.positive": 'El campo "limit" debe ser un número positivo.',
+    "number.max": 'El campo "limit" no puede ser mayor a 1000.',
   }),
 }).custom((value, helpers) => {
-  // Validar que al menos una fecha esté presente
-  if (!value.beforeDate && !value.afterDate) {
-    return helpers.message("Se requiere al menos una fecha de referencia");
-  }
-  // Validar que beforeDate sea anterior a afterDate
-  if (
-    value.beforeDate &&
-    value.afterDate &&
-    value.beforeDate > value.afterDate
-  ) {
-    return helpers.message("El campo beforeDate debe ser anterior a afterDate");
+  if (value.startDate >= value.endDate) {
+    return helpers.message(
+      "La fecha inicial debe ser anterior a la fecha final"
+    );
   }
   return value;
 });

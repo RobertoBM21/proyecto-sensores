@@ -115,14 +115,16 @@ class MessageService {
       throw new NotFoundError("No se encontraron mensajes");
     }
 
+    const totalPages = Math.ceil(messageCount / limit);
+
     return {
       messages,
       totalItems: messageCount,
       totalDevices: deviceCount,
       page,
-      totalPages: Math.ceil(messageCount / limit),
-      limit,
-      hasNextPage: page < Math.ceil(messageCount / limit),
+      totalPages,
+      itemsPerPage: limit,
+      hasNextPage: page < totalPages,
       hasPreviousPage: page > 1,
     };
   }

@@ -72,7 +72,7 @@ const messageSearchSchema = Joi.object({
   .and("startDate", "endDate") // Si se proporciona un campo, también debe estar el otro
   .custom((value, helpers) => {
     // Validar que startDate sea anterior a endDate
-    if (value.startDate && value.endDate && value.startDate > value.endDate) {
+    if (value.startDate && value.endDate && value.startDate >= value.endDate) {
       return helpers.message(
         'El campo "startDate" debe ser anterior a "endDate".'
       );
