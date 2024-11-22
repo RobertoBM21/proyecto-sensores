@@ -7,7 +7,10 @@ const deviceSchema = Joi.object({
     "string.empty": 'El campo "serial" no puede estar vacío.',
     "any.required": 'El campo "serial" es obligatorio.',
   }),
-  apikey: Joi.string().optional(), // Deprecated
+  apikey: Joi.string().required().messages({
+    "string.empty": 'El campo "apikey" no puede estar vacío.',
+    "any.required": 'El campo "apikey" es obligatorio.',
+  }),
   lastCommunication: Joi.date().iso().required().messages({
     "date.base": 'El campo "lastCommunication" debe ser una fecha válida.',
     "date.format": 'El campo "lastCommunication" debe estar en formato ISO.',

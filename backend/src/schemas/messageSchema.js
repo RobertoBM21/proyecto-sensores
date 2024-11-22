@@ -39,6 +39,7 @@ const validDateRanges = [
 // Esquema para validar los parámetros de búsqueda
 const messageSearchSchema = Joi.object({
   serial: Joi.string(),
+  apikey: Joi.string(),
   serverId: Joi.number().integer().positive().messages({
     "number.base": 'El campo "serverId" debe ser un número entero.',
     "number.positive": 'El campo "serverId" debe ser un número positivo.',

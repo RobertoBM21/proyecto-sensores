@@ -32,7 +32,7 @@ class DeviceService {
 
   //* Crear un nuevo dispositivo
   async createDevice(data) {
-    const { serial, lastCommunication, serverId } = data;
+    const { serial, apikey, lastCommunication, serverId } = data;
 
     // Comprobar si ya existe un dispositivo con el mismo serial
     const existingDevice = await Device.findOne({ where: { serial } });
@@ -48,6 +48,7 @@ class DeviceService {
 
     const device = await Device.create({
       serial,
+      apikey,
       lastCommunication,
       serverId,
     });
@@ -58,7 +59,7 @@ class DeviceService {
   async updateDevice(id, data) {
     const device = await this.getDeviceById(id);
 
-    const { serial, lastCommunication, serverId } = data;
+    const { serial, apikey, lastCommunication, serverId } = data;
 
     // Comprobar si ya existe otro dispositivo con el mismo serial
     const existingDevice = await Device.findOne({ where: { serial } });
@@ -72,7 +73,7 @@ class DeviceService {
       throw new BadRequestError("No existe un servidor con ese ID");
     }
 
-    await device.update({ serial, lastCommunication, serverId });
+    await device.update({ serial, apikey, lastCommunication, serverId });
     return device;
   }
 

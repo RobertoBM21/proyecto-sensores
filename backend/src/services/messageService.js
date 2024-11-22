@@ -59,6 +59,7 @@ class MessageService {
   async searchMessages(params) {
     const {
       serial,
+      apikey,
       serverId,
       startDate,
       endDate,
@@ -72,6 +73,9 @@ class MessageService {
 
     if (serial) {
       baseWhere.serial = { [Op.like]: `${serial}%` };
+    }
+    if (apikey) {
+      baseWhere["$Device.apikey$"] = apikey;
     }
     if (serverId) baseWhere["$Device.serverId$"] = serverId;
     if (startDate || endDate || dateRange) {

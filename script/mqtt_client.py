@@ -121,6 +121,10 @@ def parse_topic(topic_str, format_str):
         if format_part.startswith('{') and format_part.endswith('}'):
             key = format_part[1:-1]  # Eliminar los {} para obtener el nombre de la variable
             result[key] = topic_part
+    
+    # Verificar que tanto serial como apikey estén presentes
+    if not all(key in result for key in ['serial', 'apikey']):
+        return None
             
     return result
 
@@ -162,7 +166,7 @@ def get_server(server_id):
         logging.error(f"Excepción al obtener el servidor {server_id}: {e}")
     return None
 
-def update_or_create_device(serial, last_communication, server_id):
+def update_or_create_device(serial, apikey, last_communication, server_id):
     """Actualiza o crea un dispositivo en la base de datos."""
     try:
         response = requests.get(f"{config['API_URL']}/devices/serial/{serial}")
@@ -177,6 +181,7 @@ def update_or_create_device(serial, last_communication, server_id):
         else:
             new_device = {
                 "serial": serial,
+                "apikey": apikey,
                 "lastCommunication": last_communication,
                 "serverId": server_id
             }
@@ -204,8 +209,8 @@ def on_message(client, userdata, msg):
     
     # Parsear el topic según el formato del servidor
     topic_data = parse_topic(msg.topic, userdata["topic_format"])
-    if not topic_data or 'serial' not in topic_data:
-        logging.warning(f"Mensaje descartado. El topic no coincide con el formato esperado o no contiene serial: {msg.topic}")
+    if not topic_data:
+        logging.warning(f"Mensaje descartado. El topic no coincide con el formato esperado o no contiene serial o apikey: {msg.topic}")
         return
 
     try:
@@ -222,12 +227,12 @@ def on_message(client, userdata, msg):
     }
 
     # Actualizar/crear dispositivo
-    if message['serial']:
-        update_or_create_device(
-            message['serial'],
-            message["timestamp"],
-            userdata["server_id"]
-        )
+    update_or_create_device(
+        topic_data['serial'],
+        topic_data['apikey'],
+        message["timestamp"],
+        userdata["server_id"]
+    )
 
     # Enviar mensaje a la API
     try:

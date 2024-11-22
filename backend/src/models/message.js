@@ -64,7 +64,6 @@ const Message = sequelize.define(
     },
   },
   {
-    // Los índices se nombran así por convención
     indexes: [
       {
         name: "idx_serial",

@@ -22,7 +22,7 @@ const sequelize = require("../config/database.js");
  *           example: "IC0104E17000800012"
  *         apikey:
  *           type: string
- *           description: (Deprecated) Clave API del dispositivo
+ *           description: Clave API del dispositivo
  *           example: "odins"
  *         lastCommunication:
  *           type: string
@@ -39,24 +39,35 @@ const sequelize = require("../config/database.js");
  *         lastCommunication: "2024-10-21T13:46:11"
  *         serverId: 1
  */
-const Device = sequelize.define("Device", {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
+const Device = sequelize.define(
+  "Device",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    serial: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true, //* Se indexa automáticamente, no es necesario hacerlo en el modelo
+    },
+    apikey: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    lastCommunication: {
+      type: DataTypes.DATE,
+    },
   },
-  serial: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true, //* Se indexa automáticamente, no es necesario hacerlo en el modelo
-  },
-  apikey: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  lastCommunication: {
-    type: DataTypes.DATE,
-  },
-});
+  {
+    indexes: [
+      {
+        name: "idx_apikey",
+        fields: ["apikey"],
+      },
+    ],
+  }
+);
 
 module.exports = Device;

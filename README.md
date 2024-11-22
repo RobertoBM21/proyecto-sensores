@@ -214,7 +214,7 @@ El proyecto utiliza un sistema de gestión de clientes MQTT que consiste en:
    - **Conexión** a un servidor MQTT utilizando credenciales almacenadas en la base de datos.
    - **Procesamiento flexible de mensajes MQTT**:
      - Formato de topic configurable por servidor
-     - Solo se requiere la presencia de un identificador `serial` en el topic
+     - Solo se requiere la presencia de un identificador `serial` y un `apikey` en el topic
      - Formato por defecto: `/{apikey}/{serial}/{type}`
      - Soporta variables personalizadas mediante plantillas (ej: `/{cliente}/{serial}/{sensor}/...`)
    - **Actualización y creación** de dispositivos en la base de datos.
