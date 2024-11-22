@@ -76,7 +76,7 @@ router.get("/:id", serverController.getServerById);
  *       400:
  *         description: Error en la solicitud
  *       409:
- *         description: Ya existe un servidor con ese endpoint
+ *         description: Ya existe el usuario en el servidor
  */
 router.post("/", serverController.createServer);
 
@@ -111,7 +111,7 @@ router.post("/", serverController.createServer);
  *       404:
  *         description: Servidor no encontrado
  *       409:
- *         description: Ya existe un servidor con ese endpoint
+ *         description: Ya existe el usuario en el servidor
  */
 router.put("/:id", serverController.updateServer);
 

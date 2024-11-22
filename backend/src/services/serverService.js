@@ -21,10 +21,16 @@ class ServerService {
   async createServer(data) {
     const { name, endpoint, username, password, topicFormat } = data;
 
-    // Comprobar si ya existe un servidor con el mismo endpoint
-    const existingServer = await Server.findOne({ where: { endpoint } });
+    // Comprobar si ya existe un servidor con el mismo endpoint y username
+    const existingServer = await Server.findOne({
+      where: {
+        endpoint,
+        username,
+      },
+    });
+
     if (existingServer) {
-      throw new ConflictError("Ya existe un servidor con ese endpoint");
+      throw new ConflictError("Ya existe el usuario en el servidor");
     }
 
     const server = await Server.create({
@@ -44,10 +50,16 @@ class ServerService {
 
     const { name, endpoint, username, password, topicFormat } = data;
 
-    // Comprobar si ya existe otro servidor con el mismo endpoint
-    const existingServer = await Server.findOne({ where: { endpoint } });
+    // Comprobar si ya existe otro servidor con el mismo endpoint y username
+    const existingServer = await Server.findOne({
+      where: {
+        endpoint,
+        username,
+      },
+    });
+
     if (existingServer && existingServer.id !== id) {
-      throw new ConflictError("Ya existe un servidor con ese endpoint");
+      throw new ConflictError("Ya existe el usuario en el servidor");
     }
 
     await server.update({
