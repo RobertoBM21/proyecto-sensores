@@ -44,7 +44,6 @@ proyecto-sensores/
 ├── script/                 # Scripts Python MQTT
 │   ├── mqtt_client.py      # Cliente MQTT individual
 │   ├── mqtt_manager.py     # Gestor de clientes MQTT
-│   ├── mqtt_processes.json # Estado de los procesos MQTT
 │   └── logs/               # Carpeta para logs de MQTT
 ```
 
@@ -93,7 +92,6 @@ API_URL=url_del_backend (url:PORT)
 # Configuración MQTT
 MQTT_TOPIC=formato_de_topic
 LOGS_DIR=tu_carpeta_para_almacenar_logs
-PROCESSES_FILE=tu_json_con_procesos_activos
 ```
 
 ### Instalación de Dependencias
@@ -196,7 +194,6 @@ El proyecto utiliza un sistema de gestión de clientes MQTT que consiste en:
    - **Mantenimiento automático**:
      - Refresco de clientes periódico configurable (`-r/--refresh`)
      - Rotación diaria de logs con retención configurable (`-d/--retention`)
-     - Recuperación automática del estado de los clientes al reiniciar el gestor
 
 2. **Cliente MQTT Individual**:
 

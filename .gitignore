@@ -60,6 +60,3 @@ out-tsc/
 
 # Testing
 jest/
-
-# MQTT files
-mqtt_processes.json

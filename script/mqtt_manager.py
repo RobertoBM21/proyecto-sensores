@@ -1,7 +1,6 @@
 # Importaciones de la biblioteca estándar
 import os
 import sys
-import json
 import signal
 import argparse
 import threading
@@ -21,7 +20,6 @@ load_dotenv()
 ENV_VARS = {
     'API_URL': 'http://localhost:3000',
     'LOGS_DIR': 'logs',
-    'PROCESSES_FILE': 'mqtt_processes.json',
     'REFRESH_INTERVAL': '60',  # Segundos de refresco automático
     'LOG_RETENTION_DAYS': '7',  # Días a mantener logs
 }
@@ -81,7 +79,6 @@ class MQTTManager:
         if not os.path.exists(self.config['LOGS_DIR']):
             os.makedirs(self.config['LOGS_DIR'])
             
-        self.load_processes()
         self._setup_auto_refresh()
 
     def _setup_auto_refresh(self):
@@ -141,25 +138,6 @@ class MQTTManager:
             if server_id not in self.paused_servers:
                 self.stop_client(server_id, pause=False, verbose=False)
                 self.start_client(server_id, verbose=False)
-
-    def load_processes(self):
-        """Carga los PIDs guardados de procesos anteriores y verifica si siguen activos"""
-        if os.path.exists(self.config['PROCESSES_FILE']):
-            with open(self.config['PROCESSES_FILE'], 'r') as f:
-                saved_processes = json.load(f)
-                for server_id, pid in saved_processes.items():
-                    if psutil.pid_exists(pid):
-                        self.processes[server_id] = pid  # Almacenamos el PID si el proceso sigue activo
-
-    def save_processes(self):
-        """Guarda los PIDs de los procesos actuales"""
-        processes_dict = {
-            server_id: pid
-            for server_id, pid in self.processes.items()
-            if psutil.pid_exists(pid)
-        }
-        with open(self.config['PROCESSES_FILE'], 'w') as f:
-            json.dump(processes_dict, f)
 
     def _get_latest_log(self, server_id):
         """Obtiene el archivo de log más reciente para un servidor específico"""
@@ -238,7 +216,6 @@ class MQTTManager:
             if verbose:
                 print(f"Cliente MQTT iniciado para servidor {server_id} con PID {process.pid}")
                 print(f"Logs disponibles en: {log_file}")
-            self.save_processes()
             return True
         except Exception as e:
             if verbose: print(f"Error al iniciar cliente para servidor {server_id}: {e}")
@@ -303,7 +280,6 @@ class MQTTManager:
             if pause:
                 self.paused_servers.add(str(server_id))
                 if verbose: print(f"Servidor {server_id} pausado para reinicios automáticos")
-            self.save_processes()
             if verbose: print(f"Cliente MQTT detenido para servidor {server_id}")
             return True
         
@@ -329,9 +305,6 @@ class MQTTManager:
             if verbose:
                 print(f"Removiendo proceso muerto {self.processes[server_id]} del servidor {server_id}")
             del self.processes[server_id]
-        
-        # Actualizar archivo JSON después de limpiar procesos muertos
-        self.save_processes()
         
         servers = self.get_servers()
         server_ids = {str(server['id']) for server in servers}
