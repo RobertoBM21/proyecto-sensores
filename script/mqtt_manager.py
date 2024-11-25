@@ -7,7 +7,7 @@ import argparse
 import threading
 import subprocess
 from typing import Dict
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Importaciones de terceros
 import psutil
@@ -22,12 +22,15 @@ ENV_VARS = {
     'API_URL': 'http://localhost:3000',
     'LOGS_DIR': 'logs',
     'PROCESSES_FILE': 'mqtt_processes.json',
-    'REFRESH_INTERVAL': '60',  # Segundos
+    'REFRESH_INTERVAL': '60',  # Segundos de refresco automático
+    'LOG_RETENTION_DAYS': '7',  # Días a mantener logs
 }
 
 # Constantes internas
-PROCESS_WAIT_TIME = 1  # Tiempo de espera para verificación de proceso (segundos)
-TIMEOUT = 5            # Tiempo de espera para detener el proceso (segundos)
+PROCESS_WAIT_TIME = 1       # Tiempo de espera para verificación de arranque de proceso (segundos)
+TIMEOUT = 5                 # Tiempo de espera para comprobar si el proceso se detiene (segundos)
+LOG_DATE_FORMAT = '%Y%m%d'  # Formato de fecha para archivos de log
+
 
 def validate_environment():
     """Valida y devuelve la configuración de variables de entorno"""
@@ -54,18 +57,23 @@ def parse_arguments():
                        type=int,
                        metavar='<segundos>',
                        help='Intervalo de refresco en segundos')
+    parser.add_argument('-d', '--retention',
+                       type=int,
+                       metavar='<días>',
+                       help='Días a mantener los logs')
     return parser.parse_args()
 
 class MQTTManager:
     """Gestor de procesos para clientes MQTT"""
     
     # Inicialización y configuración básica
-    def __init__(self, refresh_interval):
+    def __init__(self, refresh_interval, retention_days):
         # Cargar configuración de entorno
         self.config = validate_environment()
         
         # Configuración inicial
         self.refresh_interval = refresh_interval or int(self.config['REFRESH_INTERVAL'])
+        self.retention_days = retention_days or int(self.config['LOG_RETENTION_DAYS'])
         self.processes: Dict[str, int] = {}
         self.blocked_servers = set()
         
@@ -77,17 +85,63 @@ class MQTTManager:
         self._setup_auto_refresh()
 
     def _setup_auto_refresh(self):
-        """Configura el refresco automático usando un temporizador"""
+        """Configura el refresco automático y la ejecución diaria"""
+        
+        def get_seconds_until_midnight():
+            tomorrow = datetime.now() + timedelta(days=1)
+            midnight = datetime(year=tomorrow.year, month=tomorrow.month, 
+                             day=tomorrow.day, hour=0, minute=0, second=0)
+            return (midnight - datetime.now()).total_seconds()
+
+        
+        def daily_thread():
+            while True:
+                wait_seconds = get_seconds_until_midnight()
+                threading.Event().wait(wait_seconds)
+                self.daily_task()
+        
         def timer_thread():
             while True:
-                self.check_status(verbose=False)  # Llamada silenciosa
+                self.check_status(verbose=False)
                 threading.Event().wait(self.refresh_interval)
         
-        # Iniciar el hilo del temporizador
-        thread = threading.Thread(target=timer_thread, daemon=True)
-        thread.start()
+        # Iniciar ambos hilos
+        refresh_thread = threading.Thread(target=timer_thread, daemon=True)
+        daily_thread = threading.Thread(target=daily_thread, daemon=True)
+        refresh_thread.start()
+        daily_thread.start()
 
-    # Funciones de gestión de procesos
+    def cleanup_old_logs(self):
+        """Elimina logs más antiguos que retention_days"""
+        cutoff_date = datetime.now() - timedelta(days=self.retention_days)
+        
+        log_dir = self.config['LOGS_DIR']
+        for filename in os.listdir(log_dir):
+            if not filename.startswith('mqtt_client_'):
+                continue
+            
+            try:
+                date_str = filename.split('_')[-1].split('.')[0]
+                file_date = datetime.strptime(date_str, LOG_DATE_FORMAT)
+                
+                if file_date < cutoff_date:
+                    file_path = os.path.join(log_dir, filename)
+                    os.remove(file_path)
+            except Exception:
+                continue
+
+    def daily_task(self):
+        """Tarea que se ejecutará diariamente a medianoche"""
+        # 1. Limpiar logs antiguos
+        self.cleanup_old_logs()
+        
+        # 2. Reiniciar clientes uno a uno
+        active_servers = list(self.processes.keys())
+        for server_id in active_servers:
+            if server_id not in self.blocked_servers:
+                self.stop_client(server_id, block=False, verbose=False)
+                self.start_client(server_id, verbose=False)
+
     def load_processes(self):
         """Carga los PIDs guardados de procesos anteriores y verifica si siguen activos"""
         if os.path.exists(self.config['PROCESSES_FILE']):
@@ -156,7 +210,7 @@ class MQTTManager:
 
         try:
             # Crear nombre de archivo de log con timestamp
-            timestamp = datetime.now().strftime('%Y%m%d')
+            timestamp = datetime.now().strftime(LOG_DATE_FORMAT)
             log_file = os.path.join(self.config['LOGS_DIR'], f"mqtt_client_{server_id}_{timestamp}.log")
             
             # Abrir archivo de log en modo 'append' y redirigir stdout y stderr
@@ -350,7 +404,10 @@ def main():
     args = parse_arguments()
 
     # Crear y configurar el gestor
-    manager = MQTTManager(refresh_interval=args.refresh)
+    manager = MQTTManager(
+        refresh_interval=args.refresh,
+        retention_days=args.retention
+    )
     
     # Menú principal
     while True:

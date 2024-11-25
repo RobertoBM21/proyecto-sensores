@@ -114,6 +114,9 @@ router.post("/", deviceController.createDevice);
  *                       lastCommunication:
  *                         type: string
  *                         format: date-time
+ *                       messageCount:
+ *                         type: integer
+ *                         description: Número de mensajes enviados en el rango de fechas
  *                 totalItems:
  *                   type: integer
  *                   description: Total de dispositivos encontrados

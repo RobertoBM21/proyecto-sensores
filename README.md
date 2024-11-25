@@ -179,23 +179,24 @@ El proyecto utiliza un sistema de gestión de clientes MQTT que consiste en:
 1. **Gestor de Clientes MQTT**:
 
    ```bash
-   # Ejecutar con intervalo de refresco por defecto (60 segundos)
+   # Ejecutar con configuración por defecto
    python mqtt_manager.py
 
-   # Ejecutar con intervalo personalizado (ejemplo: 10 segundos)
-   python mqtt_manager.py -r 10
+   # Personalizar intervalo de refresco y retención de logs
+   python mqtt_manager.py -r <segundos> -d <días>
    ```
 
-   **Características:**
+   **Características principales:**
 
-   - **Interfaz interactiva** por línea de comandos para:
-     - Mostrar el estado de todos los clientes MQTT.
-     - Iniciar y detener clientes individuales.
-     - Verificar y actualizar automáticamente el estado de las conexiones.
-     - Bloquear y desbloquear reinicio automático de clientes detenidos manualmente.
-   - **Persistencia del estado** de los procesos entre reinicios.
-   - **Refresco automático configurable** mediante el argumento `-r` o `--refresh`.
-   - **Logs independientes** para cada cliente y sesión almacenados en el directorio logs.
+   - **Interfaz interactiva** con opciones para:
+     - Mostrar estado actual de clientes y conexiones
+     - Iniciar/detener clientes individuales
+     - Bloquear reinicio automático de clientes detenidos manualmente
+     - Verificar y actualizar estado de todas las conexiones
+   - **Mantenimiento automático**:
+     - Refresco de clientes periódico configurable (`-r/--refresh`)
+     - Rotación diaria de logs con retención configurable (`-d/--retention`)
+     - Recuperación automática del estado de los clientes al reiniciar el gestor
 
 2. **Cliente MQTT Individual**:
 
