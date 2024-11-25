@@ -191,7 +191,7 @@ El proyecto utiliza un sistema de gestión de clientes MQTT que consiste en:
    - **Interfaz interactiva** con opciones para:
      - Mostrar estado actual de clientes y conexiones
      - Iniciar/detener clientes individuales
-     - Bloquear reinicio automático de clientes detenidos manualmente
+     - Pausar reinicio automático de clientes detenidos manualmente
      - Verificar y actualizar estado de todas las conexiones
    - **Mantenimiento automático**:
      - Refresco de clientes periódico configurable (`-r/--refresh`)

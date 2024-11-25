@@ -44,7 +44,7 @@ def validate_environment():
         config[var_name] = value
             
     if missing_vars:
-        print(f"ERROR: Faltan las siguientes variables de entorno requeridas: {', '.join(missing_vars)}")
+        print(f"Error: Faltan las siguientes variables de entorno requeridas: {', '.join(missing_vars)}")
         sys.exit(1)
     
     return config
@@ -75,7 +75,7 @@ class MQTTManager:
         self.refresh_interval = refresh_interval or int(self.config['REFRESH_INTERVAL'])
         self.retention_days = retention_days or int(self.config['LOG_RETENTION_DAYS'])
         self.processes: Dict[str, int] = {}
-        self.blocked_servers = set()
+        self.paused_servers = set()
         
         # Inicialización del directorio de logs y carga de procesos
         if not os.path.exists(self.config['LOGS_DIR']):
@@ -138,8 +138,8 @@ class MQTTManager:
         # 2. Reiniciar clientes uno a uno
         active_servers = list(self.processes.keys())
         for server_id in active_servers:
-            if server_id not in self.blocked_servers:
-                self.stop_client(server_id, block=False, verbose=False)
+            if server_id not in self.paused_servers:
+                self.stop_client(server_id, pause=False, verbose=False)
                 self.start_client(server_id, verbose=False)
 
     def load_processes(self):
@@ -180,9 +180,9 @@ class MQTTManager:
             if response.status_code == 200:
                 return response.json()
             else:
-                print(f"\nError al obtener servidores: {response.status_code} - {response.text}\n")
+                print(f"Error al obtener servidores: {response.status_code} - {response.text}")
         except requests.exceptions.RequestException as e:
-            print(f"\nExcepción al obtener servidores: {e}\n")
+            print(f"Error al obtener servidores: {e}")
         return []
 
     # Funciones principales de gestión de clientes
@@ -194,18 +194,18 @@ class MQTTManager:
             server_id: ID del servidor
             verbose (bool): Si es True, muestra mensajes en consola
         """
-        # Remover del conjunto de bloqueados si existe
-        self.blocked_servers.discard(str(server_id))
+        # Remover del conjunto de pausados si existe
+        self.paused_servers.discard(str(server_id))
         
         servers = self.get_servers()
         server_exists = any(str(server['id']) == str(server_id) for server in servers)
         
         if not server_exists:
-            if verbose: print(f"No existe ningún servidor con ID {server_id}")
+            if verbose: print(f"Error: No existe ningún servidor con ID {server_id}")
             return False
 
         if server_id in self.processes and psutil.pid_exists(self.processes[server_id]):
-            if verbose: print(f"El cliente para el servidor {server_id} ya está en ejecución")
+            if verbose: print(f"Error: El cliente para el servidor {server_id} ya está en ejecución")
             return False
 
         try:
@@ -244,13 +244,13 @@ class MQTTManager:
             if verbose: print(f"Error al iniciar cliente para servidor {server_id}: {e}")
             return False
 
-    def stop_client(self, server_id, verbose=True, block=True):
+    def stop_client(self, server_id, verbose=True, pause=True):
         """
         Detiene un cliente MQTT específico
         Args:
             server_id: ID del servidor
             verbose (bool): Si es True, muestra mensajes en consola
-            block (bool): Si es True, evita que el servidor se reinicie automáticamente
+            pause (bool): Si es True, evita que el servidor se reinicie automáticamente
         """
         if server_id not in self.processes:
             if verbose: print(f"No se encontró cliente para el servidor {server_id}")
@@ -300,9 +300,9 @@ class MQTTManager:
         # Siempre eliminar el proceso del diccionario si se detuvo o no existe
         if process_stopped:
             del self.processes[server_id]
-            if block:
-                self.blocked_servers.add(str(server_id))
-                if verbose: print(f"Servidor {server_id} bloqueado para reinicios automáticos")
+            if pause:
+                self.paused_servers.add(str(server_id))
+                if verbose: print(f"Servidor {server_id} pausado para reinicios automáticos")
             self.save_processes()
             if verbose: print(f"Cliente MQTT detenido para servidor {server_id}")
             return True
@@ -342,15 +342,15 @@ class MQTTManager:
             if server_id not in server_ids:
                 if verbose:
                     print(f"  → Deteniendo cliente {self.processes[server_id]} (servidor {server_id} ya no existe)")
-                self.stop_client(server_id, verbose=verbose, block=False)
+                self.stop_client(server_id, verbose=verbose, pause=False)
         
         if verbose:
             print("\n2. Verificando clientes que deben iniciarse o reiniciarse...")
         for server in servers:
             server_id = str(server['id'])
-            if server_id in self.blocked_servers:
+            if server_id in self.paused_servers:
                 if verbose:
-                    print(f"\n  → Omitiendo servidor {server_id} (bloqueado por usuario)")
+                    print(f"\n  → Omitiendo servidor {server_id} (pausado por usuario)")
                 continue
             
             if server_id not in self.processes:
@@ -360,7 +360,7 @@ class MQTTManager:
             elif not psutil.pid_exists(self.processes[server_id]):
                 if verbose:
                     print(f"\n  → Reiniciando cliente caído para servidor {server_id} ({server['name']})")
-                self.stop_client(server_id, verbose=verbose, block=False)
+                self.stop_client(server_id, verbose=verbose, pause=False)
                 self.start_client(server_id, verbose=verbose)
         
         if verbose:
@@ -373,30 +373,30 @@ class MQTTManager:
         server_map = {str(server['id']): server for server in servers}
         
         print("\nEstado de los clientes MQTT:")
-        print("-" * 100) 
-        print(f"{'ID':^5} | {'Nombre':^20} | {'Estado':^15} | {'PID':^10} | {'Log':^30}")
-        print("-" * 100)
+        print("-" * 90) 
+        print(f"{'ID':^5} | {'Nombre':^20} | {'Estado':^10} | {'PID':^10} | {'Log':^30}")
+        print("-" * 90)
         
         # Mostrar servidores activos
         for server_id, pid in self.processes.items():
             server = server_map.get(server_id, {'name': 'Desconocido'})
             is_running = psutil.pid_exists(pid)
             status = "Activo" if is_running else "Detenido"
-            if not is_running and str(server_id) in self.blocked_servers:
-                status += " (Bloq.)"  # Solo mostrar bloqueado si está detenido
+            if not is_running and str(server_id) in self.paused_servers:
+                status = "Pausado"
             
             log_file = self._get_latest_log(server_id)
             log_name = os.path.basename(log_file) if log_file else '-'
             
-            print(f"{server_id:^5} | {server['name'][:20]:^20} | {status:^15} | {pid:^10} | {log_name[:30]:^30}")
+            print(f"{server_id:^5} | {server['name'][:20]:^20} | {status:^10} | {pid:^10} | {log_name[:30]:^30}")
         
         # Mostrar servidores sin proceso
         for server in servers:
             server_id = str(server['id'])
             if server_id not in self.processes:
-                status = "Detenido" + (" (Bloq.)" if server_id in self.blocked_servers else "")
-                print(f"{server_id:^5} | {server['name'][:20]:^20} | {status:^15} | {'-':^10} | {'-':^30}")
-        print("-" * 100)
+                status = "Pausado" if server_id in self.paused_servers else "Detenido"
+                print(f"{server_id:^5} | {server['name'][:20]:^20} | {status:^10} | {'-':^10} | {'-':^30}")
+        print("-" * 90)
 
 def main():
     """Función principal del gestor"""
@@ -430,7 +430,7 @@ def main():
             
             elif option == '3':
                 server_id = input("Ingrese el ID del servidor: ")
-                manager.stop_client(server_id)  # Bloquear reinicio automático
+                manager.stop_client(server_id)
             
             elif option == '4':
                 print("\nIniciando verificación completa del sistema...")
@@ -441,7 +441,7 @@ def main():
             elif option == '5':
                 print("Deteniendo todos los clientes...")
                 for server_id in list(manager.processes.keys()):
-                    manager.stop_client(server_id, block=False)
+                    manager.stop_client(server_id, pause=False)
                 break
             
             else:
@@ -450,10 +450,10 @@ def main():
         except KeyboardInterrupt:
             print("\nDeteniendo solicitada por el usuario...")
             for server_id in list(manager.processes.keys()):
-                manager.stop_client(server_id)
+                manager.stop_client(server_id, pause=False)
             break
         except Exception as e:
-            print(f"Error inesperado: {e}")
+            print(f"Error: {e}")
 
 if __name__ == "__main__":
     main()
