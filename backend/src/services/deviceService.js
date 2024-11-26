@@ -1,4 +1,5 @@
 const { Device, Server } = require("../models");
+const { sequelize } = require("../models");
 const {
   NotFoundError,
   BadRequestError,
@@ -134,7 +135,20 @@ class DeviceService {
         serverId: { [Op.in]: serverIds },
         lastCommunication: { [Op.between]: [startDate, endDate] },
       },
-      attributes: ["serial", "lastCommunication"],
+      attributes: [
+        "serial",
+        "lastCommunication",
+        [
+          sequelize.literal(`(
+            SELECT COUNT(*)
+            FROM messages AS message
+            WHERE message.serial = Device.serial
+            AND message.timestamp >= '${startDate.toISOString()}'
+            AND message.timestamp <= '${endDate.toISOString()}'
+          )`),
+          "messageCount",
+        ],
+      ],
       order: [["lastCommunication", "DESC"]],
       limit,
       offset: (page - 1) * limit,
@@ -147,6 +161,7 @@ class DeviceService {
       devices: devices.map((d) => ({
         serial: d.serial,
         lastCommunication: d.lastCommunication,
+        messageCount: parseInt(d.getDataValue("messageCount")),
       })),
       totalItems,
       page,
