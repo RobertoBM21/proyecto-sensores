@@ -24,6 +24,10 @@ export const useSearchStore = defineStore("search", {
       this.filters.page = page;
     },
 
+    setSelectedServers(servers) {
+      this.filters.selectedServers = servers;
+    },
+
     setResults(data) {
       this.results = data.messages || [];
       this.metadata = {

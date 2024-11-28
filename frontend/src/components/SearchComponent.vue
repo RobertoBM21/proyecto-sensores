@@ -62,20 +62,18 @@ export default {
   data() {
     return {
       servers: [],
-      selectedServers: [],
       serial: "",
       dateRange: "",
-      selectedServerNames: "",
     };
   },
   computed: {
-    paginatedResults() {
-      const start = (this.currentPage - 1) * this.resultsPerPage;
-      const end = start + this.resultsPerPage;
-      return this.searchResults.slice(start, end);
-    },
-    totalPages() {
-      return Math.ceil(this.searchResults.length / this.resultsPerPage);
+    selectedServers: {
+      get() {
+        return this.search.filters.selectedServers;
+      },
+      set(value) {
+        this.search.setSelectedServers(value);
+      },
     },
   },
   methods: {
@@ -93,7 +91,6 @@ export default {
       this.search.setFilters({
         serial: this.serial,
         dateRange: this.dateRange,
-        selectedServers: this.selectedServers,
       });
 
       let url = new URL(`${this.apiUrl}/messages/search`);
@@ -126,21 +123,6 @@ export default {
           this.search.clearResults();
         });
     },
-    updateSelectedServerNames() {
-      const selectedNames = this.servers
-        .filter((server) => this.selectedServers.includes(server.id))
-        .map((server) => server.name);
-
-      this.selectedServerNames = selectedNames.length
-        ? selectedNames.join(", ")
-        : "";
-    },
-  },
-  watch: {
-    servers: {
-      handler: "updateSelectedServerNames",
-      immediate: true,
-    },
   },
   created() {
     this.fetchServers();
@@ -151,112 +133,101 @@ export default {
 <template>
   <div>
     <HeaderComponent />
-    <div class="mt-2 text-right px-4">
-      <DropdownMenu>
-        <DropdownMenuTrigger as-child>
-          <Button variant="outline">
-            {{ selectedServerNames || "Servidores" }}
-            <i class="bi bi-chevron-down ml-2"></i>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent class="w-48">
-          <DropdownMenuLabel>Servidores disponibles</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <div class="px-2 py-1.5" v-if="servers.length === 0">
-            <p class="text-sm text-muted-foreground text-center">
-              No hay servidores disponibles
-            </p>
-          </div>
-          <div
-            v-else
-            v-for="server in servers"
-            :key="server.id"
-            class="flex items-center space-x-2 px-2 py-1.5"
-          >
-            <Checkbox
-              :id="'server-' + server.id"
-              :value="server.id"
-              v-model="selectedServers"
-              @change="updateSelectedServerNames"
-            />
-            <Label :for="'server-' + server.id">{{ server.name }}</Label>
-          </div>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-
-    <div class="min-h-screen flex flex-col">
-      <main class="flex-grow">
-        <div class="container mx-auto px-4 my-20">
-          <div class="text-center mb-20">
-            <h1
-              class="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-6"
-            >
-              Sensores
-            </h1>
-            <p class="text-xl text-muted-foreground">
-              Aquí podrás acceder a la información transmitida por los sensores
-              de OdinS distribuidos por todo el país.
-            </p>
-          </div>
-
-          <form class="max-w-4xl mx-auto" @submit.prevent="searchDevices">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
-              <div class="md:col-span-8">
-                <div class="space-y-2">
-                  <Label for="serial">Número de serie</Label>
-                  <Input
-                    type="text"
-                    id="serial"
-                    v-model="serial"
-                    placeholder="Introduce el número de serie"
-                  />
-                </div>
-              </div>
-              <div class="md:col-span-4">
-                <div class="space-y-2">
-                  <Label for="dateRange">Rango de fecha</Label>
-                  <Select v-model="dateRange">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona un rango de fecha" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Rangos de fecha</SelectLabel>
-                        <SelectItem value="">Sin filtro de fecha</SelectItem>
-                        <SelectItem value="last_5_minutes"
-                          >Últimos 5 minutos</SelectItem
-                        >
-                        <SelectItem value="last_15_minutes"
-                          >Últimos 15 minutos</SelectItem
-                        >
-                        <SelectItem value="last_30_minutes"
-                          >Últimos 30 minutos</SelectItem
-                        >
-                        <SelectItem value="last_hour">Última hora</SelectItem>
-                        <SelectItem value="last_24_hours"
-                          >Últimas 24 horas</SelectItem
-                        >
-                        <SelectItem value="today">Hoy</SelectItem>
-                        <SelectItem value="yesterday">Ayer</SelectItem>
-                        <SelectItem value="last_week">Última semana</SelectItem>
-                        <SelectItem value="last_month">Último mes</SelectItem>
-                        <SelectItem value="last_year">Último año</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+    <div class="container mx-auto px-4 py-4">
+      <form @submit.prevent="searchDevices">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+          <div class="md:col-span-5">
+            <div class="space-y-2">
+              <Label for="serial">Número de serie</Label>
+              <Input
+                type="text"
+                id="serial"
+                v-model="serial"
+                placeholder="Introduce el número de serie"
+              />
             </div>
-
-            <div class="text-center mb-20">
-              <Button type="submit" size="lg">Buscar</Button>
+          </div>
+          <div class="md:col-span-3">
+            <div class="space-y-2">
+              <Label for="dateRange">Rango de fecha</Label>
+              <Select v-model="dateRange">
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona un rango de fecha" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Rangos de fecha</SelectLabel>
+                    <SelectItem value="">Sin filtro de fecha</SelectItem>
+                    <SelectItem value="last_5_minutes"
+                      >Últimos 5 minutos</SelectItem
+                    >
+                    <SelectItem value="last_15_minutes"
+                      >Últimos 15 minutos</SelectItem
+                    >
+                    <SelectItem value="last_30_minutes"
+                      >Últimos 30 minutos</SelectItem
+                    >
+                    <SelectItem value="last_hour">Última hora</SelectItem>
+                    <SelectItem value="last_24_hours"
+                      >Últimas 24 horas</SelectItem
+                    >
+                    <SelectItem value="today">Hoy</SelectItem>
+                    <SelectItem value="yesterday">Ayer</SelectItem>
+                    <SelectItem value="last_week">Última semana</SelectItem>
+                    <SelectItem value="last_month">Último mes</SelectItem>
+                    <SelectItem value="last_year">Último año</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
-          </form>
-
-          <ResultsComponent />
+          </div>
+          <div class="md:col-span-3">
+            <div class="space-y-2">
+              <Label>Servidores</Label>
+              <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                  <Button
+                    variant="outline"
+                    class="w-full justify-between h-10 text-muted-foreground font-normal"
+                  >
+                    Seleccionar servidores
+                    <i class="bi bi-chevron-down ml-2"></i>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent class="w-56">
+                  <div class="px-2 py-1.5" v-if="servers.length === 0">
+                    <p class="text-sm text-muted-foreground text-center">
+                      No hay servidores disponibles
+                    </p>
+                  </div>
+                  <div
+                    v-else
+                    v-for="server in servers"
+                    :key="server.id"
+                    class="flex items-center space-x-2 px-2 py-1.5"
+                  >
+                    <Checkbox
+                      :id="'server-' + server.id"
+                      :value="server.id"
+                      v-model="selectedServers"
+                    />
+                    <Label :for="'server-' + server.id">{{
+                      server.name
+                    }}</Label>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+          <div class="md:col-span-1">
+            <Button type="submit" class="w-full">Buscar</Button>
+          </div>
         </div>
-      </main>
+      </form>
+
+      <div class="mt-8">
+        <ResultsComponent />
+      </div>
     </div>
     <FooterComponent />
   </div>
