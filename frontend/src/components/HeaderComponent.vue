@@ -10,7 +10,7 @@ const mode = useColorMode();
   <header
     class="sticky z-40 top-0 bg-background/80 backdrop-blur-lg border-b border-border"
   >
-    <div class="px-4 py-2 flex justify-between items-center">
+    <div class="container px-4 py-2 flex justify-between items-center">
       <router-link to="/" class="font-medium"> Home </router-link>
       <Button
         variant="ghost"
@@ -25,7 +25,7 @@ const mode = useColorMode();
           icon="radix-icons:moon"
           class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
         />
-        <span class="sr-only">Toggle theme</span>
+        <span class="sr-only">Cambiar Tema</span>
       </Button>
     </div>
   </header>

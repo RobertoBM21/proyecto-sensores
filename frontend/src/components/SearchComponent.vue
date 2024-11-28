@@ -25,6 +25,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default {
   components: {
@@ -48,6 +53,9 @@ export default {
     SelectLabel,
     SelectTrigger,
     SelectValue,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
   },
   setup() {
     const config = useConfigStore();
@@ -64,6 +72,18 @@ export default {
       servers: [],
       serial: "",
       dateRange: "",
+      dateRangeOptions: [
+        { value: "last_5_minutes", label: "Últimos 5 minutos" },
+        { value: "last_15_minutes", label: "Últimos 15 minutos" },
+        { value: "last_30_minutes", label: "Últimos 30 minutos" },
+        { value: "last_hour", label: "Última hora" },
+        { value: "today", label: "Hoy" },
+        { value: "last_24_hours", label: "Últimas 24 horas" },
+        { value: "yesterday", label: "Ayer" },
+        { value: "last_week", label: "Última semana" },
+        { value: "last_month", label: "Último mes" },
+        { value: "last_year", label: "Último año" },
+      ],
     };
   },
   computed: {
@@ -75,13 +95,24 @@ export default {
         this.search.setSelectedServers(value);
       },
     },
+    selectedDateRangeLabel() {
+      const option = this.dateRangeOptions.find(
+        (opt) => opt.value === this.dateRange
+      );
+      return option ? option.label : "Selecciona un rango de fechas";
+    },
   },
   methods: {
+    getTextColorClass(hasValue) {
+      return hasValue ? "text-foreground" : "text-muted-foreground";
+    },
     fetchServers() {
       fetch(`${this.apiUrl}/servers`)
         .then((response) => response.json())
         .then((data) => {
           this.servers = data;
+          // Inicializar con todos los servidores seleccionados
+          this.selectedServers = data.map((server) => server.id);
         })
         .catch((error) => {
           console.error("Error fetching servers:", error);
@@ -91,6 +122,7 @@ export default {
       this.search.setFilters({
         serial: this.serial,
         dateRange: this.dateRange,
+        selectedServers: this.selectedServers,
       });
 
       let url = new URL(`${this.apiUrl}/messages/search`);
@@ -104,7 +136,7 @@ export default {
         });
       }
 
-      // Añadir parámetros de paginación
+      // Añadir parámetros de paginación y otros campos que puedan ser necesarios
       params.append("page", this.search.filters.page.toString());
       params.append("limit", this.search.filters.limit.toString());
 
@@ -122,6 +154,15 @@ export default {
           console.error("Error fetching data:", error);
           this.search.clearResults();
         });
+    },
+  },
+  watch: {
+    // Asegurarse de que los cambios en selectedServers se persistan en el store
+    selectedServers: {
+      handler(newValue) {
+        this.search.setSelectedServers(newValue);
+      },
+      deep: true,
     },
   },
   created() {
@@ -150,35 +191,48 @@ export default {
           <div class="md:col-span-3">
             <div class="space-y-2">
               <Label for="dateRange">Rango de fecha</Label>
-              <Select v-model="dateRange">
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona un rango de fecha" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Rangos de fecha</SelectLabel>
-                    <SelectItem value="">Sin filtro de fecha</SelectItem>
-                    <SelectItem value="last_5_minutes"
-                      >Últimos 5 minutos</SelectItem
-                    >
-                    <SelectItem value="last_15_minutes"
-                      >Últimos 15 minutos</SelectItem
-                    >
-                    <SelectItem value="last_30_minutes"
-                      >Últimos 30 minutos</SelectItem
-                    >
-                    <SelectItem value="last_hour">Última hora</SelectItem>
-                    <SelectItem value="last_24_hours"
-                      >Últimas 24 horas</SelectItem
-                    >
-                    <SelectItem value="today">Hoy</SelectItem>
-                    <SelectItem value="yesterday">Ayer</SelectItem>
-                    <SelectItem value="last_week">Última semana</SelectItem>
-                    <SelectItem value="last_month">Último mes</SelectItem>
-                    <SelectItem value="last_year">Último año</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <Popover>
+                <PopoverTrigger as-child>
+                  <Button
+                    variant="outline"
+                    :class="[
+                      'w-full justify-start',
+                      getTextColorClass(dateRange),
+                      'font-normal',
+                    ]"
+                  >
+                    {{ selectedDateRangeLabel }}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent class="w-[300px]">
+                  <div class="grid gap-4">
+                    <div class="space-y-2">
+                      <h4 class="font-medium leading-none">Rango de fechas</h4>
+                      <p class="text-sm text-muted-foreground">
+                        Selecciona el período de tiempo para la búsqueda
+                      </p>
+                    </div>
+                    <div class="grid gap-2">
+                      <Select v-model="dateRange" class="w-full">
+                        <SelectTrigger>
+                          <SelectValue :placeholder="selectedDateRangeLabel" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem
+                              v-for="option in dateRangeOptions"
+                              :key="option.value"
+                              :value="option.value"
+                            >
+                              {{ option.label }}
+                            </SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
           <div class="md:col-span-3">
@@ -188,9 +242,17 @@ export default {
                 <DropdownMenuTrigger as-child>
                   <Button
                     variant="outline"
-                    class="w-full justify-between h-10 text-muted-foreground font-normal"
+                    :class="[
+                      'w-full justify-between h-10',
+                      getTextColorClass(selectedServers.length > 0),
+                      'font-normal',
+                    ]"
                   >
-                    Seleccionar servidores
+                    {{
+                      selectedServers.length > 0
+                        ? `${selectedServers.length} servidor(es) seleccionado(s)`
+                        : "Seleccionar servidores"
+                    }}
                     <i class="bi bi-chevron-down ml-2"></i>
                   </Button>
                 </DropdownMenuTrigger>
@@ -200,20 +262,35 @@ export default {
                       No hay servidores disponibles
                     </p>
                   </div>
-                  <div
-                    v-else
-                    v-for="server in servers"
-                    :key="server.id"
-                    class="flex items-center space-x-2 px-2 py-1.5"
-                  >
-                    <Checkbox
-                      :id="'server-' + server.id"
-                      :value="server.id"
-                      v-model="selectedServers"
-                    />
-                    <Label :for="'server-' + server.id">{{
-                      server.name
-                    }}</Label>
+                  <div v-else>
+                    <div
+                      class="flex items-center space-x-2 px-2 py-1.5 border-b"
+                    >
+                      <Checkbox
+                        id="select-all"
+                        :checked="selectedServers.length === servers.length"
+                        @change="
+                          selectedServers = $event.target.checked
+                            ? servers.map((s) => s.id)
+                            : []
+                        "
+                      />
+                      <Label for="select-all">Seleccionar todos</Label>
+                    </div>
+                    <div
+                      v-for="server in servers"
+                      :key="server.id"
+                      class="flex items-center space-x-2 px-2 py-1.5"
+                    >
+                      <Checkbox
+                        :id="'server-' + server.id"
+                        :value="server.id"
+                        v-model="selectedServers"
+                      />
+                      <Label :for="'server-' + server.id">{{
+                        server.name
+                      }}</Label>
+                    </div>
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
