@@ -31,10 +31,10 @@ export default {
     <main class="flex-grow flex items-center">
       <div class="container mx-auto px-4 py-8">
         <div class="text-center mb-12">
-          <h1 class="text-3xl font-bold mb-6">Sensores OdinS</h1>
+          <h1 class="text-3xl font-bold mb-6">Sensores</h1>
           <p class="text-gray-600 max-w-2xl mx-auto">
-            Bienvenido al sistema de gestión de sensores OdinS. Desde aquí
-            podrás acceder a todas las funcionalidades del sistema.
+            Bienvenido al sistema de gestión de sensores. Desde aquí podrás
+            acceder a todas las funcionalidades del sistema.
           </p>
         </div>
 
@@ -45,7 +45,8 @@ export default {
             <CardHeader class="text-center">
               <CardTitle>Búsqueda de Sensores</CardTitle>
               <CardDescription>
-                Accede a la información de los sensores OdinS
+                Accede a la información de los sensores registrados en el
+                sistema
               </CardDescription>
             </CardHeader>
             <CardContent class="flex justify-center">

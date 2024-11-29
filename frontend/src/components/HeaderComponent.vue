@@ -8,7 +8,9 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
 const mode = useColorMode();
 </script>
 
@@ -18,12 +20,15 @@ const mode = useColorMode();
   >
     <div class="container px-4 py-2 flex justify-between items-center">
       <NavigationMenu>
-        <NavigationMenuList>
+        <NavigationMenuList class="flex items-center space-x-6 font-medium">
           <NavigationMenuItem>
             <NavigationMenuLink asChild>
               <router-link
                 to="/"
-                class="font-medium px-4 py-2 hover:bg-accent hover:text-accent-foreground rounded-md"
+                :class="[
+                  'transition-colors hover:text-foreground/80 text-foreground/60',
+                  route.path === '/' && 'font-semibold !text-foreground',
+                ]"
               >
                 Home
               </router-link>
@@ -33,7 +38,10 @@ const mode = useColorMode();
             <NavigationMenuLink asChild>
               <router-link
                 to="/search"
-                class="font-medium px-4 py-2 hover:bg-accent hover:text-accent-foreground rounded-md"
+                :class="[
+                  'transition-colors hover:text-foreground/80 text-foreground/60',
+                  route.path === '/search' && 'font-semibold !text-foreground',
+                ]"
               >
                 Búsqueda
               </router-link>
@@ -43,7 +51,10 @@ const mode = useColorMode();
             <NavigationMenuLink asChild>
               <router-link
                 to="/login"
-                class="font-medium px-4 py-2 hover:bg-accent hover:text-accent-foreground rounded-md"
+                :class="[
+                  'transition-colors hover:text-foreground/80 text-foreground/60',
+                  route.path === '/login' && 'font-semibold !text-foreground',
+                ]"
               >
                 Login
               </router-link>
