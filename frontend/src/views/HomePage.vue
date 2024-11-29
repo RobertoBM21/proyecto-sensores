@@ -39,7 +39,7 @@ export default {
         </div>
 
         <div
-          class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12"
+          class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-12"
         >
           <Card class="md:col-span-3 w-fit mx-auto">
             <CardHeader class="text-center">

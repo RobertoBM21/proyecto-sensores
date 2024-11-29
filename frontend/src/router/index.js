@@ -3,12 +3,12 @@ import LoginPage from "../views/LoginPage.vue";
 
 const routes = [
   {
-    path: "/",
+    path: "/login",
     name: "login",
     component: LoginPage,
   },
   {
-    path: "/home",
+    path: "/",
     name: "home",
     component: () => import("../views/HomePage.vue"),
   },
