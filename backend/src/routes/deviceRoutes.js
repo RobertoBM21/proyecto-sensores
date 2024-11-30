@@ -69,7 +69,9 @@ router.post("/", deviceController.createDevice);
  *             type: integer
  *         style: form
  *         explode: false
- *         description: Array de IDs de servidores a consultar
+ *         description: |
+ *           Array de IDs de servidores a consultar.
+ *           Formato: serverIds=1,2,3
  *       - in: query
  *         name: startDate
  *         required: true

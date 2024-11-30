@@ -42,7 +42,17 @@ exports.deleteMessage = async (req, res) => {
 
 // Buscar mensajes mediante filtros
 exports.searchMessages = async (req, res) => {
-  const params = validateSearchParams(req.query); //* Validación
+  //? Parsear serverIds solo si existe, ya que aun no se ha validado en el schema, pero se tiene que hacer antes para evitar errores
+  const query = {
+    ...req.query,
+    serverIds: req.query.serverIds
+      ? Array.isArray(req.query.serverIds)
+        ? req.query.serverIds
+        : req.query.serverIds.split(",").map(Number)
+      : undefined,
+  };
+
+  const params = validateSearchParams(query); //* Validación
   const messages = await messageService.searchMessages(params);
   res.json(messages);
 };

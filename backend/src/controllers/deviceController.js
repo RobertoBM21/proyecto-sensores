@@ -59,7 +59,7 @@ exports.deleteDevice = async (req, res) => {
 
 // Obtener reporte de actividad de dispositivos
 exports.getDeviceActivityReport = async (req, res) => {
-  // Parsear serverIds solo si existe
+  //? Parsear serverIds solo si existe, ya que aun no se ha validado en el schema, pero se tiene que hacer antes para evitar errores
   const query = {
     ...req.query,
     serverIds: req.query.serverIds

@@ -40,10 +40,15 @@ const validDateRanges = [
 const messageSearchSchema = Joi.object({
   serial: Joi.string(),
   apikey: Joi.string(),
-  serverId: Joi.number().integer().positive().messages({
-    "number.base": 'El campo "serverId" debe ser un número entero.',
-    "number.positive": 'El campo "serverId" debe ser un número positivo.',
-  }),
+  serverIds: Joi.array()
+    .items(Joi.number().integer().positive())
+    .optional()
+    .messages({
+      "array.base": 'El campo "serverIds" debe ser un array.',
+      "number.base": "Los IDs de servidor deben ser números.",
+      "number.integer": "Los IDs de servidor deben ser números enteros.",
+      "number.positive": "Los IDs de servidor deben ser números positivos.",
+    }),
   startDate: Joi.date().iso().messages({
     "date.base": 'El campo "startDate" debe ser una fecha válida.',
     "date.format": 'El campo "startDate" debe estar en formato ISO.',

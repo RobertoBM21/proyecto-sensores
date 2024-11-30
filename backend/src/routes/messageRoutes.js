@@ -40,10 +40,17 @@ router.get("/", messageController.getAllMessages);
  *           type: string
  *         description: Serial del dispositivo
  *       - in: query
- *         name: serverId
+ *         name: serverIds
+ *         required: false
  *         schema:
- *           type: integer
- *         description: ID del servidor
+ *           type: array
+ *           items:
+ *             type: integer
+ *         style: form
+ *         explode: false
+ *         description: |
+ *           Array de IDs de servidores a consultar.
+ *           Formato: serverIds=1,2,3
  *       - in: query
  *         name: startDate
  *         schema:

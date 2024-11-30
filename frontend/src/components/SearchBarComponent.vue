@@ -38,36 +38,35 @@ export default {
         apikey: this.apikey,
       });
 
-      let url = new URL(`${this.apiUrl}/messages/search`);
-      let params = new URLSearchParams();
-
-      // Obtener todos los filtros directamente del store
-      const filters = {
-        serial: this.search.filters.serial,
-        apikey: this.search.filters.apikey,
-        startDate: this.search.filters.startDate,
-        endDate: this.search.filters.endDate,
-        dateRange: this.search.filters.dateRange,
-        page: this.search.filters.page.toString(),
-        limit: this.search.filters.limit.toString(),
+      // Crear un objeto con todos los parámetros
+      const params = {
+        ...(this.search.filters.serial && {
+          serial: this.search.filters.serial,
+        }),
+        ...(this.search.filters.apikey && {
+          apikey: this.search.filters.apikey,
+        }),
+        ...(this.search.filters.selectedServers.length > 0 && {
+          serverIds: this.search.filters.selectedServers.join(","),
+          ...(this.search.filters.startDate && {
+            startDate: this.search.filters.startDate,
+          }),
+          ...(this.search.filters.endDate && {
+            endDate: this.search.filters.endDate,
+          }),
+          ...(this.search.filters.dateRange && {
+            dateRange: this.search.filters.dateRange,
+          }),
+          page: this.search.filters.page,
+          limit: this.search.filters.limit,
+        }),
       };
 
-      // Añadir solo los parámetros que no estén vacíos
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value) {
-          params.append(key, value);
-        }
+      // Crear la URL con los parámetros
+      const url = new URL(`${this.apiUrl}/messages/search`);
+      Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.append(key, value);
       });
-
-      // Añadir servidores seleccionados
-      const selectedServers = this.search.filters.selectedServers;
-      if (selectedServers.length > 0) {
-        selectedServers.forEach((serverId) => {
-          params.append("serverId", serverId);
-        });
-      }
-
-      url.search = params.toString();
 
       fetch(url)
         .then((response) => {

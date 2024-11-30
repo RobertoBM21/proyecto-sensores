@@ -6,10 +6,10 @@ export const useSearchStore = defineStore("search", {
     filters: {
       serial: "",
       apikey: "",
+      selectedServers: [],
       startDate: "",
       endDate: "",
       dateRange: "",
-      selectedServers: [],
       page: 1,
       limit: 10,
     },

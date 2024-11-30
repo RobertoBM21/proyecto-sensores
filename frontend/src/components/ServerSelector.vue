@@ -34,6 +34,8 @@ export default {
   data() {
     return {
       servers: [],
+      loading: false,
+      error: null,
     };
   },
   computed: {
@@ -41,51 +43,69 @@ export default {
       const totalServers = this.servers.length;
       const selectedCount = this.search.filters.selectedServers.length;
 
-      if (selectedCount === 0) return "none";
-      if (selectedCount === totalServers) return "all";
-      return "partial";
+      return selectedCount === 0
+        ? "none"
+        : selectedCount === totalServers
+        ? "all"
+        : "partial";
+    },
+    selectionIcon() {
+      const icons = {
+        all: "radix-icons:cross-2",
+        partial: "radix-icons:plus",
+        none: "radix-icons:stack",
+      };
+      return icons[this.selectionState];
+    },
+    selectionTitle() {
+      return this.selectionState === "all"
+        ? "Borrar selección"
+        : "Seleccionar todos";
     },
   },
   methods: {
-    fetchServers() {
-      fetch(`${this.apiUrl}/servers`)
-        .then((response) => response.json())
-        .then((data) => {
-          this.servers = data;
-          this.search.setSelectedServers(data.map((server) => server.id));
-        })
-        .catch((error) => {
-          console.error("Error fetching servers:", error);
-        });
+    async fetchServers() {
+      this.loading = true;
+      this.error = null;
+
+      try {
+        const response = await fetch(`${this.apiUrl}/servers`);
+        if (!response.ok) throw new Error("Error al cargar servidores");
+
+        this.servers = await response.json();
+        if (this.servers.length > 0) {
+          this.search.setSelectedServers(
+            this.servers.map((server) => server.id)
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching servers:", error);
+        this.error = "Error al cargar los servidores";
+      } finally {
+        this.loading = false;
+      }
     },
     handleServerChange(serverId) {
-      const currentSelection = [...this.search.filters.selectedServers];
-      const index = currentSelection.indexOf(serverId);
+      const currentSelection = new Set(this.search.filters.selectedServers);
 
-      if (index === -1) {
-        currentSelection.push(serverId);
+      if (currentSelection.has(serverId)) {
+        currentSelection.delete(serverId);
       } else {
-        currentSelection.splice(index, 1);
+        currentSelection.add(serverId);
       }
 
-      this.search.setSelectedServers(currentSelection);
+      this.search.setSelectedServers([...currentSelection]);
     },
     isServerSelected(serverId) {
       return this.search.filters.selectedServers.includes(serverId);
     },
-    selectAllServers() {
-      const allServerIds = this.servers.map((server) => server.id);
-      this.search.setSelectedServers(allServerIds);
-    },
     toggleAllServers() {
-      if (this.selectionState === "all") {
-        // Si todos están seleccionados, deseleccionar todos
-        this.search.setSelectedServers([]);
-      } else {
-        // Si hay algunos o ninguno seleccionado, seleccionar todos
-        const allServerIds = this.servers.map((server) => server.id);
-        this.search.setSelectedServers(allServerIds);
-      }
+      const newSelection =
+        this.selectionState === "all"
+          ? []
+          : this.servers.map((server) => server.id);
+
+      this.search.setSelectedServers(newSelection);
     },
   },
   created() {
@@ -104,7 +124,17 @@ export default {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent class="w-auto">
-        <div class="px-2 py-1.5" v-if="servers.length === 0">
+        <div v-if="loading" class="px-2 py-1.5">
+          <p class="text-sm text-muted-foreground text-center">
+            Cargando servidores...
+          </p>
+        </div>
+        <div v-else-if="error" class="px-2 py-1.5">
+          <p class="text-sm text-destructive text-center">
+            {{ error }}
+          </p>
+        </div>
+        <div v-else-if="servers.length === 0" class="px-2 py-1.5">
           <p class="text-sm text-muted-foreground text-center">
             No hay servidores disponibles
           </p>
@@ -117,22 +147,9 @@ export default {
               size="icon"
               class="h-4 w-4 text-muted-foreground hover:text-foreground ml-4"
               @click="toggleAllServers"
-              :title="
-                selectionState === 'all'
-                  ? 'Borrar selección'
-                  : 'Seleccionar todos'
-              "
+              :title="selectionTitle"
             >
-              <Icon
-                :icon="
-                  selectionState === 'all'
-                    ? 'radix-icons:cross-2'
-                    : selectionState === 'partial'
-                    ? 'radix-icons:plus'
-                    : 'radix-icons:stack'
-                "
-                class="h-3 w-3"
-              />
+              <Icon :icon="selectionIcon" class="h-3 w-3" />
             </Button>
           </div>
           <div

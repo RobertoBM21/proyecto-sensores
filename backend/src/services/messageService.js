@@ -60,7 +60,7 @@ class MessageService {
     const {
       serial,
       apikey,
-      serverId,
+      serverIds,
       startDate,
       endDate,
       dateRange,
@@ -77,7 +77,11 @@ class MessageService {
     if (apikey) {
       baseWhere["$Device.apikey$"] = apikey;
     }
-    if (serverId) baseWhere["$Device.serverId$"] = serverId;
+    if (serverIds) {
+      // No comprobar si los servidores existen ya que es más eficiente y
+      // no afecta a la integridad de los datos => si no existen simplemente no se encontrarán mensajes
+      baseWhere["$Device.serverId$"] = { [Op.in]: serverIds };
+    }
     if (startDate || endDate || dateRange) {
       baseWhere.timestamp = {};
       if (dateRange) {
