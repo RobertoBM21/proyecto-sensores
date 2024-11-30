@@ -36,7 +36,16 @@ export default {
       servers: [],
     };
   },
-  computed: {},
+  computed: {
+    selectionState() {
+      const totalServers = this.servers.length;
+      const selectedCount = this.search.filters.selectedServers.length;
+
+      if (selectedCount === 0) return "none";
+      if (selectedCount === totalServers) return "all";
+      return "partial";
+    },
+  },
   methods: {
     fetchServers() {
       fetch(`${this.apiUrl}/servers`)
@@ -64,6 +73,20 @@ export default {
     isServerSelected(serverId) {
       return this.search.filters.selectedServers.includes(serverId);
     },
+    selectAllServers() {
+      const allServerIds = this.servers.map((server) => server.id);
+      this.search.setSelectedServers(allServerIds);
+    },
+    toggleAllServers() {
+      if (this.selectionState === "all") {
+        // Si todos están seleccionados, deseleccionar todos
+        this.search.setSelectedServers([]);
+      } else {
+        // Si hay algunos o ninguno seleccionado, seleccionar todos
+        const allServerIds = this.servers.map((server) => server.id);
+        this.search.setSelectedServers(allServerIds);
+      }
+    },
   },
   created() {
     this.fetchServers();
@@ -87,13 +110,35 @@ export default {
           </p>
         </div>
         <div v-else>
-          <div class="px-2 py-1.5 border-b">
+          <div class="flex items-center justify-between px-2 py-2.5 border-b">
             <Label>Servidores disponibles</Label>
+            <Button
+              variant="ghost"
+              size="icon"
+              class="h-4 w-4 text-muted-foreground hover:text-foreground ml-4"
+              @click="toggleAllServers"
+              :title="
+                selectionState === 'all'
+                  ? 'Borrar selección'
+                  : 'Seleccionar todos'
+              "
+            >
+              <Icon
+                :icon="
+                  selectionState === 'all'
+                    ? 'radix-icons:cross-2'
+                    : selectionState === 'partial'
+                    ? 'radix-icons:plus'
+                    : 'radix-icons:stack'
+                "
+                class="h-3 w-3"
+              />
+            </Button>
           </div>
           <div
             v-for="server in servers"
             :key="server.id"
-            class="flex items-center space-x-2 px-2 py-1.5"
+            class="flex items-center space-x-2 px-2 py-2.5"
           >
             <Checkbox
               :id="'server-' + server.id"
