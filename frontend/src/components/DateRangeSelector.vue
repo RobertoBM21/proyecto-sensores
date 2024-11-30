@@ -158,7 +158,10 @@ export default {
     dateRange: {
       handler(newValue) {
         if (newValue) {
-          this.clearCalendar();
+          this.dateValue = {
+            start: null,
+            end: null,
+          };
           this.search.setFilters({
             dateRange: newValue,
             startDate: "",
@@ -232,7 +235,7 @@ export default {
               O escoge los días y horas que desees
             </p>
 
-            <div class="grid grid-cols-[1fr,200px] gap-4">
+            <div class="grid grid-cols-[1fr,180px] gap-4">
               <RangeCalendar
                 v-model="dateValue"
                 class="rounded-md border p-3"
@@ -240,14 +243,13 @@ export default {
 
               <div class="space-y-4 p-3 border rounded-md">
                 <div>
-                  <h4 class="font-medium text-center mb-2">Hora</h4>
                   <div class="flex items-center space-x-2">
+                    <Label for="time-selection">Especificar Hora</Label>
                     <Switch
                       id="time-selection"
                       :checked="showTimeSelection"
                       @update:checked="showTimeSelection = $event"
                     />
-                    <Label for="time-selection">Especificar hora</Label>
                   </div>
                 </div>
 

@@ -4,24 +4,16 @@ import { useSearchStore } from "../stores/search";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import DateRangeSelector from "./DateRangeSelector.vue";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-} from "@/components/ui/dropdown-menu";
+import ServerSelector from "./ServerSelector.vue";
 
 export default {
   components: {
     Button,
     Input,
     Label,
-    Checkbox,
-    DropdownMenu,
-    DropdownMenuTrigger,
-    DropdownMenuContent,
     DateRangeSelector,
+    ServerSelector,
   },
   setup() {
     const config = useConfigStore();
@@ -35,43 +27,15 @@ export default {
   },
   data() {
     return {
-      servers: [],
       serial: "",
       apikey: "",
     };
   },
-  computed: {
-    selectedServers: {
-      get() {
-        return this.search.filters.selectedServers;
-      },
-      set(value) {
-        this.search.setSelectedServers(value);
-      },
-    },
-  },
   methods: {
-    getTextColorClass(hasValue) {
-      return hasValue ? "text-foreground" : "text-muted-foreground";
-    },
-    fetchServers() {
-      fetch(`${this.apiUrl}/servers`)
-        .then((response) => response.json())
-        .then((data) => {
-          this.servers = data;
-          // Inicializar con todos los servidores seleccionados
-          this.selectedServers = data.map((server) => server.id);
-        })
-        .catch((error) => {
-          console.error("Error fetching servers:", error);
-        });
-    },
     searchMessages() {
-      // Actualizar los filtros en el store
       this.search.setFilters({
         serial: this.serial,
         apikey: this.apikey,
-        selectedServers: this.selectedServers,
       });
 
       let url = new URL(`${this.apiUrl}/messages/search`);
@@ -119,26 +83,16 @@ export default {
         });
     },
   },
-  watch: {
-    // Asegurarse de que los cambios en selectedServers se persistan en el store
-    selectedServers: {
-      handler(newValue) {
-        this.search.setSelectedServers(newValue);
-      },
-      deep: true,
-    },
-  },
-  created() {
-    this.fetchServers();
-  },
 };
 </script>
 
 <template>
   <form @submit.prevent="searchMessages">
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+    <div
+      class="grid grid-cols-1 md:grid-cols-[2fr,1.5fr,2fr,auto,auto] gap-4 items-end"
+    >
       <!-- Serial input -->
-      <div class="md:col-span-3">
+      <div>
         <div class="space-y-2">
           <Label for="serial">Número de serie</Label>
           <Input
@@ -151,7 +105,7 @@ export default {
       </div>
 
       <!-- API Key input -->
-      <div class="md:col-span-2">
+      <div>
         <div class="space-y-2">
           <Label for="apikey">API Key</Label>
           <Input
@@ -164,72 +118,18 @@ export default {
       </div>
 
       <!-- Date Range Selector -->
-      <div class="md:col-span-3">
+      <div>
         <DateRangeSelector />
       </div>
 
       <!-- Servers selector -->
-      <div class="md:col-span-3">
-        <div class="space-y-2">
-          <Label>Servidores</Label>
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button
-                variant="outline"
-                :class="[
-                  'w-full justify-between h-10',
-                  getTextColorClass(selectedServers.length > 0),
-                  'font-normal',
-                ]"
-              >
-                {{
-                  selectedServers.length > 0
-                    ? `${selectedServers.length} servidor(es) seleccionado(s)`
-                    : "Seleccionar servidores"
-                }}
-                <i class="bi bi-chevron-down ml-2"></i>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent class="w-56">
-              <div class="px-2 py-1.5" v-if="servers.length === 0">
-                <p class="text-sm text-muted-foreground text-center">
-                  No hay servidores disponibles
-                </p>
-              </div>
-              <div v-else>
-                <div class="flex items-center space-x-2 px-2 py-1.5 border-b">
-                  <Checkbox
-                    id="select-all"
-                    :checked="selectedServers.length === servers.length"
-                    @change="
-                      selectedServers = $event.target.checked
-                        ? servers.map((s) => s.id)
-                        : []
-                    "
-                  />
-                  <Label for="select-all">Seleccionar todos</Label>
-                </div>
-                <div
-                  v-for="server in servers"
-                  :key="server.id"
-                  class="flex items-center space-x-2 px-2 py-1.5"
-                >
-                  <Checkbox
-                    :id="'server-' + server.id"
-                    :value="server.id"
-                    v-model="selectedServers"
-                  />
-                  <Label :for="'server-' + server.id">{{ server.name }}</Label>
-                </div>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+      <div class="flex items-end">
+        <ServerSelector />
       </div>
 
       <!-- Submit button -->
-      <div class="md:col-span-1">
-        <Button type="submit" class="w-full">Buscar</Button>
+      <div class="flex items-end">
+        <Button type="submit">Buscar</Button>
       </div>
     </div>
   </form>
