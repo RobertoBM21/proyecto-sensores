@@ -35,13 +35,13 @@ export default {
   // Mock metodos de login
   methods: {
     handleLogin() {
-      this.$router.push("/home");
+      this.$router.push("/");
     },
     handleGoogleLogin() {
-      this.$router.push("/home");
+      this.$router.push("/");
     },
     handleGithubLogin() {
-      this.$router.push("/home");
+      this.$router.push("/");
     },
   },
 };
