@@ -49,18 +49,19 @@ export default {
         }),
         ...(this.search.filters.selectedServers.length > 0 && {
           serverIds: this.search.filters.selectedServers.join(","),
-          ...(this.search.filters.startDate && {
-            startDate: this.search.filters.startDate,
-          }),
-          ...(this.search.filters.endDate && {
-            endDate: this.search.filters.endDate,
-          }),
-          ...(this.search.filters.dateRange && {
-            dateRange: this.search.filters.dateRange,
-          }),
-          page: this.search.filters.page,
-          limit: this.search.filters.limit,
         }),
+        ...(this.search.filters.startDate && {
+          startDate: this.search.filters.startDate,
+        }),
+        ...(this.search.filters.endDate && {
+          endDate: this.search.filters.endDate,
+        }),
+        ...(this.search.filters.dateRange && {
+          dateRange: this.search.filters.dateRange,
+        }),
+        // Siempre incluir page y limit
+        page: this.search.filters.page,
+        limit: this.search.filters.limit,
       };
 
       // Crear la URL con los parámetros

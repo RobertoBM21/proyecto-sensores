@@ -13,7 +13,7 @@
     "@vueuse/core": "11.2.0",
     "class-variance-authority": "0.7.0",
     "clsx": "2.1.1",
-    "lucide-vue-next": "^0.460.0",
+    "lucide-vue-next": "0.460.0",
     "pinia": "2.2.6",
     "radix-vue": "1.9.10",
     "tailwind-merge": "2.5.4",

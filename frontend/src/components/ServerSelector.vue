@@ -4,7 +4,7 @@ import { useSearchStore } from "../stores/search";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Icon } from "@iconify/vue";
+import { Server, X, Plus, Layers } from "lucide-vue-next";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -19,7 +19,10 @@ export default {
     DropdownMenu,
     DropdownMenuTrigger,
     DropdownMenuContent,
-    Icon,
+    Server,
+    X,
+    Plus,
+    Layers,
   },
   setup() {
     const config = useConfigStore();
@@ -51,9 +54,9 @@ export default {
     },
     selectionIcon() {
       const icons = {
-        all: "radix-icons:cross-2",
-        partial: "radix-icons:plus",
-        none: "radix-icons:stack",
+        all: X,
+        partial: Plus,
+        none: Layers,
       };
       return icons[this.selectionState];
     },
@@ -119,7 +122,7 @@ export default {
     <DropdownMenu>
       <DropdownMenuTrigger as-child>
         <Button variant="outline" class="w-auto gap-2">
-          <Icon icon="radix-icons:laptop" class="h-4 w-4" />
+          <Server class="h-4 w-4" />
           Servidores ({{ search.filters.selectedServers.length }})
         </Button>
       </DropdownMenuTrigger>
@@ -149,7 +152,7 @@ export default {
               @click="toggleAllServers"
               :title="selectionTitle"
             >
-              <Icon :icon="selectionIcon" class="h-3 w-3" />
+              <component :is="selectionIcon" class="h-4 w-4" />
             </Button>
           </div>
           <div
