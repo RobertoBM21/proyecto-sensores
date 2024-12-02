@@ -1,7 +1,12 @@
-<script>
+<script setup>
+// Layout components
 import HeaderComponent from "../components/HeaderComponent.vue";
 import FooterComponent from "../components/FooterComponent.vue";
+
+// UI components
 import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
 import {
   Card,
   CardContent,
@@ -9,42 +14,18 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
 
-export default {
-  name: "LoginPage",
-  components: {
-    HeaderComponent,
-    FooterComponent,
-    Card,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-    CardContent,
-    Button,
-    Input,
-    Label,
-  },
-  data() {
-    return {
-      username: "",
-      password: "",
-    };
-  },
-  // Mock metodos de login
-  methods: {
-    handleLogin() {
-      this.$router.push("/");
-    },
-    handleGoogleLogin() {
-      this.$router.push("/");
-    },
-    handleGithubLogin() {
-      this.$router.push("/");
-    },
-  },
-};
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+
+// Estado del formulario
+const username = ref("");
+const password = ref("");
+const router = useRouter();
+
+// Mock de autenticación => será reemplazado por Keycloak
+const handleLogin = () => router.push("/");
+const handleSocialLogin = (provider) => router.push("/");
 </script>
 
 <template>
@@ -76,14 +57,14 @@ export default {
               <div class="w-full border-t"></div>
             </div>
             <div class="relative flex justify-center text-sm">
-              <span class="bg-background px-2 text-muted-foreground"
-                >O CONTINUA CON</span
-              >
+              <span class="bg-background px-2 text-muted-foreground">
+                O CONTINUA CON
+              </span>
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
-            <Button @click="handleGoogleLogin" variant="outline">
+            <Button @click="handleSocialLogin('google')" variant="outline">
               <img
                 src="@/assets/icons/google.svg"
                 alt="Google"
@@ -91,7 +72,7 @@ export default {
               />
               Google
             </Button>
-            <Button @click="handleGithubLogin" variant="outline">
+            <Button @click="handleSocialLogin('github')" variant="outline">
               <img
                 src="@/assets/icons/github-light.svg"
                 alt="GitHub"
