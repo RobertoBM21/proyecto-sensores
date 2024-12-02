@@ -8,8 +8,10 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 
-// Icons and utilities
+// Icons
 import { Icon } from "@iconify/vue";
+
+// Utilities
 import { useColorMode } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 

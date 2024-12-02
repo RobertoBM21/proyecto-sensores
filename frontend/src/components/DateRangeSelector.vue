@@ -1,12 +1,13 @@
-<script>
+<script setup>
+// Store
 import { useMessagesStore } from "../stores/messages";
-import { ref } from "vue";
+
+// UI components
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { RangeCalendar } from "@/components/ui/range-calendar";
-import { getLocalTimeZone } from "@internationalized/date";
 import {
   Select,
   SelectContent,
@@ -20,208 +21,167 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+
+// Icons
 import { X } from "lucide-vue-next";
 
-export default {
-  components: {
-    Button,
-    Label,
-    Input,
-    Switch,
-    RangeCalendar,
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-    X,
-  },
-  setup() {
-    const search = useMessagesStore();
-    const dateValue = ref({
-      start: null,
-      end: null,
-    });
-    const showTimeSelection = ref(false);
-    const timeValue = ref({
-      start: "00:00",
-      end: "23:59",
-    });
-    const calendarKey = ref(0);
+// Utilities
+import { ref, computed, watch } from "vue";
+import { getLocalTimeZone } from "@internationalized/date";
 
-    return {
-      search,
-      dateValue,
-      showTimeSelection,
-      timeValue,
-      calendarKey,
-    };
-  },
-  data() {
-    return {
-      dateRange: "",
-      dateRangeOptions: [
-        { value: "last_5_minutes", label: "Últimos 5 minutos" },
-        { value: "last_15_minutes", label: "Últimos 15 minutos" },
-        { value: "last_30_minutes", label: "Últimos 30 minutos" },
-        { value: "last_hour", label: "Última hora" },
-        { value: "today", label: "Hoy" },
-        { value: "last_24_hours", label: "Últimas 24 horas" },
-        { value: "yesterday", label: "Ayer" },
-        { value: "last_week", label: "Última semana" },
-        { value: "last_month", label: "Último mes" },
-        { value: "last_year", label: "Último año" },
-      ],
-    };
-  },
-  computed: {
-    selectedDateRangeLabel() {
-      const option = this.dateRangeOptions.find(
-        (opt) => opt.value === this.dateRange
-      );
-      return option ? option.label : "Selecciona un rango de fechas";
-    },
-    selectedDateLabel() {
-      if (this.dateRange) {
-        return this.selectedDateRangeLabel;
-      }
-      if (this.dateValue.start && this.dateValue.end) {
-        const start = this.dateValue.start.toDate(getLocalTimeZone());
-        const end = this.dateValue.end.toDate(getLocalTimeZone());
-        return `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`;
-      }
-      return "Selecciona un rango de fechas";
-    },
-    hasDateSelection() {
-      return this.dateRange || (this.dateValue.start && this.dateValue.end);
-    },
-  },
-  methods: {
-    getTextColorClass(hasValue) {
-      return hasValue ? "text-foreground" : "text-muted-foreground";
-    },
-    updateDateRange(range) {
-      if (range.start && range.end) {
-        const startDate = range.start.toDate(getLocalTimeZone());
-        const endDate = range.end.toDate(getLocalTimeZone());
+// Store initialization
+const search = useMessagesStore();
 
-        if (this.showTimeSelection) {
-          const [startHours, startMinutes] = this.timeValue.start.split(":");
-          const [endHours, endMinutes] = this.timeValue.end.split(":");
+// Initial states
+const initialDateValue = { start: null, end: null };
+const initialTimeValue = { start: "00:00", end: "23:59" };
 
-          startDate.setHours(parseInt(startHours), parseInt(startMinutes));
-          endDate.setHours(parseInt(endHours), parseInt(endMinutes), 59);
-        } else {
-          startDate.setHours(0, 0, 0);
-          endDate.setHours(23, 59, 59);
-        }
+// Component state
+const dateValue = ref({ ...initialDateValue });
+const timeValue = ref({ ...initialTimeValue });
+const showTimeSelection = ref(false);
+const calendarKey = ref(0);
+const dateRange = ref("");
 
-        this.search.updateFilters({
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
-          dateRange: "",
-        });
-      }
-    },
-    clearDateRange() {
-      this.dateRange = "";
-      this.search.updateFilters({
-        dateRange: "",
-      });
-    },
-    clearCalendar() {
-      this.dateValue = {
-        start: null,
-        end: null,
-      };
-      this.showTimeSelection = false;
-      this.timeValue = {
-        start: "00:00",
-        end: "23:59",
-      };
-      this.search.updateFilters({
-        startDate: "",
-        endDate: "",
-      });
-    },
-    clearAll() {
-      this.dateRange = "";
-      this.dateValue = {
-        start: null,
-        end: null,
-      };
-      this.showTimeSelection = false;
-      this.timeValue = {
-        start: "00:00",
-        end: "23:59",
-      };
-      this.search.updateFilters({
-        startDate: "",
-        endDate: "",
-        dateRange: "",
-      });
-    },
-  },
-  watch: {
-    dateValue: {
-      handler(newValue) {
-        if (newValue.start && newValue.end) {
-          this.clearDateRange();
-          this.updateDateRange(newValue);
-        }
-      },
-      deep: true,
-    },
-    dateRange: {
-      handler(newValue) {
-        if (newValue) {
-          // Reset estado visual del calendario
-          this.dateValue = {
-            start: null,
-            end: null,
-          };
-          // Reset time selection
-          this.showTimeSelection = false;
-          this.timeValue = {
-            start: "00:00",
-            end: "23:59",
-          };
-          this.calendarKey += 1;
-          // Update store
-          this.search.updateFilters({
-            dateRange: newValue,
-            startDate: "",
-            endDate: "",
-          });
-        }
-      },
-      immediate: true,
-    },
-    timeValue: {
-      handler() {
-        if (this.dateValue.start && this.dateValue.end) {
-          this.updateDateRange(this.dateValue);
-        }
-      },
-      deep: true,
-    },
-    showTimeSelection: function (newValue) {
-      if (this.dateValue.start && this.dateValue.end) {
-        this.updateDateRange(this.dateValue);
-      }
-    },
-  },
+// Date range options
+const dateRangeOptions = [
+  { value: "last_5_minutes", label: "Últimos 5 minutos" },
+  { value: "last_15_minutes", label: "Últimos 15 minutos" },
+  { value: "last_30_minutes", label: "Últimos 30 minutos" },
+  { value: "last_hour", label: "Última hora" },
+  { value: "today", label: "Hoy" },
+  { value: "last_24_hours", label: "Últimas 24 horas" },
+  { value: "yesterday", label: "Ayer" },
+  { value: "last_week", label: "Última semana" },
+  { value: "last_month", label: "Último mes" },
+  { value: "last_year", label: "Último año" },
+];
+
+// Computed properties
+const selectedDateRangeLabel = computed(
+  () =>
+    dateRangeOptions.find((opt) => opt.value === dateRange.value)?.label ||
+    "Selecciona un rango de fechas"
+);
+
+const selectedDateLabel = computed(() => {
+  if (dateRange.value) return selectedDateRangeLabel.value;
+  if (dateValue.value.start && dateValue.value.end) {
+    const [start, end] = [dateValue.value.start, dateValue.value.end].map(
+      (date) => date.toDate(getLocalTimeZone()).toLocaleDateString()
+    );
+    return `${start} - ${end}`;
+  }
+  return "Selecciona un rango de fechas";
+});
+
+const hasDateSelection = computed(
+  () => dateRange.value || (dateValue.value.start && dateValue.value.end)
+);
+
+// Methods
+const updateDateRange = (range) => {
+  if (!range.start || !range.end) return;
+
+  const startDate = range.start.toDate(getLocalTimeZone());
+  const endDate = range.end.toDate(getLocalTimeZone());
+
+  if (showTimeSelection.value) {
+    setTimeOnDate(startDate, timeValue.value.start);
+    setTimeOnDate(endDate, timeValue.value.end).setSeconds(59);
+  } else {
+    startDate.setHours(0, 0, 0);
+    endDate.setHours(23, 59, 59);
+  }
+
+  search.updateFilters({
+    startDate: startDate.toISOString(),
+    endDate: endDate.toISOString(),
+    dateRange: "",
+  });
 };
+
+// Reset methods
+const resetToDefaults = () => {
+  dateValue.value = { ...initialDateValue };
+  timeValue.value = { ...initialTimeValue };
+  showTimeSelection.value = false;
+};
+
+const clearDateRange = () => {
+  dateRange.value = "";
+  search.updateFilters({ dateRange: "" });
+};
+
+const clearCalendar = () => {
+  resetToDefaults();
+  search.updateFilters({ startDate: "", endDate: "" });
+};
+
+const clearAll = () => {
+  resetToDefaults();
+  dateRange.value = "";
+  search.updateFilters({
+    startDate: "",
+    endDate: "",
+    dateRange: "",
+  });
+};
+
+// Helper methods
+const getTextColorClass = (hasValue) =>
+  hasValue ? "text-foreground" : "text-muted-foreground";
+
+const setTimeOnDate = (date, timeString) => {
+  const [hours, minutes] = timeString.split(":");
+  date.setHours(parseInt(hours), parseInt(minutes));
+  return date;
+};
+
+// Watchers
+watch(
+  dateValue,
+  (newValue) => {
+    if (newValue.start && newValue.end) {
+      clearDateRange();
+      updateDateRange(newValue);
+    }
+  },
+  { deep: true }
+);
+
+watch(
+  dateRange,
+  (newValue) => {
+    if (newValue) {
+      resetToDefaults();
+      calendarKey.value += 1;
+      search.updateFilters({
+        dateRange: newValue,
+        startDate: "",
+        endDate: "",
+      });
+    }
+  },
+  { immediate: true }
+);
+
+watch(
+  [timeValue, showTimeSelection],
+  () => {
+    if (dateValue.value.start && dateValue.value.end) {
+      updateDateRange(dateValue.value);
+    }
+  },
+  { deep: true }
+);
 </script>
 
 <template>
   <div class="space-y-2">
     <Label for="dateRange">Rango de fecha</Label>
     <Popover>
+      <!-- Date Range Selector Button -->
       <div class="relative">
         <PopoverTrigger as-child>
           <Button
@@ -243,15 +203,21 @@ export default {
           <X class="h-4 w-4 opacity-50 hover:opacity-100 cursor-pointer" />
         </div>
       </div>
+
+      <!-- Popover Content -->
       <PopoverContent class="w-auto">
         <div class="grid gap-4">
+          <!-- Header -->
           <div class="space-y-2">
             <h4 class="font-medium leading-none">Rango de fechas</h4>
             <p class="text-sm text-muted-foreground">
               Selecciona un período de tiempo para la búsqueda
             </p>
           </div>
+
+          <!-- Date Selection Controls -->
           <div class="space-y-4">
+            <!-- Quick Date Range Select -->
             <Select v-model="dateRange" class="w-full">
               <SelectTrigger>
                 <SelectValue :placeholder="selectedDateRangeLabel" />
@@ -270,17 +236,21 @@ export default {
             </Select>
 
             <div class="border-t"></div>
+
+            <!-- Custom Date Range -->
             <p class="text-sm text-muted-foreground">
               O escoge los días y horas que desees
             </p>
 
             <div class="grid grid-cols-[1fr,180px] gap-4">
+              <!-- Calendar -->
               <RangeCalendar
                 :key="calendarKey"
                 v-model="dateValue"
                 class="rounded-md border p-3"
               />
 
+              <!-- Time Selection -->
               <div class="space-y-4 p-3 border rounded-md">
                 <div>
                   <div class="flex items-center space-x-2">
