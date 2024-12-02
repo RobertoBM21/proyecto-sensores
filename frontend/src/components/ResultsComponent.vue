@@ -11,7 +11,7 @@ import {
   PaginationNext,
   PaginationPrev,
 } from "@/components/ui/pagination";
-import { useSearchStore } from "../stores/search";
+import { useMessagesStore } from "../stores/messages";
 
 export default {
   name: "ResultsComponent",
@@ -31,36 +31,18 @@ export default {
     PaginationPrev,
   },
   setup() {
-    const search = useSearchStore();
+    const search = useMessagesStore();
     return { search };
-  },
-  data() {
-    return {
-      currentPage: 1,
-      resultsPerPage: 10,
-    };
   },
   computed: {
     results() {
       return this.search.results;
     },
-    totalPages() {
-      return Math.ceil(this.search.results.length / this.resultsPerPage);
-    },
-    totalResults() {
-      return this.search.results.length;
-    },
   },
   methods: {
-    changePage(page) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page;
-      }
-    },
     onPageChange(page) {
-      this.currentPage = page;
-      this.search.setPage(page);
-      this.$parent.searchDevices();
+      this.search.updatePage(page);
+      this.$emit("page-change");
     },
   },
 };
@@ -103,7 +85,7 @@ export default {
     </div>
 
     <Card
-      v-for="result in results"
+      v-for="result in search.results"
       :key="result.id"
       class="hover:bg-accent transition-colors"
     >

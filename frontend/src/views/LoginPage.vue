@@ -1,7 +1,7 @@
 <script setup>
 // Layout components
-import HeaderComponent from "../components/HeaderComponent.vue";
-import FooterComponent from "../components/FooterComponent.vue";
+import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
 
 // UI components
 import { Button } from "../components/ui/button";
@@ -30,7 +30,7 @@ const handleSocialLogin = (provider) => router.push("/");
 
 <template>
   <div class="min-h-screen flex flex-col">
-    <HeaderComponent />
+    <Header />
     <main class="flex-grow flex items-center justify-center">
       <Card class="w-full max-w-md">
         <CardHeader>
@@ -84,6 +84,6 @@ const handleSocialLogin = (provider) => router.push("/");
         </CardContent>
       </Card>
     </main>
-    <FooterComponent />
+    <Footer />
   </div>
 </template>

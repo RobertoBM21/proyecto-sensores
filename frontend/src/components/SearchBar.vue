@@ -1,6 +1,6 @@
 <script>
 import { useConfigStore } from "../stores/config";
-import { useSearchStore } from "../stores/search";
+import { useMessagesStore } from "../stores/messages";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,7 +17,7 @@ export default {
   },
   setup() {
     const config = useConfigStore();
-    const search = useSearchStore();
+    const search = useMessagesStore();
     const apiUrl = config.getApiUrl;
 
     return {
@@ -34,7 +34,7 @@ export default {
   },
   methods: {
     searchMessages() {
-      this.search.setFilters({
+      this.search.updateFilters({
         serial: this.serial,
         apikey: this.apikey,
       });
@@ -76,7 +76,7 @@ export default {
           return response.json();
         })
         .then((data) => {
-          this.search.setResults(data);
+          this.search.updateSearchResults(data);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -94,7 +94,7 @@ export default {
       }
 
       // Limpiar el store
-      this.search.clearFilters();
+      this.search.resetFilters();
     },
   },
 };

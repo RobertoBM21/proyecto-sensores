@@ -1,5 +1,5 @@
 <script>
-import { useSearchStore } from "../stores/search";
+import { useMessagesStore } from "../stores/messages";
 import { ref } from "vue";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -41,7 +41,7 @@ export default {
     X,
   },
   setup() {
-    const search = useSearchStore();
+    const search = useMessagesStore();
     const dateValue = ref({
       start: null,
       end: null,
@@ -120,7 +120,7 @@ export default {
           endDate.setHours(23, 59, 59);
         }
 
-        this.search.setFilters({
+        this.search.updateFilters({
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
           dateRange: "",
@@ -129,7 +129,7 @@ export default {
     },
     clearDateRange() {
       this.dateRange = "";
-      this.search.setFilters({
+      this.search.updateFilters({
         dateRange: "",
       });
     },
@@ -143,7 +143,7 @@ export default {
         start: "00:00",
         end: "23:59",
       };
-      this.search.setFilters({
+      this.search.updateFilters({
         startDate: "",
         endDate: "",
       });
@@ -159,7 +159,7 @@ export default {
         start: "00:00",
         end: "23:59",
       };
-      this.search.setFilters({
+      this.search.updateFilters({
         startDate: "",
         endDate: "",
         dateRange: "",
@@ -192,7 +192,7 @@ export default {
           };
           this.calendarKey += 1;
           // Update store
-          this.search.setFilters({
+          this.search.updateFilters({
             dateRange: newValue,
             startDate: "",
             endDate: "",

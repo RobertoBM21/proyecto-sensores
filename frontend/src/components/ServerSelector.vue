@@ -1,6 +1,6 @@
 <script>
 import { useConfigStore } from "../stores/config";
-import { useSearchStore } from "../stores/search";
+import { useMessagesStore } from "../stores/messages";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -26,7 +26,7 @@ export default {
   },
   setup() {
     const config = useConfigStore();
-    const search = useSearchStore();
+    const search = useMessagesStore();
     const apiUrl = config.getApiUrl;
 
     return {
@@ -77,7 +77,7 @@ export default {
 
         this.servers = await response.json();
         if (this.servers.length > 0) {
-          this.search.setSelectedServers(
+          this.search.updateServerSelection(
             this.servers.map((server) => server.id)
           );
         }
@@ -97,7 +97,7 @@ export default {
         currentSelection.add(serverId);
       }
 
-      this.search.setSelectedServers([...currentSelection]);
+      this.search.updateServerSelection([...currentSelection]);
     },
     isServerSelected(serverId) {
       return this.search.filters.selectedServers.includes(serverId);
@@ -108,7 +108,7 @@ export default {
           ? []
           : this.servers.map((server) => server.id);
 
-      this.search.setSelectedServers(newSelection);
+      this.search.updateServerSelection(newSelection);
     },
   },
   created() {

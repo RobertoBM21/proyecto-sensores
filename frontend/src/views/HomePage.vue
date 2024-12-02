@@ -1,6 +1,6 @@
 <script>
-import HeaderComponent from "../components/HeaderComponent.vue";
-import FooterComponent from "../components/FooterComponent.vue";
+import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -13,8 +13,8 @@ import {
 export default {
   name: "HomePage",
   components: {
-    HeaderComponent,
-    FooterComponent,
+    Header,
+    Footer,
     Card,
     CardHeader,
     CardTitle,
@@ -27,7 +27,7 @@ export default {
 
 <template>
   <div class="min-h-screen flex flex-col">
-    <HeaderComponent />
+    <Header />
     <main class="flex-grow flex items-center">
       <div class="container mx-auto px-4 py-8">
         <div class="text-center mb-12">
@@ -100,6 +100,6 @@ export default {
         </div>
       </div>
     </main>
-    <FooterComponent />
+    <Footer />
   </div>
 </template>
