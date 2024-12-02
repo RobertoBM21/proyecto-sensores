@@ -29,6 +29,7 @@ export default {
     return {
       serial: "",
       apikey: "",
+      dateRangeSelectorRef: null,
     };
   },
   methods: {
@@ -81,6 +82,19 @@ export default {
           this.search.clearResults();
         });
     },
+    clearFilters() {
+      // Limpiar campos locales
+      this.serial = "";
+      this.apikey = "";
+
+      // Limpiar componentes hijos
+      if (this.$refs.dateRangeSelector) {
+        this.$refs.dateRangeSelector.clearAll();
+      }
+
+      // Limpiar el store
+      this.search.clearFilters();
+    },
   },
 };
 </script>
@@ -88,7 +102,7 @@ export default {
 <template>
   <form @submit.prevent="searchMessages">
     <div
-      class="grid grid-cols-1 md:grid-cols-[2fr,1.5fr,2fr,auto,auto] gap-4 items-end"
+      class="grid grid-cols-1 md:grid-cols-[2fr,1.5fr,2fr,auto,auto,auto] gap-4 items-end"
     >
       <!-- Serial input -->
       <div>
@@ -118,7 +132,7 @@ export default {
 
       <!-- Date Range Selector -->
       <div>
-        <DateRangeSelector />
+        <DateRangeSelector ref="dateRangeSelector" />
       </div>
 
       <!-- Servers selector -->
@@ -126,8 +140,11 @@ export default {
         <ServerSelector />
       </div>
 
-      <!-- Submit button -->
-      <div class="flex items-end">
+      <!-- Submit and Clear buttons -->
+      <div class="flex items-end gap-4">
+        <Button type="button" variant="secondary" @click="clearFilters">
+          Limpiar Filtros
+        </Button>
         <Button type="submit">Buscar</Button>
       </div>
     </div>

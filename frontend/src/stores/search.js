@@ -44,6 +44,20 @@ export const useSearchStore = defineStore("search", {
       };
     },
 
+    clearFilters() {
+      this.filters = {
+        serial: "",
+        apikey: "",
+        selectedServers: [],
+        startDate: "",
+        endDate: "",
+        dateRange: "",
+        page: 1,
+        limit: 10,
+      };
+      this.clearResults();
+    },
+
     clearResults() {
       this.results = [];
       this.metadata = null;
