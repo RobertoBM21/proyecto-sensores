@@ -20,6 +20,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { X } from "lucide-vue-next";
 
 export default {
   components: {
@@ -37,6 +38,7 @@ export default {
     Popover,
     PopoverContent,
     PopoverTrigger,
+    X,
   },
   setup() {
     const search = useSearchStore();
@@ -144,6 +146,23 @@ export default {
         endDate: "",
       });
     },
+    clearAll() {
+      this.dateRange = "";
+      this.dateValue = {
+        start: null,
+        end: null,
+      };
+      this.showTimeSelection = false;
+      this.timeValue = {
+        start: "00:00",
+        end: "23:59",
+      };
+      this.search.setFilters({
+        startDate: "",
+        endDate: "",
+        dateRange: "",
+      });
+    },
   },
   watch: {
     dateValue: {
@@ -192,18 +211,27 @@ export default {
   <div class="space-y-2">
     <Label for="dateRange">Rango de fecha</Label>
     <Popover>
-      <PopoverTrigger as-child>
-        <Button
-          variant="outline"
-          :class="[
-            'w-full justify-start',
-            getTextColorClass(hasDateSelection),
-            'font-normal',
-          ]"
+      <div class="relative">
+        <PopoverTrigger as-child>
+          <Button
+            variant="outline"
+            :class="[
+              'w-full pr-8 justify-start',
+              getTextColorClass(hasDateSelection),
+              'font-normal',
+            ]"
+          >
+            {{ selectedDateLabel }}
+          </Button>
+        </PopoverTrigger>
+        <div
+          v-if="hasDateSelection"
+          class="absolute right-2 top-1/2 -translate-y-1/2"
+          @click.stop="clearAll"
         >
-          {{ selectedDateLabel }}
-        </Button>
-      </PopoverTrigger>
+          <X class="h-4 w-4 opacity-50 hover:opacity-100 cursor-pointer" />
+        </div>
+      </div>
       <PopoverContent class="w-auto">
         <div class="grid gap-4">
           <div class="space-y-2">
