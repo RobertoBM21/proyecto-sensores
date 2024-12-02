@@ -57,9 +57,7 @@ const fetchServers = async () => {
     const response = await fetch(`${apiUrl}/servers`);
     if (!response.ok) throw new Error("Error al cargar servidores");
 
-    const data = await response.json();
-    servers.value = data;
-
+    servers.value = await response.json();
     if (servers.value.length > 0) {
       search.updateServerSelection(servers.value.map((server) => server.id));
     }

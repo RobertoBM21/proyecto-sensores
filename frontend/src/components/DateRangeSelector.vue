@@ -138,6 +138,9 @@ const setTimeOnDate = (date, timeString) => {
   return date;
 };
 
+// Expose clearAll method
+defineExpose({ clearAll });
+
 // Watchers
 watch(
   dateValue,
