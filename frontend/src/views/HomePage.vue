@@ -1,6 +1,9 @@
-<script>
+<script setup>
+// Layout components
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
+
+// UI components
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -9,20 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
-
-export default {
-  name: "HomePage",
-  components: {
-    Header,
-    Footer,
-    Card,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-    CardContent,
-    Button,
-  },
-};
 </script>
 
 <template>
@@ -30,6 +19,7 @@ export default {
     <Header />
     <main class="flex-grow flex items-center">
       <div class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
         <div class="text-center mb-12">
           <h1 class="text-3xl font-bold mb-6">Sensores</h1>
           <p class="text-gray-600 max-w-2xl mx-auto">
@@ -38,9 +28,11 @@ export default {
           </p>
         </div>
 
+        <!-- Cards Grid -->
         <div
           class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-12"
         >
+          <!-- Search Card -->
           <Card class="md:col-span-3 w-fit mx-auto">
             <CardHeader class="text-center">
               <CardTitle>Búsqueda de Sensores</CardTitle>
@@ -56,6 +48,7 @@ export default {
             </CardContent>
           </Card>
 
+          <!-- Messages API Card -->
           <Card class="md:col-span-3 lg:col-span-1">
             <CardHeader>
               <CardTitle>Búsqueda de Mensajes</CardTitle>
@@ -77,6 +70,7 @@ export default {
             </CardContent>
           </Card>
 
+          <!-- Activity Report Card -->
           <Card class="md:col-span-3 lg:col-span-1">
             <CardHeader>
               <CardTitle>Reporte de Actividad</CardTitle>

@@ -7,16 +7,25 @@ const routes = [
     path: "/",
     name: "home",
     component: HomePage,
-  },
-  {
-    path: "/login",
-    name: "login",
-    component: LoginPage,
+    meta: {
+      label: "Home",
+    },
   },
   {
     path: "/search",
     name: "search",
     component: () => import("../views/SearchPage.vue"),
+    meta: {
+      label: "Búsqueda",
+    },
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: LoginPage,
+    meta: {
+      label: "Login",
+    },
   },
   {
     //* Cualquier otra ruta que no exista, redirigir a la página principal

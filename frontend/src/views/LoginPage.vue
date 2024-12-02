@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "../components/ui/card";
 
+// Utilities
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
@@ -33,13 +34,16 @@ const handleSocialLogin = (provider) => router.push("/");
     <Header />
     <main class="flex-grow flex items-center justify-center">
       <Card class="w-full max-w-md">
+        <!-- Login Form Header -->
         <CardHeader>
           <CardTitle class="text-2xl">Iniciar Sesión</CardTitle>
           <CardDescription>
             Introduce tus credenciales para acceder al sistema
           </CardDescription>
         </CardHeader>
+
         <CardContent>
+          <!-- Credentials Form -->
           <form @submit.prevent="handleLogin" class="space-y-4">
             <div class="space-y-2">
               <Label for="username">Usuario</Label>
@@ -52,6 +56,7 @@ const handleSocialLogin = (provider) => router.push("/");
             <Button type="submit" class="w-full">Iniciar Sesión</Button>
           </form>
 
+          <!-- Social Login Separator -->
           <div class="relative my-4">
             <div class="absolute inset-0 flex items-center">
               <div class="w-full border-t"></div>
@@ -63,6 +68,7 @@ const handleSocialLogin = (provider) => router.push("/");
             </div>
           </div>
 
+          <!-- Social Login Options -->
           <div class="grid grid-cols-2 gap-4">
             <Button @click="handleSocialLogin('google')" variant="outline">
               <img

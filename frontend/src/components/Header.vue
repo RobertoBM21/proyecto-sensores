@@ -1,17 +1,31 @@
-<script setup lang="ts">
+<script setup>
+// UI components
 import { Button } from "@/components/ui/button";
-import { Icon } from "@iconify/vue";
-import { useColorMode } from "@vueuse/core";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
-import { useRoute } from "vue-router";
+
+// Icons and utilities
+import { Icon } from "@iconify/vue";
+import { useColorMode } from "@vueuse/core";
+import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
+const router = useRouter();
 const mode = useColorMode();
+
+// Obtenemos las rutas directamente del router
+const navigationLinks = router.options.routes
+  .filter((route) => !route.redirect && route.name) // Excluimos redirecciones y rutas sin nombre
+  .map((route) => ({
+    path: route.path,
+    label:
+      route.meta?.label ||
+      route.name.charAt(0).toUpperCase() + route.name.slice(1), // Si no hay label, usamos el nombre
+  }));
 </script>
 
 <template>
@@ -19,49 +33,26 @@ const mode = useColorMode();
     class="sticky z-40 top-0 bg-background/80 backdrop-blur-lg border-b border-border"
   >
     <div class="container px-4 py-2 flex justify-between items-center">
+      <!-- Navigation Links -->
       <NavigationMenu>
         <NavigationMenuList class="flex items-center space-x-6 font-medium">
-          <NavigationMenuItem>
+          <NavigationMenuItem v-for="link in navigationLinks" :key="link.path">
             <NavigationMenuLink asChild>
               <router-link
-                to="/"
+                :to="link.path"
                 :class="[
                   'transition-colors hover:text-foreground/80 text-foreground/60',
-                  route.path === '/' && 'font-semibold !text-foreground',
+                  route.path === link.path && 'font-semibold !text-foreground',
                 ]"
               >
-                Home
-              </router-link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild>
-              <router-link
-                to="/search"
-                :class="[
-                  'transition-colors hover:text-foreground/80 text-foreground/60',
-                  route.path === '/search' && 'font-semibold !text-foreground',
-                ]"
-              >
-                Búsqueda
-              </router-link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild>
-              <router-link
-                to="/login"
-                :class="[
-                  'transition-colors hover:text-foreground/80 text-foreground/60',
-                  route.path === '/login' && 'font-semibold !text-foreground',
-                ]"
-              >
-                Login
+                {{ link.label }}
               </router-link>
             </NavigationMenuLink>
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
+
+      <!-- Theme Toggle -->
       <Button
         variant="ghost"
         size="icon"
