@@ -51,12 +51,14 @@ export default {
       start: "00:00",
       end: "23:59",
     });
+    const calendarKey = ref(0);
 
     return {
       search,
       dateValue,
       showTimeSelection,
       timeValue,
+      calendarKey,
     };
   },
   data() {
@@ -177,10 +179,19 @@ export default {
     dateRange: {
       handler(newValue) {
         if (newValue) {
+          // Reset estado visual del calendario
           this.dateValue = {
             start: null,
             end: null,
           };
+          // Reset time selection
+          this.showTimeSelection = false;
+          this.timeValue = {
+            start: "00:00",
+            end: "23:59",
+          };
+          this.calendarKey += 1;
+          // Update store
           this.search.setFilters({
             dateRange: newValue,
             startDate: "",
@@ -265,6 +276,7 @@ export default {
 
             <div class="grid grid-cols-[1fr,180px] gap-4">
               <RangeCalendar
+                :key="calendarKey"
                 v-model="dateValue"
                 class="rounded-md border p-3"
               />
