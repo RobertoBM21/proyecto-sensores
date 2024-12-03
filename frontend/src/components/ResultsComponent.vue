@@ -12,6 +12,7 @@ import {
   PaginationPrev,
 } from "@/components/ui/pagination";
 import { useMessagesStore } from "../stores/messages";
+import { ref } from "vue";
 
 export default {
   name: "ResultsComponent",
@@ -32,7 +33,21 @@ export default {
   },
   setup() {
     const search = useMessagesStore();
-    return { search };
+    const expandedContents = ref(new Set());
+
+    const toggleContent = (id) => {
+      if (expandedContents.value.has(id)) {
+        expandedContents.value.delete(id);
+      } else {
+        expandedContents.value.add(id);
+      }
+    };
+
+    return {
+      search,
+      expandedContents,
+      toggleContent,
+    };
   },
   computed: {
     results() {
@@ -108,9 +123,40 @@ export default {
           </div>
           <div class="space-y-1">
             <span class="font-medium text-foreground">Contenido</span>
-            <p class="truncate text-muted-foreground">
-              {{ result.content || "N/A" }}
-            </p>
+            <div class="flex items-start gap-2">
+              <p
+                :class="[
+                  'text-muted-foreground transition-all duration-200',
+                  expandedContents.has(result.id) ? '' : 'truncate',
+                ]"
+              >
+                {{ result.content || "N/A" }}
+              </p>
+              <button
+                @click="toggleContent(result.id)"
+                class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6"
+                :title="
+                  expandedContents.has(result.id)
+                    ? 'Mostrar menos'
+                    : 'Mostrar más'
+                "
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  :class="expandedContents.has(result.id) ? 'rotate-180' : ''"
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+            </div>
           </div>
           <div class="space-y-1">
             <span class="font-medium text-foreground">Timestamp</span>

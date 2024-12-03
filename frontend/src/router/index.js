@@ -12,7 +12,7 @@ const routes = [
   {
     path: "/",
     name: "home",
-    component: HomePage,
+    component: HomePage, // Carga estática
     meta: {
       label: "Inicio",
     },
@@ -31,7 +31,7 @@ const routes = [
   {
     path: "/search/messages",
     name: "searchMessages",
-    component: () => import("../views/SearchMessagesPage.vue"),
+    component: () => import("../views/SearchMessagesPage.vue"), // Carga dinámica
     meta: {
       group: RouteGroups.SEARCH,
       label: "Mensajes",
