@@ -1,4 +1,5 @@
-<script>
+<script setup>
+// UI components
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -11,65 +12,59 @@ import {
   PaginationNext,
   PaginationPrev,
 } from "@/components/ui/pagination";
+
+// Icons
+import { ChevronDown } from "lucide-vue-next";
+
+// Store & Utilities
 import { useMessagesStore } from "../stores/messages";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
-export default {
-  name: "ResultsComponent",
-  components: {
-    Button,
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    Pagination,
-    PaginationEllipsis,
-    PaginationFirst,
-    PaginationLast,
-    PaginationList,
-    PaginationListItem,
-    PaginationNext,
-    PaginationPrev,
+// Constants
+const RESULT_FIELDS = [
+  { key: "topic", label: "Topic", defaultValue: "N/A" },
+  { key: "content", label: "Contenido", defaultValue: "N/A", expandable: true },
+  {
+    key: "timestamp",
+    label: "Timestamp",
+    formatter: (value) => new Date(value).toLocaleString(),
+    defaultValue: "N/A",
   },
-  setup() {
-    const search = useMessagesStore();
-    const expandedContents = ref(new Set());
+];
 
-    const toggleContent = (id) => {
-      if (expandedContents.value.has(id)) {
-        expandedContents.value.delete(id);
-      } else {
-        expandedContents.value.add(id);
-      }
-    };
+// Store initialization
+const search = useMessagesStore();
+const emit = defineEmits(["pageChange"]);
 
-    return {
-      search,
-      expandedContents,
-      toggleContent,
-    };
-  },
-  computed: {
-    results() {
-      return this.search.results;
-    },
-  },
-  methods: {
-    onPageChange(page) {
-      this.search.updatePage(page);
-      this.$emit("page-change");
-    },
-  },
+// Component state
+const expandedContents = ref(new Set());
+
+// Computed properties
+const results = computed(() => search.results);
+const hasResults = computed(() => search.metadata && results.value.length > 0);
+
+// Methods
+const toggleContent = (id) => {
+  expandedContents.value.has(id)
+    ? expandedContents.value.delete(id)
+    : expandedContents.value.add(id);
+};
+
+const handlePageChange = (page) => {
+  search.updatePage(page);
+  emit("pageChange");
+};
+
+const formatFieldValue = (field, value) => {
+  if (!value) return field.defaultValue;
+  return field.formatter ? field.formatter(value) : value;
 };
 </script>
 
 <template>
   <div class="max-w-4xl mx-auto space-y-6">
     <!-- Stats Cards -->
-    <div
-      v-if="search.metadata && search.results.length > 0"
-      class="grid grid-cols-1 sm:grid-cols-3 gap-4"
-    >
+    <div v-if="hasResults" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <Card class="flex-1">
         <CardHeader>
           <CardTitle class="text-sm">Dispositivos únicos</CardTitle>
@@ -102,7 +97,7 @@ export default {
 
     <!-- Results Cards -->
     <Card
-      v-for="result in search.results"
+      v-for="result in results"
       :key="result.id"
       class="transition-colors duration-200 hover:bg-muted/50 group"
     >
@@ -115,24 +110,25 @@ export default {
       </CardHeader>
       <CardContent>
         <div class="grid gap-4 md:grid-cols-3 text-sm text-muted-foreground">
-          <div class="space-y-1">
-            <span class="font-medium text-foreground">Topic</span>
-            <p class="truncate text-muted-foreground">
-              {{ result.topic || "N/A" }}
-            </p>
-          </div>
-          <div class="space-y-1">
-            <span class="font-medium text-foreground">Contenido</span>
+          <div
+            v-for="field in RESULT_FIELDS"
+            :key="field.key"
+            class="space-y-1"
+          >
+            <span class="font-medium text-foreground">{{ field.label }}</span>
             <div class="flex items-start gap-2">
               <p
                 :class="[
                   'text-muted-foreground transition-all duration-200',
-                  expandedContents.has(result.id) ? '' : 'truncate',
+                  field.expandable && {
+                    truncate: !expandedContents.has(result.id),
+                  },
                 ]"
               >
-                {{ result.content || "N/A" }}
+                {{ formatFieldValue(field, result[field.key]) }}
               </p>
               <button
+                v-if="field.expandable"
                 @click="toggleContent(result.id)"
                 class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6"
                 :title="
@@ -141,28 +137,12 @@ export default {
                     : 'Mostrar más'
                 "
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                <ChevronDown
+                  class="h-4 w-4 transition-transform duration-200"
                   :class="expandedContents.has(result.id) ? 'rotate-180' : ''"
-                >
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
+                />
               </button>
             </div>
-          </div>
-          <div class="space-y-1">
-            <span class="font-medium text-foreground">Timestamp</span>
-            <p class="truncate text-muted-foreground">
-              {{ new Date(result.timestamp).toLocaleString() }}
-            </p>
           </div>
         </div>
       </CardContent>
@@ -176,7 +156,7 @@ export default {
         :default-page="search.metadata.page"
         :sibling-count="1"
         show-edges
-        @update:page="onPageChange"
+        @update:page="handlePageChange"
         v-slot="{ page }"
       >
         <PaginationList

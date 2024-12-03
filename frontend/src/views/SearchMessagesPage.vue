@@ -2,8 +2,8 @@
 // Layout components
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
-import SearchBar from "../components/SearchBar.vue";
-import ResultsComponent from "../components/ResultsComponent.vue";
+import MessageSearchBar from "../components/MessageSearchBar.vue";
+import MessagesList from "../components/MessagesList.vue";
 </script>
 
 <template>
@@ -12,10 +12,12 @@ import ResultsComponent from "../components/ResultsComponent.vue";
     <main class="flex-grow">
       <div class="container mx-auto px-4 py-4">
         <!-- Search Controls -->
-        <SearchBar ref="searchBar" />
+        <MessageSearchBar ref="MessageSearchBar" />
         <!-- Results Table & List -->
         <div class="mt-8">
-          <ResultsComponent @page-change="$refs.searchBar.searchMessages()" />
+          <MessagesList
+            @page-change="$refs.MessageSearchBar.searchMessages()"
+          />
         </div>
       </div>
     </main>
