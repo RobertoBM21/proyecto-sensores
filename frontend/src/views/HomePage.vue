@@ -21,8 +21,8 @@ import {
       <div class="container mx-auto px-4 py-8">
         <!-- Hero Section -->
         <div class="text-center mb-12">
-          <h1 class="text-3xl font-bold mb-6">Sensores</h1>
-          <p class="text-gray-600 max-w-2xl mx-auto">
+          <h1 class="text-3xl font-bold text-foreground mb-6">Sensores</h1>
+          <p class="text-muted-foreground max-w-2xl mx-auto">
             Bienvenido al sistema de gestión de sensores. Desde aquí podrás
             acceder a todas las funcionalidades del sistema.
           </p>
@@ -56,7 +56,9 @@ import {
             <CardContent>
               <p class="text-sm text-muted-foreground mb-4">
                 El endpoint
-                <code class="bg-muted px-1 rounded">/messages/search</code>
+                <code class="bg-muted text-foreground px-1 rounded"
+                  >/messages/search</code
+                >
                 permite filtrar mensajes por:
               </p>
               <ul
@@ -78,7 +80,9 @@ import {
             <CardContent>
               <p class="text-sm text-muted-foreground mb-4">
                 El endpoint
-                <code class="bg-muted px-1 rounded">/devices/activity</code>
+                <code class="bg-muted text-foreground px-1 rounded"
+                  >/devices/activity</code
+                >
                 proporciona informes detallados de:
               </p>
               <ul

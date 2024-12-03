@@ -99,7 +99,10 @@ onMounted(fetchServers);
     <DropdownMenu>
       <!-- Dropdown Trigger -->
       <DropdownMenuTrigger as-child>
-        <Button variant="outline" class="w-auto gap-2">
+        <Button
+          variant="outline"
+          class="w-auto gap-2 hover:bg-muted/50 transition-colors duration-200"
+        >
           <Server class="h-4 w-4" />
           Servidores ({{ search.filters.selectedServers.length }})
         </Button>
@@ -146,7 +149,7 @@ onMounted(fetchServers);
           <div
             v-for="server in servers"
             :key="server.id"
-            class="flex items-center space-x-2 px-2 py-2.5"
+            class="flex items-center space-x-2 px-2 py-2.5 hover:bg-muted/50 transition-colors duration-200"
           >
             <Checkbox
               :id="'server-' + server.id"

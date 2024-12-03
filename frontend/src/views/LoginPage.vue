@@ -59,7 +59,7 @@ const handleSocialLogin = (provider) => router.push("/");
           <!-- Social Login Separator -->
           <div class="relative my-4">
             <div class="absolute inset-0 flex items-center">
-              <div class="w-full border-t"></div>
+              <div class="w-full border-border"></div>
             </div>
             <div class="relative flex justify-center text-sm">
               <span class="bg-background px-2 text-muted-foreground">
@@ -70,7 +70,11 @@ const handleSocialLogin = (provider) => router.push("/");
 
           <!-- Social Login Options -->
           <div class="grid grid-cols-2 gap-4">
-            <Button @click="handleSocialLogin('google')" variant="outline">
+            <Button
+              @click="handleSocialLogin('google')"
+              variant="outline"
+              class="hover:bg-muted/50"
+            >
               <img
                 src="@/assets/icons/google.svg"
                 alt="Google"
@@ -78,7 +82,11 @@ const handleSocialLogin = (provider) => router.push("/");
               />
               Google
             </Button>
-            <Button @click="handleSocialLogin('github')" variant="outline">
+            <Button
+              @click="handleSocialLogin('github')"
+              variant="outline"
+              class="hover:bg-muted/50"
+            >
               <img
                 src="@/assets/icons/github-light.svg"
                 alt="GitHub"

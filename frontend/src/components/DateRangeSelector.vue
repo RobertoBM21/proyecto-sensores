@@ -203,7 +203,9 @@ watch(
           class="absolute right-2 top-1/2 -translate-y-1/2"
           @click.stop="clearAll"
         >
-          <X class="h-4 w-4 opacity-50 hover:opacity-100 cursor-pointer" />
+          <X
+            class="h-4 w-4 text-muted-foreground hover:text-foreground cursor-pointer"
+          />
         </div>
       </div>
 
@@ -238,7 +240,7 @@ watch(
               </SelectContent>
             </Select>
 
-            <div class="border-t"></div>
+            <div class="border-border border-t"></div>
 
             <!-- Custom Date Range -->
             <p class="text-sm text-muted-foreground">
@@ -254,7 +256,7 @@ watch(
               />
 
               <!-- Time Selection -->
-              <div class="space-y-4 p-3 border rounded-md">
+              <div class="space-y-4 p-3 border-border border rounded-md">
                 <div>
                   <div class="flex items-center space-x-2">
                     <Label for="time-selection">Especificar Hora</Label>

@@ -49,10 +49,11 @@ export default {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto space-y-4">
+  <div class="max-w-4xl mx-auto space-y-6">
+    <!-- Stats Cards -->
     <div
       v-if="search.metadata && search.results.length > 0"
-      class="flex flex-wrap gap-4 mb-4 text-sm text-muted-foreground"
+      class="grid grid-cols-1 sm:grid-cols-3 gap-4"
     >
       <Card class="flex-1">
         <CardHeader>
@@ -84,27 +85,36 @@ export default {
       </Card>
     </div>
 
+    <!-- Results Cards -->
     <Card
       v-for="result in search.results"
       :key="result.id"
-      class="hover:bg-accent transition-colors"
+      class="transition-colors duration-200 hover:bg-muted/50 group"
     >
-      <CardHeader>
-        <CardTitle class="text-lg">Serial: {{ result.serial }}</CardTitle>
+      <CardHeader
+        class="group-hover:bg-muted/25 transition-colors duration-200"
+      >
+        <CardTitle class="text-lg text-foreground"
+          >Serial: {{ result.serial }}</CardTitle
+        >
       </CardHeader>
       <CardContent>
         <div class="grid gap-4 md:grid-cols-3 text-sm text-muted-foreground">
           <div class="space-y-1">
-            <span class="font-medium">Topic</span>
-            <p class="truncate">{{ result.topic || "N/A" }}</p>
+            <span class="font-medium text-foreground">Topic</span>
+            <p class="truncate text-muted-foreground">
+              {{ result.topic || "N/A" }}
+            </p>
           </div>
           <div class="space-y-1">
-            <span class="font-medium">Contenido</span>
-            <p class="truncate">{{ result.content || "N/A" }}</p>
+            <span class="font-medium text-foreground">Contenido</span>
+            <p class="truncate text-muted-foreground">
+              {{ result.content || "N/A" }}
+            </p>
           </div>
           <div class="space-y-1">
-            <span class="font-medium">Timestamp</span>
-            <p class="truncate">
+            <span class="font-medium text-foreground">Timestamp</span>
+            <p class="truncate text-muted-foreground">
               {{ new Date(result.timestamp).toLocaleString() }}
             </p>
           </div>
@@ -112,7 +122,8 @@ export default {
       </CardContent>
     </Card>
 
-    <nav v-if="search.metadata" class="mt-8">
+    <!-- Pagination -->
+    <nav v-if="search.metadata" class="mt-8 pb-8">
       <Pagination
         :total="search.metadata.totalItems"
         :per-page="search.metadata.limit"
