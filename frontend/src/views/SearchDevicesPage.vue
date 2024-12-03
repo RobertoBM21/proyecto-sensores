@@ -12,7 +12,7 @@ import ResultsComponent from "../components/ResultsComponent.vue";
     <main class="flex-grow">
       <div class="container mx-auto px-4 py-4">
         <!-- Search Controls -->
-        <SearchBar ref="searchBar" />
+        <h1>Patata</h1>
         <!-- Results Table & List -->
         <div class="mt-8">
           <ResultsComponent
