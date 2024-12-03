@@ -12,11 +12,21 @@ const routes = [
     },
   },
   {
-    path: "/search",
-    name: "search",
-    component: () => import("../views/SearchPage.vue"),
+    path: "/search/messages",
+    name: "searchMessages",
+    component: () => import("../views/SearchMessagesPage.vue"),
     meta: {
       label: "Búsqueda",
+      subLabel: "Mensajes",
+    },
+  },
+  {
+    path: "/search/devices",
+    name: "searchDevices",
+    component: () => import("../views/SearchDevicesPage.vue"),
+    meta: {
+      label: "Búsqueda",
+      subLabel: "Dispositivos",
     },
   },
   {
