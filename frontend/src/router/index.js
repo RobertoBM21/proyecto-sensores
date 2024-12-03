@@ -18,6 +18,7 @@ const routes = [
     meta: {
       label: "Búsqueda",
       subLabel: "Mensajes",
+      group: "search",
     },
   },
   {
@@ -27,6 +28,7 @@ const routes = [
     meta: {
       label: "Búsqueda",
       subLabel: "Dispositivos",
+      group: "search",
     },
   },
   {

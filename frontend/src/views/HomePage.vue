@@ -41,9 +41,14 @@ import {
                 sistema
               </CardDescription>
             </CardHeader>
-            <CardContent class="flex justify-center">
+            <CardContent class="flex justify-center space-x-6">
               <Button asChild>
-                <router-link to="/search">Ir a búsqueda</router-link>
+                <router-link to="/search/messages">Buscar Mensajes</router-link>
+              </Button>
+              <Button asChild>
+                <router-link to="/search/devices"
+                  >Buscar Dispositivos</router-link
+                >
               </Button>
             </CardContent>
           </Card>
