@@ -149,14 +149,17 @@ onMounted(fetchServers);
           <div
             v-for="server in servers"
             :key="server.id"
-            class="flex items-center space-x-2 px-2 py-2.5 hover:bg-muted/50 transition-colors duration-200"
+            class="flex items-center space-x-2 px-2 py-2.5 hover:bg-muted/50 transition-colors duration-200 cursor-pointer"
+            @click="handleServerChange(server.id)"
           >
             <Checkbox
               :id="'server-' + server.id"
               :checked="isServerSelected(server.id)"
-              @update:checked="handleServerChange(server.id)"
+              @click.stop
             />
-            <Label :for="'server-' + server.id">{{ server.name }}</Label>
+            <Label :for="'server-' + server.id" class="cursor-pointer">{{
+              server.name
+            }}</Label>
           </div>
         </div>
       </DropdownMenuContent>
