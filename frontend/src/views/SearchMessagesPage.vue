@@ -4,6 +4,7 @@ import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 import MessageSearchBar from "../components/MessageSearchBar.vue";
 import MessagesList from "../components/MessagesList.vue";
+import MessagesChart from "../components/MessagesChart.vue";
 </script>
 
 <template>
@@ -13,6 +14,10 @@ import MessagesList from "../components/MessagesList.vue";
       <div class="container mx-auto px-4 py-4">
         <!-- Search Controls -->
         <MessageSearchBar ref="MessageSearchBar" />
+        <!-- Chart -->
+        <div class="mt-8">
+          <MessagesChart />
+        </div>
         <!-- Results Table & List -->
         <div class="mt-8">
           <MessagesList
