@@ -12,13 +12,6 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 // Register ChartJS components
 ChartJS.register(
@@ -39,6 +32,8 @@ const groupingOptions = [
   { value: "day", label: "1D", description: "Por día" },
   { value: "week", label: "1S", description: "Por semana" },
   { value: "month", label: "1M", description: "Por mes" },
+  { value: "year", label: "1A", description: "Último año" },
+  { value: "5year", label: "5A", description: "Últimos 5 años" },
 ];
 
 const selectedGrouping = ref("hour");
@@ -47,6 +42,15 @@ const isLoading = ref(true);
 // Get CSS variables for theming
 const getCssVar = (variable) =>
   getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+
+// Computed para los colores del tema
+const themeColors = computed(() => ({
+  primary: `hsl(${getCssVar("--primary")})`,
+  primaryHover: `hsl(${getCssVar("--primary")} / 0.8)`,
+  popover: `hsl(${getCssVar("--popover")})`,
+  popoverForeground: `hsl(${getCssVar("--popover-foreground")})`,
+  muted: `hsl(${getCssVar("--muted-foreground")})`,
+}));
 
 // Dynamic chart options based on theme
 const chartOptions = computed(() => ({
@@ -72,9 +76,9 @@ const chartOptions = computed(() => ({
       padding: 20,
     },
     tooltip: {
-      backgroundColor: `hsl(${getCssVar("--popover")})`,
-      titleColor: `hsl(${getCssVar("--popover-foreground")})`,
-      bodyColor: `hsl(${getCssVar("--popover-foreground")})`,
+      backgroundColor: themeColors.value.popover,
+      titleColor: themeColors.value.popoverForeground,
+      bodyColor: themeColors.value.popoverForeground,
       padding: 12,
       cornerRadius: 6,
       titleFont: {
@@ -137,6 +141,9 @@ const chartOptions = computed(() => ({
   },
 }));
 
+// Mover la referencia al inicio
+const chartInstance = ref(null);
+
 // Process data for the chart
 const chartData = computed(() => {
   if (!store.results.length) return null;
@@ -157,6 +164,10 @@ const chartData = computed(() => {
         return weekStart.toISOString().split("T")[0];
       case "month":
         return date.getMonth();
+      case "year":
+        return date.getMonth() + (date.getFullYear() - now.getFullYear()) * 12;
+      case "5year":
+        return date.getFullYear();
     }
   };
 
@@ -198,6 +209,32 @@ const chartData = computed(() => {
         };
       }
       break;
+    case "year":
+      const yearAgo = new Date(now);
+      yearAgo.setFullYear(now.getFullYear() - 1);
+      for (let i = 0; i < 12; i++) {
+        const date = new Date(yearAgo);
+        date.setMonth(yearAgo.getMonth() + i);
+        const key =
+          date.getMonth() + (date.getFullYear() - now.getFullYear()) * 12;
+        groupedData[key] = {
+          count: 0,
+          label: date.toLocaleDateString("es-ES", {
+            month: "short",
+            year: "numeric",
+          }),
+        };
+      }
+      break;
+    case "5year":
+      for (let i = 4; i >= 0; i--) {
+        const year = now.getFullYear() - i;
+        groupedData[year] = {
+          count: 0,
+          label: year.toString(),
+        };
+      }
+      break;
   }
 
   // Agrupar mensajes
@@ -217,8 +254,8 @@ const chartData = computed(() => {
     datasets: [
       {
         data: sortedData.map((d) => d.count),
-        backgroundColor: `hsl(${getCssVar("--primary")} / 0.8)`,
-        hoverBackgroundColor: `hsl(${getCssVar("--primary")})`,
+        backgroundColor: themeColors.value.primary,
+        hoverBackgroundColor: themeColors.value.primaryHover,
         borderRadius: 4,
       },
     ],
@@ -241,16 +278,22 @@ onMounted(() => {
   }, 1000);
 });
 
-// Watch for theme changes to update chart
-watch([mode, selectedGrouping], () => {
-  ChartJS.defaults.color = `hsl(${getCssVar("--muted-foreground")})`;
-  // Forzar actualización del gráfico
-  if (chartInstance.value) {
-    chartInstance.value.update();
-  }
-});
+// Simplificar el watch para forzar la actualización completa
+watch(
+  [mode, selectedGrouping],
+  () => {
+    ChartJS.defaults.color = themeColors.value.muted;
+    if (chartInstance.value) {
+      chartInstance.value.update();
+    }
+  },
+  { immediate: true }
+);
 
-const chartInstance = ref(null);
+// Ya no necesitamos updateChartColors ni handleChartRender
+const handleChartRender = (chart) => {
+  chartInstance.value = chart;
+};
 </script>
 
 <template>
@@ -287,7 +330,7 @@ const chartInstance = ref(null);
           v-else-if="chartData"
           :data="chartData"
           :options="chartOptions"
-          @chart:render="(chart) => (chartInstance = chart)"
+          @chart:render="handleChartRender"
         />
       </div>
     </div>
