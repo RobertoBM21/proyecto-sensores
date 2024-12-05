@@ -26,7 +26,7 @@ const RESULT_FIELDS = [
   { key: "content", label: "Contenido", defaultValue: "N/A", expandable: true },
   {
     key: "timestamp",
-    label: "Timestamp",
+    label: "Fecha",
     formatter: (value) => new Date(value).toLocaleString(),
     defaultValue: "N/A",
   },
@@ -99,11 +99,10 @@ const formatFieldValue = (field, value) => {
     <Card
       v-for="result in results"
       :key="result.id"
-      class="transition-colors duration-200 hover:bg-muted/50 group"
+      class="transition-colors duration-200 hover:bg-muted/50 cursor-pointer"
+      @click="toggleContent(result.id)"
     >
-      <CardHeader
-        class="group-hover:bg-muted/25 transition-colors duration-200"
-      >
+      <CardHeader>
         <CardTitle class="text-lg text-foreground"
           >Serial: {{ result.serial }}</CardTitle
         >
@@ -127,21 +126,15 @@ const formatFieldValue = (field, value) => {
               >
                 {{ formatFieldValue(field, result[field.key]) }}
               </p>
-              <button
+              <div
                 v-if="field.expandable"
-                @click="toggleContent(result.id)"
-                class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-6 w-6"
-                :title="
-                  expandedContents.has(result.id)
-                    ? 'Mostrar menos'
-                    : 'Mostrar más'
-                "
+                class="inline-flex items-center justify-center h-6 w-6"
               >
                 <ChevronDown
                   class="h-4 w-4 transition-transform duration-200"
                   :class="expandedContents.has(result.id) ? 'rotate-180' : ''"
                 />
-              </button>
+              </div>
             </div>
           </div>
         </div>

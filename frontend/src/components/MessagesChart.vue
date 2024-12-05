@@ -19,32 +19,69 @@ const timeRanges = [
 
 const selectedRange = ref("hour");
 
-// Función para agrupar datos según el rango seleccionado
+const DATE_FORMATS = {
+  DAYS_COMPLETE: [
+    "Lunes",
+    "Martes",
+    "Miércoles",
+    "Jueves",
+    "Viernes",
+    "Sábado",
+    "Domingo",
+  ],
+  DAYS_SHORT: ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
+  MONTHS_COMPLETE: [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ],
+  MONTHS_SHORT: [
+    "Ene",
+    "Feb",
+    "Mar",
+    "Abr",
+    "May",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dic",
+  ],
+};
+
 const groupData = (data, range) => {
   const now = new Date();
   const grouped = new Map();
   const startDate = new Date(now);
 
+  const formatHourMinute = (hour, minute) =>
+    `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+
   switch (range) {
     case "hour":
-      // Obtener la hora actual y crear intervalos de 5 minutos
       const currentHour = startDate.getHours();
-      for (let minute = 0; minute < 60; minute += 5) {
-        const timeStr = `${currentHour.toString().padStart(2, "0")}:${minute
-          .toString()
-          .padStart(2, "0")}`;
-        grouped.set(timeStr, 0);
+      for (let minute = 0; minute < 60; minute++) {
+        grouped.set(formatHourMinute(currentHour, minute), 0);
       }
       break;
     case "day":
-      for (let hour = 0; hour < 24; hour++) {
-        const hourStr = hour.toString().padStart(2, "0");
-        grouped.set(hourStr, 0);
+      for (let hour = 0; hour <= 24; hour++) {
+        grouped.set(formatHourMinute(hour, 0), 0);
       }
       break;
     case "week":
-      const weekDays = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-      weekDays.forEach((day) => grouped.set(day, 0));
+      DATE_FORMATS.DAYS_COMPLETE.forEach((day) => grouped.set(day, 0));
       break;
     case "month":
       const daysInMonth = new Date(
@@ -53,28 +90,18 @@ const groupData = (data, range) => {
         0
       ).getDate();
       for (let day = 1; day <= daysInMonth; day++) {
-        grouped.set(day.toString(), 0);
+        const key = `${day} ${
+          DATE_FORMATS.MONTHS_COMPLETE[startDate.getMonth()]
+        }`;
+        grouped.set(key, 0);
       }
       break;
     case "year":
-      const months = [
-        "Ene",
-        "Feb",
-        "Mar",
-        "Abr",
-        "May",
-        "Jun",
-        "Jul",
-        "Ago",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dic",
-      ];
-      months.forEach((month) => grouped.set(month, 0));
+      DATE_FORMATS.MONTHS_COMPLETE.forEach((month) =>
+        grouped.set(`${month} ${startDate.getFullYear()}`, 0)
+      );
       break;
     case "5year":
-      // Ajustar para incluir el año actual y los 4 anteriores en orden cronológico
       for (let i = 4; i >= 0; i--) {
         const year = startDate.getFullYear() - i;
         grouped.set(year.toString(), 0);
@@ -82,47 +109,35 @@ const groupData = (data, range) => {
       break;
   }
 
-  // Agrupar los mensajes
   data.forEach((msg) => {
     const date = new Date(msg.timestamp);
     let key;
 
     switch (range) {
       case "hour":
-        // Solo procesar mensajes de la hora actual
         if (date.getHours() === startDate.getHours()) {
-          const minutes = Math.floor(date.getMinutes() / 5) * 5;
-          key = `${date.getHours().toString().padStart(2, "0")}:${minutes
-            .toString()
-            .padStart(2, "0")}`;
+          key = formatHourMinute(date.getHours(), date.getMinutes());
         }
         break;
       case "day":
-        key = date.getHours().toString().padStart(2, "0");
+        const hour = date.getHours();
+        key = formatHourMinute(hour, 0);
         break;
       case "week":
-        const weekDays = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
-        key = weekDays[date.getDay() === 0 ? 6 : date.getDay() - 1];
+        key =
+          DATE_FORMATS.DAYS_COMPLETE[
+            date.getDay() === 0 ? 6 : date.getDay() - 1
+          ];
         break;
       case "month":
-        key = date.getDate().toString();
+        key = `${date.getDate()} ${
+          DATE_FORMATS.MONTHS_COMPLETE[date.getMonth()]
+        }`;
         break;
       case "year":
-        const months = [
-          "Ene",
-          "Feb",
-          "Mar",
-          "Abr",
-          "May",
-          "Jun",
-          "Jul",
-          "Ago",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dic",
-        ];
-        key = months[date.getMonth()];
+        key = `${
+          DATE_FORMATS.MONTHS_COMPLETE[date.getMonth()]
+        } ${date.getFullYear()}`;
         break;
       case "5year":
         key = date.getFullYear().toString();
@@ -137,7 +152,6 @@ const groupData = (data, range) => {
   return grouped;
 };
 
-// Aseguramos que los datos se muestren en el orden correcto
 const chartData = computed(() => {
   const messages = store.results;
   if (!messages?.length) return [];
@@ -145,11 +159,9 @@ const chartData = computed(() => {
   const grouped = groupData(messages, selectedRange.value);
   let entries = Array.from(grouped.entries());
 
-  // Ordenar según el rango seleccionado
   if (selectedRange.value === "5year") {
     entries = entries.sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
   } else if (selectedRange.value === "hour") {
-    // Asegurar orden cronológico para las horas
     entries = entries.sort((a, b) => {
       const [aHour, aMin] = a[0].split(":").map(Number);
       const [bHour, bMin] = b[0].split(":").map(Number);
@@ -159,36 +171,43 @@ const chartData = computed(() => {
 
   return entries.map(([timestamp, count]) => ({
     timestamp,
-    messages: count,
+    mensajes: count,
   }));
 });
 
-// Ajustar el formateador del eje X según el rango seleccionado
 const xFormatter = computed(() => (value) => {
+  const timestamp = chartData.value[value]?.timestamp;
+  if (!timestamp) return "";
+
   switch (selectedRange.value) {
-    case "hour":
-      // Asumiendo que value es un número que representa minutos
-      const hour = Math.floor(value / 60);
-      const minute = value % 60;
-      return `${hour.toString().padStart(2, "0")}:${minute
-        .toString()
-        .padStart(2, "0")}`;
+    case "hour": {
+      const [h, minute] = timestamp.split(":").map(Number);
+      return minute % 10 === 0 ? timestamp : "";
+    }
     case "day":
-      return value.toString().padStart(2, "0") + "h";
-    case "week":
-      return value;
-    case "month":
-      return "Día " + value.toString().padStart(2, "0");
-    case "year":
-      return value;
-    case "5year":
-      return value;
+      return timestamp;
+    case "week": {
+      const dayIndex = DATE_FORMATS.DAYS_COMPLETE.indexOf(timestamp);
+      return DATE_FORMATS.DAYS_SHORT[dayIndex];
+    }
+    case "month": {
+      const [day, month] = timestamp.split(" ");
+      const monthIndex = DATE_FORMATS.MONTHS_COMPLETE.indexOf(month);
+      return `${day} ${DATE_FORMATS.MONTHS_SHORT[monthIndex]}`;
+    }
+    case "year": {
+      const [month, year] = timestamp.split(" ");
+      const monthIndex = DATE_FORMATS.MONTHS_COMPLETE.indexOf(month);
+      return `${DATE_FORMATS.MONTHS_SHORT[monthIndex]} ${year}`;
+    }
+    case "5year": {
+      return timestamp;
+    }
     default:
       return value;
   }
 });
 
-// Formateador para el eje Y (cuenta de mensajes)
 const yFormatter = (value) => {
   return value.toLocaleString("es-ES");
 };
@@ -219,7 +238,7 @@ const yFormatter = (value) => {
           class="h-[300px]"
           :data="chartData"
           index="timestamp"
-          :categories="['messages']"
+          :categories="['mensajes']"
           :curve-type="CurveType.MonotoneX"
           :y-formatter="yFormatter"
           :x-formatter="xFormatter"
