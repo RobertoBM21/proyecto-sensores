@@ -1,338 +1,231 @@
 <script setup>
-import { computed, ref, watch, onMounted, defineComponent } from "vue";
-import { Bar } from "vue-chartjs";
+import { computed, ref } from "vue";
 import { useMessagesStore } from "../stores/messages";
-import { useColorMode } from "@vueuse/core";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import { AreaChart } from "@/components/ui/chart-area";
+import { CurveType } from "@unovis/ts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
-// Register ChartJS components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-const mode = useColorMode();
 const store = useMessagesStore();
 
-// Mover las opciones de agrupación aquí arriba
-const groupingOptions = [
-  { value: "hour", label: "1H", description: "Por hora" },
-  { value: "day", label: "1D", description: "Por día" },
-  { value: "week", label: "1S", description: "Por semana" },
-  { value: "month", label: "1M", description: "Por mes" },
-  { value: "year", label: "1A", description: "Último año" },
-  { value: "5year", label: "5A", description: "Últimos 5 años" },
+const timeRanges = [
+  { id: "hour", label: "1H", description: "Última hora" },
+  { id: "day", label: "1D", description: "Último día" },
+  { id: "week", label: "1S", description: "Última semana" },
+  { id: "month", label: "1M", description: "Último mes" },
+  { id: "year", label: "1A", description: "Último año" },
+  { id: "5year", label: "5A", description: "Últimos 5 años" },
 ];
 
-const selectedGrouping = ref("hour");
-const isLoading = ref(true);
+const selectedRange = ref("hour");
 
-// Get CSS variables for theming
-const getCssVar = (variable) =>
-  getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
-
-// Computed para los colores del tema
-const themeColors = computed(() => ({
-  primary: `hsl(${getCssVar("--primary")})`,
-  primaryHover: `hsl(${getCssVar("--primary")} / 0.8)`,
-  popover: `hsl(${getCssVar("--popover")})`,
-  popoverForeground: `hsl(${getCssVar("--popover-foreground")})`,
-  muted: `hsl(${getCssVar("--muted-foreground")})`,
-}));
-
-// Dynamic chart options based on theme
-const chartOptions = computed(() => ({
-  responsive: true,
-  maintainAspectRatio: false,
-  animation: {
-    duration: 750,
-    easing: "easeInOutQuart",
-  },
-  plugins: {
-    legend: {
-      display: false,
-    },
-    title: {
-      display: true,
-      text: "Distribución Temporal de Mensajes",
-      color: `hsl(${getCssVar("--foreground")})`,
-      font: {
-        size: 18,
-        weight: "500",
-        family: "'Inter', sans-serif",
-      },
-      padding: 20,
-    },
-    tooltip: {
-      backgroundColor: themeColors.value.popover,
-      titleColor: themeColors.value.popoverForeground,
-      bodyColor: themeColors.value.popoverForeground,
-      padding: 12,
-      cornerRadius: 6,
-      titleFont: {
-        size: 14,
-        weight: "600",
-        family: "'Inter', sans-serif",
-      },
-      bodyFont: {
-        size: 13,
-        family: "'Inter', sans-serif",
-      },
-      callbacks: {
-        label: (context) => {
-          const value = context.raw;
-          return `${value.toLocaleString("es-ES")} mensaje${
-            value !== 1 ? "s" : ""
-          }`;
-        },
-        title: (context) => {
-          return `${context[0].label}`;
-        },
-      },
-    },
-  },
-  scales: {
-    x: {
-      grid: {
-        display: false,
-      },
-      border: {
-        display: false,
-      },
-      ticks: {
-        color: `hsl(${getCssVar("--muted-foreground")})`,
-        font: {
-          size: 12,
-          family: "'Inter', sans-serif",
-        },
-      },
-    },
-    y: {
-      grid: {
-        color: `hsl(${getCssVar("--border")} / 0.3)`,
-        drawTicks: false,
-      },
-      border: {
-        display: false,
-      },
-      ticks: {
-        color: `hsl(${getCssVar("--muted-foreground")})`,
-        padding: 8,
-        font: {
-          size: 12,
-          family: "'Inter', sans-serif",
-        },
-        callback: (value) => value.toLocaleString("es-ES"),
-      },
-      beginAtZero: true,
-    },
-  },
-}));
-
-// Mover la referencia al inicio
-const chartInstance = ref(null);
-
-// Process data for the chart
-const chartData = computed(() => {
-  if (!store.results.length) return null;
-
+// Función para agrupar datos según el rango seleccionado
+const groupData = (data, range) => {
   const now = new Date();
-  let groupedData = {};
+  const grouped = new Map();
+  const startDate = new Date(now);
 
-  // Función auxiliar para obtener la clave según la agrupación
-  const getGroupKey = (date) => {
-    switch (selectedGrouping.value) {
-      case "hour":
-        return date.getHours();
-      case "day":
-        return date.getDate();
-      case "week":
-        const weekStart = new Date(date);
-        weekStart.setDate(date.getDate() - date.getDay());
-        return weekStart.toISOString().split("T")[0];
-      case "month":
-        return date.getMonth();
-      case "year":
-        return date.getMonth() + (date.getFullYear() - now.getFullYear()) * 12;
-      case "5year":
-        return date.getFullYear();
-    }
-  };
-
-  // Inicializar datos según la agrupación seleccionada
-  switch (selectedGrouping.value) {
+  switch (range) {
     case "hour":
-      for (let i = 0; i < 24; i++) {
-        groupedData[i] = {
-          count: 0,
-          label: `${String(i).padStart(2, "0")}:00`,
-        };
+      // Obtener la hora actual y crear intervalos de 5 minutos
+      const currentHour = startDate.getHours();
+      for (let minute = 0; minute < 60; minute += 5) {
+        const timeStr = `${currentHour.toString().padStart(2, "0")}:${minute
+          .toString()
+          .padStart(2, "0")}`;
+        grouped.set(timeStr, 0);
       }
       break;
     case "day":
-      for (let i = 1; i <= 31; i++) {
-        groupedData[i] = { count: 0, label: `Día ${i}` };
+      for (let hour = 0; hour < 24; hour++) {
+        const hourStr = hour.toString().padStart(2, "0");
+        grouped.set(hourStr, 0);
       }
       break;
     case "week":
-      const weekStart = new Date(now);
-      weekStart.setDate(now.getDate() - now.getDay());
-      for (let i = 0; i < 7; i++) {
-        const date = new Date(weekStart);
-        date.setDate(weekStart.getDate() + i);
-        const key = date.toISOString().split("T")[0];
-        groupedData[key] = {
-          count: 0,
-          label: date.toLocaleDateString("es-ES", { weekday: "long" }),
-        };
-      }
+      const weekDays = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+      weekDays.forEach((day) => grouped.set(day, 0));
       break;
     case "month":
-      for (let i = 0; i < 12; i++) {
-        groupedData[i] = {
-          count: 0,
-          label: new Date(2024, i).toLocaleDateString("es-ES", {
-            month: "long",
-          }),
-        };
+      const daysInMonth = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth() + 1,
+        0
+      ).getDate();
+      for (let day = 1; day <= daysInMonth; day++) {
+        grouped.set(day.toString(), 0);
       }
       break;
     case "year":
-      const yearAgo = new Date(now);
-      yearAgo.setFullYear(now.getFullYear() - 1);
-      for (let i = 0; i < 12; i++) {
-        const date = new Date(yearAgo);
-        date.setMonth(yearAgo.getMonth() + i);
-        const key =
-          date.getMonth() + (date.getFullYear() - now.getFullYear()) * 12;
-        groupedData[key] = {
-          count: 0,
-          label: date.toLocaleDateString("es-ES", {
-            month: "short",
-            year: "numeric",
-          }),
-        };
-      }
+      const months = [
+        "Ene",
+        "Feb",
+        "Mar",
+        "Abr",
+        "May",
+        "Jun",
+        "Jul",
+        "Ago",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dic",
+      ];
+      months.forEach((month) => grouped.set(month, 0));
       break;
     case "5year":
+      // Ajustar para incluir el año actual y los 4 anteriores en orden cronológico
       for (let i = 4; i >= 0; i--) {
-        const year = now.getFullYear() - i;
-        groupedData[year] = {
-          count: 0,
-          label: year.toString(),
-        };
+        const year = startDate.getFullYear() - i;
+        grouped.set(year.toString(), 0);
       }
       break;
   }
 
-  // Agrupar mensajes
-  store.results.forEach((message) => {
-    const date = new Date(message.timestamp);
-    const key = getGroupKey(date);
-    if (groupedData[key]) {
-      groupedData[key].count++;
+  // Agrupar los mensajes
+  data.forEach((msg) => {
+    const date = new Date(msg.timestamp);
+    let key;
+
+    switch (range) {
+      case "hour":
+        // Solo procesar mensajes de la hora actual
+        if (date.getHours() === startDate.getHours()) {
+          const minutes = Math.floor(date.getMinutes() / 5) * 5;
+          key = `${date.getHours().toString().padStart(2, "0")}:${minutes
+            .toString()
+            .padStart(2, "0")}`;
+        }
+        break;
+      case "day":
+        key = date.getHours().toString().padStart(2, "0");
+        break;
+      case "week":
+        const weekDays = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+        key = weekDays[date.getDay() === 0 ? 6 : date.getDay() - 1];
+        break;
+      case "month":
+        key = date.getDate().toString();
+        break;
+      case "year":
+        const months = [
+          "Ene",
+          "Feb",
+          "Mar",
+          "Abr",
+          "May",
+          "Jun",
+          "Jul",
+          "Ago",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dic",
+        ];
+        key = months[date.getMonth()];
+        break;
+      case "5year":
+        key = date.getFullYear().toString();
+        break;
+    }
+
+    if (grouped.has(key)) {
+      grouped.set(key, grouped.get(key) + 1);
     }
   });
 
-  // Preparar datos para el gráfico
-  const sortedData = Object.values(groupedData);
+  return grouped;
+};
 
-  return {
-    labels: sortedData.map((d) => d.label),
-    datasets: [
-      {
-        data: sortedData.map((d) => d.count),
-        backgroundColor: themeColors.value.primary,
-        hoverBackgroundColor: themeColors.value.primaryHover,
-        borderRadius: 4,
-      },
-    ],
-  };
+// Aseguramos que los datos se muestren en el orden correcto
+const chartData = computed(() => {
+  const messages = store.results;
+  if (!messages?.length) return [];
+
+  const grouped = groupData(messages, selectedRange.value);
+  let entries = Array.from(grouped.entries());
+
+  // Ordenar según el rango seleccionado
+  if (selectedRange.value === "5year") {
+    entries = entries.sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+  } else if (selectedRange.value === "hour") {
+    // Asegurar orden cronológico para las horas
+    entries = entries.sort((a, b) => {
+      const [aHour, aMin] = a[0].split(":").map(Number);
+      const [bHour, bMin] = b[0].split(":").map(Number);
+      return aHour * 60 + aMin - (bHour * 60 + bMin);
+    });
+  }
+
+  return entries.map(([timestamp, count]) => ({
+    timestamp,
+    messages: count,
+  }));
 });
 
-// En lugar de usar JSX, definimos el skeleton como un componente normal de Vue
-const SkeletonLoader = defineComponent({
-  name: "SkeletonLoader",
-  template: `
-    <div class="animate-pulse">
-      <div class="h-[300px] bg-muted rounded-lg"></div>
-    </div>
-  `,
+// Ajustar el formateador del eje X según el rango seleccionado
+const xFormatter = computed(() => (value) => {
+  switch (selectedRange.value) {
+    case "hour":
+      // Asumiendo que value es un número que representa minutos
+      const hour = Math.floor(value / 60);
+      const minute = value % 60;
+      return `${hour.toString().padStart(2, "0")}:${minute
+        .toString()
+        .padStart(2, "0")}`;
+    case "day":
+      return value.toString().padStart(2, "0") + "h";
+    case "week":
+      return value;
+    case "month":
+      return "Día " + value.toString().padStart(2, "0");
+    case "year":
+      return value;
+    case "5year":
+      return value;
+    default:
+      return value;
+  }
 });
 
-onMounted(() => {
-  setTimeout(() => {
-    isLoading.value = false;
-  }, 1000);
-});
-
-// Simplificar el watch para forzar la actualización completa
-watch(
-  [mode, selectedGrouping],
-  () => {
-    ChartJS.defaults.color = themeColors.value.muted;
-    if (chartInstance.value) {
-      chartInstance.value.update();
-    }
-  },
-  { immediate: true }
-);
-
-// Ya no necesitamos updateChartColors ni handleChartRender
-const handleChartRender = (chart) => {
-  chartInstance.value = chart;
+// Formateador para el eje Y (cuenta de mensajes)
+const yFormatter = (value) => {
+  return value.toLocaleString("es-ES");
 };
 </script>
 
 <template>
-  <div v-if="store.hasResults" class="w-full space-y-4">
-    <!-- Card wrapper para la gráfica -->
-    <div class="rounded-lg border bg-card p-4">
-      <!-- Header con título y selector -->
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-medium">Mensajes en el tiempo</h3>
-        <!-- Grupo de botones para la agrupación -->
+  <div v-if="store.hasResults">
+    <Card>
+      <CardHeader class="flex flex-row items-center justify-between">
+        <CardTitle>Mensajes Recibidos</CardTitle>
         <div
           class="inline-flex items-center rounded-md border bg-muted p-1 text-muted-foreground"
         >
-          <button
-            v-for="option in groupingOptions"
-            :key="option.value"
-            @click="selectedGrouping = option.value"
-            class="inline-flex items-center justify-center rounded-sm px-2.5 py-1.5 text-sm font-medium transition-colors hover:text-foreground"
-            :class="{
-              'bg-background text-foreground shadow-sm':
-                selectedGrouping === option.value,
-            }"
-            :title="option.description"
+          <Button
+            v-for="range in timeRanges"
+            :key="range.id"
+            @click="selectedRange = range.id"
+            :variant="selectedRange === range.id ? 'default' : 'ghost'"
+            class="px-2.5"
+            :title="range.description"
           >
-            {{ option.label }}
-          </button>
+            {{ range.label }}
+          </Button>
         </div>
-      </div>
-
-      <!-- Chart or Skeleton -->
-      <div class="h-[300px]">
-        <component :is="SkeletonLoader" v-if="isLoading" />
-        <Bar
-          v-else-if="chartData"
+      </CardHeader>
+      <CardContent>
+        <AreaChart
+          class="h-[300px]"
           :data="chartData"
-          :options="chartOptions"
-          @chart:render="handleChartRender"
+          index="timestamp"
+          :categories="['messages']"
+          :curve-type="CurveType.MonotoneX"
+          :y-formatter="yFormatter"
+          :x-formatter="xFormatter"
+          :show-gradiant="true"
         />
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   </div>
 </template>

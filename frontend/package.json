@@ -10,8 +10,9 @@
   },
   "dependencies": {
     "@internationalized/date": "^3.6.0",
+    "@unovis/ts": "^1.4.5",
+    "@unovis/vue": "^1.4.5",
     "@vueuse/core": "11.2.0",
-    "chart.js": "4.4.7",
     "class-variance-authority": "0.7.0",
     "clsx": "2.1.1",
     "lucide-vue-next": "0.460.0",
@@ -20,7 +21,6 @@
     "tailwind-merge": "2.5.4",
     "tailwindcss-animate": "1.0.7",
     "vue": "3.5.12",
-    "vue-chartjs": "5.3.2",
     "vue-router": "4.4.5"
   },
   "devDependencies": {
