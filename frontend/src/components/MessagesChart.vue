@@ -1,213 +1,282 @@
 <script setup>
-import { computed, ref } from "vue";
-import { useMessagesStore } from "../stores/messages";
+// UI components
 import { AreaChart } from "@/components/ui/chart-area";
-import { CurveType } from "@unovis/ts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-const store = useMessagesStore();
+// Store
+import { useMessagesStore } from "../stores/messages";
 
-const timeRanges = [
-  { id: "hour", label: "1H", description: "Última hora" },
-  { id: "day", label: "1D", description: "Último día" },
-  { id: "week", label: "1S", description: "Última semana" },
-  { id: "month", label: "1M", description: "Último mes" },
-  { id: "year", label: "1A", description: "Último año" },
-  { id: "5year", label: "5A", description: "Últimos 5 años" },
-];
+// Utilities
+import { computed, ref } from "vue";
+import { CurveType } from "@unovis/ts";
 
-const selectedRange = ref("hour");
+// Types and Interfaces
+const ChartRangeType = {
+  HOUR: "hour",
+  DAY: "day",
+  WEEK: "week",
+  MONTH: "month",
+  YEAR: "year",
+  FIVE_YEAR: "5year",
+};
 
-const DATE_FORMATS = {
-  DAYS_COMPLETE: [
-    "Lunes",
-    "Martes",
-    "Miércoles",
-    "Jueves",
-    "Viernes",
-    "Sábado",
-    "Domingo",
-  ],
-  DAYS_SHORT: ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
-  MONTHS_COMPLETE: [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
-  ],
-  MONTHS_SHORT: [
-    "Ene",
-    "Feb",
-    "Mar",
-    "Abr",
-    "May",
-    "Jun",
-    "Jul",
-    "Ago",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dic",
+// Constants & Configuration
+const DATE_CONFIG = {
+  formats: {
+    DAYS_COMPLETE: [
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+      "Domingo",
+    ],
+    DAYS_SHORT: ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
+    MONTHS_COMPLETE: [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre",
+    ],
+    MONTHS_SHORT: [
+      "Ene",
+      "Feb",
+      "Mar",
+      "Abr",
+      "May",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dic",
+    ],
+  },
+  timeRanges: [
+    { id: ChartRangeType.HOUR, label: "1H", description: "Última hora" },
+    { id: ChartRangeType.DAY, label: "1D", description: "Último día" },
+    { id: ChartRangeType.WEEK, label: "1S", description: "Última semana" },
+    { id: ChartRangeType.MONTH, label: "1M", description: "Último mes" },
+    { id: ChartRangeType.YEAR, label: "1A", description: "Último año" },
+    {
+      id: ChartRangeType.FIVE_YEAR,
+      label: "5A",
+      description: "Últimos 5 años",
+    },
   ],
 };
 
-const groupData = (data, range) => {
-  const now = new Date();
-  const grouped = new Map();
-  const startDate = new Date(now);
-  let timeLimit;
+// Store & State
+const store = useMessagesStore();
+const selectedRange = ref(ChartRangeType.HOUR);
 
-  // Ajustar startDate y timeLimit según el rango
-  switch (range) {
-    case "hour":
-      startDate.setMinutes(0, 0, 0);
-      timeLimit = new Date(startDate);
-      break;
-    case "day":
-      startDate.setHours(0, 0, 0, 0);
-      timeLimit = new Date(startDate);
-      break;
-    case "week":
-      startDate.setHours(0, 0, 0, 0);
-      // Ajustar al inicio de la semana (Lunes)
-      const currentDay = startDate.getDay() || 7; // Convertir 0 (domingo) a 7
-      startDate.setDate(startDate.getDate() - (currentDay - 1));
-      timeLimit = new Date(startDate);
-      break;
-    case "month":
-      startDate.setDate(1);
-      startDate.setHours(0, 0, 0, 0);
-      timeLimit = new Date(startDate);
-      break;
-    case "year":
-      startDate.setMonth(0, 1);
-      startDate.setHours(0, 0, 0, 0);
-      timeLimit = new Date(startDate);
-      break;
-    case "5year":
-      timeLimit = new Date(now);
-      timeLimit.setFullYear(now.getFullYear() - 4);
-      timeLimit.setMonth(0, 1);
-      timeLimit.setHours(0, 0, 0, 0);
-
-      startDate.setFullYear(now.getFullYear());
-      startDate.setMonth(0, 1);
-      startDate.setHours(0, 0, 0, 0);
-      break;
-  }
-
-  // Filtrar mensajes dentro del rango de tiempo correcto
-  const filteredData = data.filter((msg) => {
-    const msgDate = new Date(msg.timestamp);
-    return msgDate >= timeLimit && msgDate <= now;
-  });
-
-  const formatHourMinute = (hour, minute) =>
-    `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
-
-  // Inicializar el mapa con las claves
-  switch (range) {
-    case "hour":
-      const currentHour = startDate.getHours();
+// Time Range => Patron Estrategia
+const timeRangeStrategies = {
+  [ChartRangeType.HOUR]: {
+    getTimeLimit: (startDate) => new Date(startDate),
+    initializeData: (startDate) => {
+      const grouped = new Map();
+      const hour = startDate.getHours();
       for (let minute = 0; minute < 60; minute++) {
-        grouped.set(formatHourMinute(currentHour, minute), 0);
+        grouped.set(formatHourMinute(hour, minute), 0);
       }
-      break;
-    case "day":
+      return grouped;
+    },
+    getKey: (date) => formatHourMinute(date.getHours(), date.getMinutes()),
+    formatLabel: (timestamp) => {
+      const [h, minute] = timestamp.split(":").map(Number);
+      return minute % 10 === 0 ? timestamp : "";
+    },
+  },
+  [ChartRangeType.DAY]: {
+    getTimeLimit: (startDate) => new Date(startDate),
+    initializeData: () => {
+      const grouped = new Map();
       for (let hour = 0; hour <= 24; hour++) {
         grouped.set(formatHourMinute(hour, 0), 0);
       }
-      break;
-    case "week":
-      DATE_FORMATS.DAYS_COMPLETE.forEach((day) => grouped.set(day, 0));
-      break;
-    case "month":
+      return grouped;
+    },
+    getKey: (date) => formatHourMinute(date.getHours(), 0),
+    formatLabel: (timestamp) => timestamp,
+  },
+  [ChartRangeType.WEEK]: {
+    getTimeLimit: (startDate) => new Date(startDate),
+    initializeData: () => {
+      const grouped = new Map();
+      DATE_CONFIG.formats.DAYS_COMPLETE.forEach((day) => grouped.set(day, 0));
+      return grouped;
+    },
+    getKey: (date) =>
+      DATE_CONFIG.formats.DAYS_COMPLETE[
+        date.getDay() === 0 ? 6 : date.getDay() - 1
+      ],
+    formatLabel: (timestamp) => {
+      const dayIndex = DATE_CONFIG.formats.DAYS_COMPLETE.indexOf(timestamp);
+      return DATE_CONFIG.formats.DAYS_SHORT[dayIndex];
+    },
+  },
+  [ChartRangeType.MONTH]: {
+    getTimeLimit: (startDate) => new Date(startDate),
+    initializeData: (startDate) => {
+      const grouped = new Map();
       const daysInMonth = new Date(
         startDate.getFullYear(),
         startDate.getMonth() + 1,
         0
       ).getDate();
       for (let day = 1; day <= daysInMonth; day++) {
-        const key = `${day} ${
-          DATE_FORMATS.MONTHS_COMPLETE[startDate.getMonth()]
-        }`;
-        grouped.set(key, 0);
+        grouped.set(
+          `${day} ${DATE_CONFIG.formats.MONTHS_COMPLETE[startDate.getMonth()]}`,
+          0
+        );
       }
-      break;
-    case "year":
-      DATE_FORMATS.MONTHS_COMPLETE.forEach((month) =>
+      return grouped;
+    },
+    getKey: (date) =>
+      `${date.getDate()} ${
+        DATE_CONFIG.formats.MONTHS_COMPLETE[date.getMonth()]
+      }`,
+    formatLabel: (timestamp) => {
+      const [day, month] = timestamp.split(" ");
+      const monthIndex = DATE_CONFIG.formats.MONTHS_COMPLETE.indexOf(month);
+      return `${day} ${DATE_CONFIG.formats.MONTHS_SHORT[monthIndex]}`;
+    },
+  },
+  [ChartRangeType.YEAR]: {
+    getTimeLimit: (startDate) => new Date(startDate),
+    initializeData: (startDate) => {
+      const grouped = new Map();
+      DATE_CONFIG.formats.MONTHS_COMPLETE.forEach((month) =>
         grouped.set(`${month} ${startDate.getFullYear()}`, 0)
       );
-      break;
-    case "5year":
+      return grouped;
+    },
+    getKey: (date) =>
+      `${
+        DATE_CONFIG.formats.MONTHS_COMPLETE[date.getMonth()]
+      } ${date.getFullYear()}`,
+    formatLabel: (timestamp) => {
+      const [month, year] = timestamp.split(" ");
+      const monthIndex = DATE_CONFIG.formats.MONTHS_COMPLETE.indexOf(month);
+      return `${DATE_CONFIG.formats.MONTHS_SHORT[monthIndex]} ${year}`;
+    },
+  },
+  [ChartRangeType.FIVE_YEAR]: {
+    getTimeLimit: (startDate) => {
+      const limit = new Date(startDate);
+      limit.setFullYear(limit.getFullYear() - 4);
+      return limit;
+    },
+    initializeData: (startDate) => {
+      const grouped = new Map();
       for (let i = 4; i >= 0; i--) {
-        const year = startDate.getFullYear() - i;
-        grouped.set(year.toString(), 0);
+        grouped.set((startDate.getFullYear() - i).toString(), 0);
       }
-      break;
-  }
-
-  // Agrupar solo los mensajes filtrados
-  filteredData.forEach((msg) => {
-    const date = new Date(msg.timestamp);
-    let key;
-
-    switch (range) {
-      case "hour":
-        key = formatHourMinute(date.getHours(), date.getMinutes());
-        break;
-      case "day":
-        key = formatHourMinute(date.getHours(), 0);
-        break;
-      case "week":
-        key =
-          DATE_FORMATS.DAYS_COMPLETE[
-            date.getDay() === 0 ? 6 : date.getDay() - 1
-          ];
-        break;
-      case "month":
-        key = `${date.getDate()} ${
-          DATE_FORMATS.MONTHS_COMPLETE[date.getMonth()]
-        }`;
-        break;
-      case "year":
-        key = `${
-          DATE_FORMATS.MONTHS_COMPLETE[date.getMonth()]
-        } ${date.getFullYear()}`;
-        break;
-      case "5year":
-        key = date.getFullYear().toString();
-        break;
-    }
-
-    if (grouped.has(key)) {
-      grouped.set(key, grouped.get(key) + 1);
-    }
-  });
-
-  return grouped;
+      return grouped;
+    },
+    getKey: (date) => date.getFullYear().toString(),
+    formatLabel: (timestamp) => timestamp,
+  },
 };
 
-const chartData = computed(() => {
-  const messages = store.stats;
-  if (!messages?.length) return [];
+// Utility Functions
+const formatHourMinute = (hour, minute) =>
+  `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
 
-  const grouped = groupData(messages, selectedRange.value);
+// Data Processing Service
+const chartDataService = {
+  getTimeRange(range) {
+    const now = new Date();
+    const startDate = new Date(now);
+    const strategy = timeRangeStrategies[range];
+
+    if (!strategy) return null;
+
+    // Aplicar configuración inicial según el rango
+    switch (range) {
+      case ChartRangeType.HOUR:
+        startDate.setMinutes(0, 0, 0);
+        break;
+      case ChartRangeType.DAY:
+        startDate.setHours(0, 0, 0, 0);
+        break;
+      case ChartRangeType.WEEK:
+        startDate.setHours(0, 0, 0, 0);
+        const currentDay = startDate.getDay() || 7;
+        startDate.setDate(startDate.getDate() - (currentDay - 1));
+        break;
+      case ChartRangeType.MONTH:
+        startDate.setDate(1);
+        startDate.setHours(0, 0, 0, 0);
+        break;
+      case ChartRangeType.YEAR:
+        startDate.setMonth(0, 1);
+        startDate.setHours(0, 0, 0, 0);
+        break;
+      case ChartRangeType.FIVE_YEAR:
+        startDate.setFullYear(now.getFullYear());
+        startDate.setMonth(0, 1);
+        startDate.setHours(0, 0, 0, 0);
+        break;
+    }
+
+    return {
+      startDate,
+      timeLimit: strategy.getTimeLimit(startDate),
+      now,
+    };
+  },
+
+  processData(data, range) {
+    const timeRange = this.getTimeRange(range);
+    if (!timeRange) return new Map();
+
+    const strategy = timeRangeStrategies[range];
+    const grouped = strategy.initializeData(timeRange.startDate);
+
+    const filteredData = data.filter((msg) => {
+      const msgDate = new Date(msg.timestamp);
+      return msgDate >= timeRange.timeLimit && msgDate <= timeRange.now;
+    });
+
+    filteredData.forEach((msg) => {
+      const key = strategy.getKey(new Date(msg.timestamp));
+      if (grouped.has(key)) {
+        grouped.set(key, grouped.get(key) + 1);
+      }
+    });
+
+    return grouped;
+  },
+};
+
+// Computed Properties
+const chartData = computed(() => {
+  if (!store.stats?.length) return [];
+
+  const grouped = chartDataService.processData(
+    store.stats,
+    selectedRange.value
+  );
   let entries = Array.from(grouped.entries());
 
-  if (selectedRange.value === "5year") {
-    entries = entries.sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
-  } else if (selectedRange.value === "hour") {
-    entries = entries.sort((a, b) => {
+  // Ordenamiento específico por tipo de rango
+  if (selectedRange.value === ChartRangeType.FIVE_YEAR) {
+    entries.sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+  } else if (selectedRange.value === ChartRangeType.HOUR) {
+    entries.sort((a, b) => {
       const [aHour, aMin] = a[0].split(":").map(Number);
       const [bHour, bMin] = b[0].split(":").map(Number);
       return aHour * 60 + aMin - (bHour * 60 + bMin);
@@ -220,42 +289,16 @@ const chartData = computed(() => {
   }));
 });
 
+// Formatters
 const xFormatter = computed(() => (value) => {
   const timestamp = chartData.value[value]?.timestamp;
   if (!timestamp) return "";
 
-  switch (selectedRange.value) {
-    case "hour": {
-      const [h, minute] = timestamp.split(":").map(Number);
-      return minute % 10 === 0 ? timestamp : "";
-    }
-    case "day":
-      return timestamp;
-    case "week": {
-      const dayIndex = DATE_FORMATS.DAYS_COMPLETE.indexOf(timestamp);
-      return DATE_FORMATS.DAYS_SHORT[dayIndex];
-    }
-    case "month": {
-      const [day, month] = timestamp.split(" ");
-      const monthIndex = DATE_FORMATS.MONTHS_COMPLETE.indexOf(month);
-      return `${day} ${DATE_FORMATS.MONTHS_SHORT[monthIndex]}`;
-    }
-    case "year": {
-      const [month, year] = timestamp.split(" ");
-      const monthIndex = DATE_FORMATS.MONTHS_COMPLETE.indexOf(month);
-      return `${DATE_FORMATS.MONTHS_SHORT[monthIndex]} ${year}`;
-    }
-    case "5year": {
-      return timestamp;
-    }
-    default:
-      return value;
-  }
+  const strategy = timeRangeStrategies[selectedRange.value];
+  return strategy ? strategy.formatLabel(timestamp) : value;
 });
 
-const yFormatter = (value) => {
-  return value.toLocaleString("es-ES");
-};
+const yFormatter = (value) => value.toLocaleString("es-ES");
 </script>
 
 <template>
@@ -267,7 +310,7 @@ const yFormatter = (value) => {
           class="inline-flex items-center rounded-md border bg-muted p-1 text-muted-foreground"
         >
           <Button
-            v-for="range in timeRanges"
+            v-for="range in DATE_CONFIG.timeRanges"
             :key="range.id"
             @click="selectedRange = range.id"
             :variant="selectedRange === range.id ? 'default' : 'ghost'"
