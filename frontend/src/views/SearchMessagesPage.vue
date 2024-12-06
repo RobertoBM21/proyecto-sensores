@@ -14,6 +14,10 @@ const searchBarRef = ref(null);
 const handlePageChange = () => {
   searchBarRef.value.searchMessagesOnly();
 };
+
+const handleLimitChange = () => {
+  searchBarRef.value.searchMessagesOnly();
+};
 </script>
 
 <template>
@@ -29,7 +33,10 @@ const handlePageChange = () => {
         </div>
         <!-- Results Table & List -->
         <div class="mt-8">
-          <MessagesList @page-change="handlePageChange" />
+          <MessagesList
+            @page-change="handlePageChange"
+            @limit-change="handleLimitChange"
+          />
         </div>
       </div>
     </main>

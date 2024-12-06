@@ -12,6 +12,14 @@ import {
   PaginationNext,
   PaginationPrev,
 } from "@/components/ui/pagination";
+import { Label } from "@/components/ui/label";
+import {
+  NumberField,
+  NumberFieldContent,
+  NumberFieldDecrement,
+  NumberFieldIncrement,
+  NumberFieldInput,
+} from "@/components/ui/number-field";
 
 // Icons
 import { ChevronDown } from "lucide-vue-next";
@@ -34,14 +42,18 @@ const RESULT_FIELDS = [
 
 // Store initialization
 const search = useMessagesStore();
-const emit = defineEmits(["pageChange"]);
+const emit = defineEmits(["pageChange", "limitChange"]);
 
 // Component state
 const expandedContents = ref(new Set());
+const currentLimit = ref(search.filters.limit);
 
 // Computed properties
 const results = computed(() => search.results);
 const hasResults = computed(() => search.metadata && results.value.length > 0);
+
+// Key para la barra de paginación
+const paginationKey = computed(() => `pagination-${currentLimit.value}`);
 
 // Methods
 const toggleContent = (id) => {
@@ -55,6 +67,12 @@ const handlePageChange = (page) => {
   emit("pageChange");
 };
 
+const handleLimitChange = (value) => {
+  currentLimit.value = value;
+  search.updateFilters({ limit: value, page: 1 });
+  emit("limitChange");
+};
+
 const formatFieldValue = (field, value) => {
   if (!value) return field.defaultValue;
   return field.formatter ? field.formatter(value) : value;
@@ -63,6 +81,24 @@ const formatFieldValue = (field, value) => {
 
 <template>
   <div class="max-w-4xl mx-auto space-y-6">
+    <!-- Limit Selector -->
+    <div v-if="hasResults" class="flex items-center gap-4">
+      <NumberField
+        v-model="currentLimit"
+        :min="5"
+        :max="100"
+        :step="5"
+        @update:model-value="handleLimitChange"
+      >
+        <Label>Resultados por página</Label>
+        <NumberFieldContent>
+          <NumberFieldDecrement />
+          <NumberFieldInput />
+          <NumberFieldIncrement />
+        </NumberFieldContent>
+      </NumberField>
+    </div>
+
     <!-- Stats Cards -->
     <div v-if="hasResults" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <Card class="flex-1">
@@ -142,7 +178,7 @@ const formatFieldValue = (field, value) => {
     </Card>
 
     <!-- Pagination -->
-    <nav v-if="search.metadata" class="mt-8 pb-8">
+    <nav v-if="search.metadata" class="mt-8 pb-8" :key="paginationKey">
       <Pagination
         :total="search.metadata.totalItems"
         :per-page="search.metadata.limit"

@@ -272,14 +272,14 @@ watch(
                   <div class="space-y-1.5">
                     <Label for="start-time">Hora inicio</Label>
                     <Input
-                      type="time"
                       id="start-time"
+                      type="time"
                       v-model="timeValue.start"
                     />
                   </div>
                   <div class="space-y-1.5">
                     <Label for="end-time">Hora fin</Label>
-                    <Input type="time" id="end-time" v-model="timeValue.end" />
+                    <Input id="end-time" type="time" v-model="timeValue.end" />
                   </div>
                 </div>
               </div>
