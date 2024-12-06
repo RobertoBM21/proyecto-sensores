@@ -198,7 +198,7 @@ const groupData = (data, range) => {
 };
 
 const chartData = computed(() => {
-  const messages = store.results;
+  const messages = store.stats;
   if (!messages?.length) return [];
 
   const grouped = groupData(messages, selectedRange.value);
@@ -259,7 +259,7 @@ const yFormatter = (value) => {
 </script>
 
 <template>
-  <div v-if="store.hasResults">
+  <div v-if="store.hasStats">
     <Card>
       <CardHeader class="flex flex-row items-center justify-between">
         <CardTitle>Mensajes Recibidos</CardTitle>

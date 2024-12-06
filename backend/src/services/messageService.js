@@ -1,7 +1,6 @@
 const { Message, Device } = require("../models");
 const { NotFoundError, BadRequestError } = require("../utils/errors.js");
-const { getDateRange } = require("../utils/dateUtils.js");
-const { Op } = require("sequelize");
+const { buildBaseWhere } = require("../utils/queryUtils.js");
 
 class MessageService {
   //* Obtener todos los mensajes
@@ -57,43 +56,9 @@ class MessageService {
 
   //* Buscar mensajes mediante filtros
   async searchMessages(params) {
-    const {
-      serial,
-      apikey,
-      serverIds,
-      startDate,
-      endDate,
-      dateRange,
-      page = 1,
-      limit = 50,
-    } = params;
+    const { page = 1, limit = 50 } = params;
 
-    // Filtros de búsqueda
-    const baseWhere = {};
-
-    if (serial) {
-      baseWhere.serial = { [Op.like]: `${serial}%` };
-    }
-    if (apikey) {
-      baseWhere["$Device.apikey$"] = apikey;
-    }
-    if (serverIds) {
-      // No comprobar si los servidores existen ya que es más eficiente y
-      // no afecta a la integridad de los datos => si no existen simplemente no se encontrarán mensajes
-      baseWhere["$Device.serverId$"] = { [Op.in]: serverIds };
-    }
-    if (startDate || endDate || dateRange) {
-      baseWhere.timestamp = {};
-      if (dateRange) {
-        const { start, end } = getDateRange(dateRange);
-        baseWhere.timestamp[Op.between] = [start, end];
-      } else {
-        if (startDate) baseWhere.timestamp[Op.gte] = startDate;
-        if (endDate) baseWhere.timestamp[Op.lte] = endDate;
-      }
-    }
-
-    // Consulta base
+    const baseWhere = buildBaseWhere(params);
     const baseOptions = {
       where: baseWhere,
       include: [{ model: Device, attributes: [] }],
@@ -131,6 +96,24 @@ class MessageService {
       hasNextPage: page < totalPages,
       hasPreviousPage: page > 1,
     };
+  }
+
+  //* Obtener estadísticas de mensajes (para la gráfica)
+  async getMessagesStats(params) {
+    const baseWhere = buildBaseWhere(params);
+
+    const messages = await Message.findAll({
+      where: baseWhere,
+      include: [{ model: Device, attributes: [] }],
+      attributes: ["id", "timestamp"],
+      order: [["timestamp", "ASC"]],
+    });
+
+    if (messages.length === 0) {
+      throw new NotFoundError("No se encontraron mensajes");
+    }
+
+    return messages;
   }
 }
 

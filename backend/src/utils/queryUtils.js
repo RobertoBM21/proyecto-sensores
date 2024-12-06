@@ -1,4 +1,5 @@
 const { BadRequestError } = require("./errors.js");
+const { Op } = require("sequelize");
 
 function getDateRange(range) {
   const now = new Date();
@@ -45,4 +46,31 @@ function getDateRange(range) {
   return { start, end };
 }
 
-module.exports = { getDateRange };
+function buildBaseWhere(params) {
+  const { serial, apikey, serverIds, startDate, endDate, dateRange } = params;
+  const baseWhere = {};
+
+  if (serial) {
+    baseWhere.serial = { [Op.like]: `${serial}%` };
+  }
+  if (apikey) {
+    baseWhere["$Device.apikey$"] = apikey;
+  }
+  if (serverIds) {
+    baseWhere["$Device.serverId$"] = { [Op.in]: serverIds };
+  }
+  if (startDate || endDate || dateRange) {
+    baseWhere.timestamp = {};
+    if (dateRange) {
+      const { start, end } = getDateRange(dateRange);
+      baseWhere.timestamp[Op.between] = [start, end];
+    } else {
+      if (startDate) baseWhere.timestamp[Op.gte] = startDate;
+      if (endDate) baseWhere.timestamp[Op.lte] = endDate;
+    }
+  }
+
+  return baseWhere;
+}
+
+module.exports = { getDateRange, buildBaseWhere };

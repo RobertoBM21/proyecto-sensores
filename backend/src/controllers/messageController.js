@@ -3,6 +3,7 @@ const {
   validateMessageId,
   validateMessage,
   validateSearchParams,
+  validateStatsParams,
 } = require("../schemas/messageSchema.js");
 
 // Obtener todos los mensajes
@@ -55,4 +56,20 @@ exports.searchMessages = async (req, res) => {
   const params = validateSearchParams(query); //* Validación
   const messages = await messageService.searchMessages(params);
   res.json(messages);
+};
+
+// Obtener estadísticas de mensajes
+exports.getMessagesStats = async (req, res) => {
+  const query = {
+    ...req.query,
+    serverIds: req.query.serverIds
+      ? Array.isArray(req.query.serverIds)
+        ? req.query.serverIds
+        : req.query.serverIds.split(",").map(Number)
+      : undefined,
+  };
+
+  const params = validateStatsParams(query); //* Validación
+  const stats = await messageService.getMessagesStats(params);
+  res.json(stats);
 };

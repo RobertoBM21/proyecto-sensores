@@ -14,11 +14,13 @@ const DEFAULT_FILTERS = {
 export const useMessagesStore = defineStore("messages", {
   state: () => ({
     filters: { ...DEFAULT_FILTERS },
+    stats: [],
     results: [],
     metadata: null,
   }),
 
   getters: {
+    hasStats: (state) => state.stats.length > 0,
     hasResults: (state) => state.results.length > 0,
     currentPage: (state) => state.metadata?.page || 1,
     totalPages: (state) => state.metadata?.totalPages || 0,
@@ -38,6 +40,10 @@ export const useMessagesStore = defineStore("messages", {
         ...this.filters,
         ...newFilters,
       };
+    },
+
+    updateStats(data) {
+      this.stats = data;
     },
 
     updatePage(page) {
@@ -63,12 +69,18 @@ export const useMessagesStore = defineStore("messages", {
 
     resetFilters() {
       this.filters = { ...DEFAULT_FILTERS };
+      this.clearStats();
       this.clearResults();
+    },
+
+    clearStats() {
+      this.stats = [];
     },
 
     clearResults() {
       this.results = [];
       this.metadata = null;
+      this.clearStats();
     },
   },
 });

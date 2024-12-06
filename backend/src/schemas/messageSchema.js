@@ -36,8 +36,8 @@ const validDateRanges = [
   "last_year",
 ];
 
-// Esquema para validar los parámetros de búsqueda
-const messageSearchSchema = Joi.object({
+// Esquema base para busqueda de mensajes con filtros
+const baseSearchSchema = Joi.object({
   serial: Joi.string(),
   apikey: Joi.string(),
   serverIds: Joi.array()
@@ -64,6 +64,19 @@ const messageSearchSchema = Joi.object({
         ", "
       )}.`,
     }),
+})
+  .and("startDate", "endDate")
+  .custom((value, helpers) => {
+    if (value.startDate && value.endDate && value.startDate >= value.endDate) {
+      return helpers.message(
+        'El campo "startDate" debe ser anterior a "endDate".'
+      );
+    }
+    return value;
+  });
+
+// Esquema extendido para búsqueda paginada
+const messageSearchSchema = baseSearchSchema.keys({
   page: Joi.number().integer().positive().default(1).messages({
     "number.base": 'El campo "page" debe ser un número entero.',
     "number.positive": 'El campo "page" debe ser un número positivo.',
@@ -73,17 +86,10 @@ const messageSearchSchema = Joi.object({
     "number.positive": 'El campo "limit" debe ser un número positivo.',
     "number.max": 'El campo "limit" no puede ser mayor a 1000.',
   }),
-})
-  .and("startDate", "endDate") // Si se proporciona un campo, también debe estar el otro
-  .custom((value, helpers) => {
-    // Validar que startDate sea anterior a endDate
-    if (value.startDate && value.endDate && value.startDate >= value.endDate) {
-      return helpers.message(
-        'El campo "startDate" debe ser anterior a "endDate".'
-      );
-    }
-    return value;
-  });
+});
+
+// Esquema para estadísticas (sin paginación)
+const messageStatsSchema = baseSearchSchema;
 
 //* Función para validar todos los campos del mensaje
 function validateMessage(data) {
@@ -108,4 +114,17 @@ function validateSearchParams(data) {
   return value; // Datos validados
 }
 
-module.exports = { validateMessageId, validateMessage, validateSearchParams };
+function validateStatsParams(data) {
+  const { error, value } = messageStatsSchema.validate(data);
+  if (error) {
+    throw new BadRequestError(error.details[0].message);
+  }
+  return value; // Datos validados
+}
+
+module.exports = {
+  validateMessageId,
+  validateMessage,
+  validateSearchParams,
+  validateStatsParams,
+};

@@ -48,9 +48,8 @@ router.get("/", messageController.getAllMessages);
  *             type: integer
  *         style: form
  *         explode: false
- *         description: |
- *           Array de IDs de servidores a consultar.
- *           Formato: serverIds=1,2,3
+ *         description:
+ *           Array de IDs de servidores a consultar. Formato: serverIds=1,2,3
  *       - in: query
  *         name: startDate
  *         schema:
@@ -120,6 +119,69 @@ router.get("/", messageController.getAllMessages);
  *        description: Mensajes no encontrados
  */
 router.get("/search", messageController.searchMessages);
+
+/**
+ * @swagger
+ * /messages/stats:
+ *   get:
+ *     summary: Obtiene estadísticas temporales de mensajes según los filtros aplicados
+ *     tags: [Messages]
+ *     parameters:
+ *       - in: query
+ *         name: serial
+ *         schema:
+ *           type: string
+ *         description: Serial del dispositivo
+ *       - in: query
+ *         name: serverIds
+ *         required: false
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: integer
+ *         style: form
+ *         explode: false
+ *         description:
+ *           Array de IDs de servidores a consultar. Formato: serverIds=1,2,3
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: Fecha de inicio en formato ISO
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *         description: Fecha de fin en formato ISO
+ *       - in: query
+ *         name: dateRange
+ *         schema:
+ *           type: string
+ *           enum: [today, yesterday, last_5_minutes, last_15_minutes, last_30_minutes, last_hour, last_24_hours, last_week, last_month, last_year]
+ *         description: Rango de fecha predefinido
+ *     responses:
+ *       200:
+ *         description: Estadísticas de mensajes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   timestamp:
+ *                     type: string
+ *                     format: date-time
+ *       400:
+ *         description: Parámetros inválidos
+ *       404:
+ *         description: No se encontraron mensajes
+ */
+router.get("/stats", messageController.getMessagesStats);
 
 /**
  * @swagger

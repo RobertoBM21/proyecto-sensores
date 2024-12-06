@@ -26,15 +26,8 @@ const serial = ref("");
 const apikey = ref("");
 
 // Methods
-const searchMessages = async () => {
-  // Update store with form values
-  search.updateFilters({
-    serial: serial.value,
-    apikey: apikey.value,
-  });
-
-  // Build search parameters
-  const params = {
+const buildParams = () => {
+  return {
     ...(search.filters.serial && { serial: search.filters.serial }),
     ...(search.filters.apikey && { apikey: search.filters.apikey }),
     ...(search.filters.selectedServers.length > 0 && {
@@ -43,22 +36,44 @@ const searchMessages = async () => {
     ...(search.filters.startDate && { startDate: search.filters.startDate }),
     ...(search.filters.endDate && { endDate: search.filters.endDate }),
     ...(search.filters.dateRange && { dateRange: search.filters.dateRange }),
-    page: search.filters.page,
-    limit: search.filters.limit,
   };
+};
+
+const fetchData = async (endpoint, params = {}) => {
+  const url = new URL(`${apiUrl}/messages/${endpoint}`);
+  Object.entries(params).forEach(([key, value]) => {
+    url.searchParams.append(key, value);
+  });
+
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("Network response was not ok");
+  return await response.json();
+};
+
+const searchMessages = async () => {
+  // Update store with form values
+  search.updateFilters({
+    serial: serial.value,
+    apikey: apikey.value,
+  });
 
   try {
-    // Build and execute request
-    const url = new URL(`${apiUrl}/messages/search`);
-    Object.entries(params).forEach(([key, value]) => {
-      url.searchParams.append(key, value);
-    });
+    // Construir parámetros base
+    const baseParams = buildParams();
 
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("Network response was not ok");
+    // Realizar ambas llamadas en paralelo
+    const [searchData, statsData] = await Promise.all([
+      fetchData("search", {
+        ...baseParams,
+        page: search.filters.page,
+        limit: search.filters.limit,
+      }),
+      fetchData("stats", baseParams),
+    ]);
 
-    const data = await response.json();
-    search.updateSearchResults(data);
+    // Actualizar store con resultados
+    search.updateSearchResults(searchData);
+    search.updateStats(statsData);
   } catch (error) {
     console.error("Error fetching data:", error);
     search.clearResults();
