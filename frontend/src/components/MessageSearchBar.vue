@@ -61,7 +61,7 @@ const searchMessages = async () => {
     // Construir parámetros base
     const baseParams = buildParams();
 
-    // Realizar ambas llamadas en paralelo
+    // Realizar ambas llamadas en paralelo ya que es una búsqueda completa
     const [searchData, statsData] = await Promise.all([
       fetchData("search", {
         ...baseParams,
@@ -80,6 +80,23 @@ const searchMessages = async () => {
   }
 };
 
+// Añadir nuevo método para búsqueda solo de mensajes
+const searchMessagesOnly = async () => {
+  try {
+    const baseParams = buildParams();
+    const searchData = await fetchData("search", {
+      ...baseParams,
+      page: search.filters.page,
+      limit: search.filters.limit,
+    });
+
+    search.updateSearchResults(searchData);
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    search.clearResults();
+  }
+};
+
 const clearFilters = () => {
   // Reset local state
   serial.value = "";
@@ -94,8 +111,7 @@ const clearFilters = () => {
   search.resetFilters();
 };
 
-// Expose methods for parent components
-defineExpose({ searchMessages });
+defineExpose({ searchMessagesOnly });
 </script>
 
 <template>
