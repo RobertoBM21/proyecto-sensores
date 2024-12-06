@@ -55,7 +55,7 @@ export const useMessagesStore = defineStore("messages", {
         totalDevices: data.totalDevices,
         page: data.page,
         totalPages: data.totalPages,
-        limit: data.limit,
+        itemsPerPage: data.itemsPerPage,
         hasNextPage: data.hasNextPage,
         hasPreviousPage: data.hasPreviousPage,
       };

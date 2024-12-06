@@ -64,10 +64,57 @@ const groupData = (data, range) => {
   const now = new Date();
   const grouped = new Map();
   const startDate = new Date(now);
+  let timeLimit;
+
+  // Ajustar startDate y timeLimit según el rango
+  switch (range) {
+    case "hour":
+      startDate.setMinutes(0, 0, 0);
+      timeLimit = new Date(startDate);
+      break;
+    case "day":
+      startDate.setHours(0, 0, 0, 0);
+      timeLimit = new Date(startDate);
+      break;
+    case "week":
+      startDate.setHours(0, 0, 0, 0);
+      // Ajustar al inicio de la semana (Lunes)
+      const currentDay = startDate.getDay() || 7; // Convertir 0 (domingo) a 7
+      startDate.setDate(startDate.getDate() - (currentDay - 1));
+      timeLimit = new Date(startDate);
+      break;
+    case "month":
+      startDate.setDate(1);
+      startDate.setHours(0, 0, 0, 0);
+      timeLimit = new Date(startDate);
+      break;
+    case "year":
+      startDate.setMonth(0, 1);
+      startDate.setHours(0, 0, 0, 0);
+      timeLimit = new Date(startDate);
+      break;
+    case "5year":
+      timeLimit = new Date(now);
+      timeLimit.setFullYear(now.getFullYear() - 4);
+      timeLimit.setMonth(0, 1);
+      timeLimit.setHours(0, 0, 0, 0);
+
+      startDate.setFullYear(now.getFullYear());
+      startDate.setMonth(0, 1);
+      startDate.setHours(0, 0, 0, 0);
+      break;
+  }
+
+  // Filtrar mensajes dentro del rango de tiempo correcto
+  const filteredData = data.filter((msg) => {
+    const msgDate = new Date(msg.timestamp);
+    return msgDate >= timeLimit && msgDate <= now;
+  });
 
   const formatHourMinute = (hour, minute) =>
     `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
 
+  // Inicializar el mapa con las claves
   switch (range) {
     case "hour":
       const currentHour = startDate.getHours();
@@ -109,19 +156,17 @@ const groupData = (data, range) => {
       break;
   }
 
-  data.forEach((msg) => {
+  // Agrupar solo los mensajes filtrados
+  filteredData.forEach((msg) => {
     const date = new Date(msg.timestamp);
     let key;
 
     switch (range) {
       case "hour":
-        if (date.getHours() === startDate.getHours()) {
-          key = formatHourMinute(date.getHours(), date.getMinutes());
-        }
+        key = formatHourMinute(date.getHours(), date.getMinutes());
         break;
       case "day":
-        const hour = date.getHours();
-        key = formatHourMinute(hour, 0);
+        key = formatHourMinute(date.getHours(), 0);
         break;
       case "week":
         key =
