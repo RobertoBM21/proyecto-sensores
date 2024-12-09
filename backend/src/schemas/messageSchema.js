@@ -1,6 +1,10 @@
 const Joi = require("joi");
 const { BadRequestError } = require("../utils/errors.js");
 const { validateId } = require("./idSchema.js");
+const {
+  dateRangeSchema,
+  createOptionalDateValidation,
+} = require("./dateSchema");
 
 const messageSchema = Joi.object({
   serial: Joi.string().required().messages({
@@ -22,21 +26,6 @@ const messageSchema = Joi.object({
   }),
 });
 
-// Rangos de fecha válidos
-const validDateRanges = [
-  "today",
-  "yesterday",
-  "last_5_minutes",
-  "last_15_minutes",
-  "last_30_minutes",
-  "last_hour",
-  "last_24_hours",
-  "last_week",
-  "last_month",
-  "last_year",
-];
-
-// Esquema base para busqueda de mensajes con filtros
 const baseSearchSchema = Joi.object({
   serial: Joi.string(),
   apikey: Joi.string(),
@@ -49,31 +38,8 @@ const baseSearchSchema = Joi.object({
       "number.integer": "Los IDs de servidor deben ser números enteros.",
       "number.positive": "Los IDs de servidor deben ser números positivos.",
     }),
-  startDate: Joi.date().iso().messages({
-    "date.base": 'El campo "startDate" debe ser una fecha válida.',
-    "date.format": 'El campo "startDate" debe estar en formato ISO.',
-  }),
-  endDate: Joi.date().iso().messages({
-    "date.base": 'El campo "endDate" debe ser una fecha válida.',
-    "date.format": 'El campo "endDate" debe estar en formato ISO.',
-  }),
-  dateRange: Joi.string()
-    .valid(...validDateRanges)
-    .messages({
-      "any.only": `El campo "dateRange" debe ser uno de los siguientes valores: ${validDateRanges.join(
-        ", "
-      )}.`,
-    }),
-})
-  .and("startDate", "endDate")
-  .custom((value, helpers) => {
-    if (value.startDate && value.endDate && value.startDate >= value.endDate) {
-      return helpers.message(
-        'El campo "startDate" debe ser anterior a "endDate".'
-      );
-    }
-    return value;
-  });
+  ...dateRangeSchema,
+}).concat(createOptionalDateValidation());
 
 // Esquema extendido para búsqueda paginada
 const messageSearchSchema = baseSearchSchema.keys({

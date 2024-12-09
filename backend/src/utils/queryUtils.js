@@ -46,7 +46,7 @@ function getDateRange(range) {
   return { start, end };
 }
 
-function buildBaseWhere(params) {
+function buildBaseWhere(params, dateField = "timestamp") {
   const { serial, apikey, serverIds, startDate, endDate, dateRange } = params;
   const baseWhere = {};
 
@@ -60,13 +60,11 @@ function buildBaseWhere(params) {
     baseWhere["$Device.serverId$"] = { [Op.in]: serverIds };
   }
   if (startDate || endDate || dateRange) {
-    baseWhere.timestamp = {};
     if (dateRange) {
       const { start, end } = getDateRange(dateRange);
-      baseWhere.timestamp[Op.between] = [start, end];
-    } else {
-      if (startDate) baseWhere.timestamp[Op.gte] = startDate;
-      if (endDate) baseWhere.timestamp[Op.lte] = endDate;
+      baseWhere[dateField] = { [Op.between]: [start, end] };
+    } else if (startDate && endDate) {
+      baseWhere[dateField] = { [Op.between]: [startDate, endDate] };
     }
   }
 

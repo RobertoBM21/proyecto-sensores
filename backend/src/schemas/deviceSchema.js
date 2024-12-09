@@ -1,6 +1,10 @@
 const Joi = require("joi");
 const { BadRequestError } = require("../utils/errors.js");
 const { validateId } = require("./idSchema.js");
+const {
+  dateRangeSchema,
+  createRequiredDateValidation,
+} = require("./dateSchema");
 
 const deviceSchema = Joi.object({
   serial: Joi.string().required().messages({
@@ -46,16 +50,7 @@ const deviceActivityReportSchema = Joi.object({
       "number.positive": "Los IDs de servidor deben ser números positivos.",
       "any.required": 'El campo "serverIds" es obligatorio.',
     }),
-  startDate: Joi.date().iso().required().messages({
-    "date.base": 'El campo "startDate" debe ser una fecha válida.',
-    "date.format": 'El campo "startDate" debe estar en formato ISO.',
-    "any.required": 'El campo "startDate" es obligatorio.',
-  }),
-  endDate: Joi.date().iso().required().messages({
-    "date.base": 'El campo "endDate" debe ser una fecha válida.',
-    "date.format": 'El campo "endDate" debe estar en formato ISO.',
-    "any.required": 'El campo "endDate" es obligatorio.',
-  }),
+  ...dateRangeSchema,
   page: Joi.number().integer().positive().default(1).messages({
     "number.base": 'El campo "page" debe ser un número entero.',
     "number.positive": 'El campo "page" debe ser un número positivo.',
@@ -65,14 +60,7 @@ const deviceActivityReportSchema = Joi.object({
     "number.positive": 'El campo "limit" debe ser un número positivo.',
     "number.max": 'El campo "limit" no puede ser mayor a 1000.',
   }),
-}).custom((value, helpers) => {
-  if (value.startDate >= value.endDate) {
-    return helpers.message(
-      "La fecha inicial debe ser anterior a la fecha final"
-    );
-  }
-  return value;
-});
+}).concat(createRequiredDateValidation());
 
 //* Función para validar todos los campos del dispositivo
 function validateDevice(data) {

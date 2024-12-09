@@ -74,18 +74,22 @@ router.post("/", deviceController.createDevice);
  *           Formato: serverIds=1,2,3
  *       - in: query
  *         name: startDate
- *         required: true
  *         schema:
  *           type: string
  *           format: date-time
  *         description: Fecha inicial del rango
  *       - in: query
  *         name: endDate
- *         required: true
  *         schema:
  *           type: string
  *           format: date-time
  *         description: Fecha final del rango
+ *       - in: query
+ *         name: dateRange
+ *         schema:
+ *           type: string
+ *           enum: [today, yesterday, last_5_minutes, last_15_minutes, last_30_minutes, last_hour, last_24_hours, last_week, last_month, last_year]
+ *         description: Rango de fecha predefinido
  *       - in: query
  *         name: page
  *         schema:
@@ -98,6 +102,24 @@ router.post("/", deviceController.createDevice);
  *           type: integer
  *           default: 50
  *         description: Cantidad de dispositivos por página
+ *     schema:
+ *       oneOf:
+ *         - required: [serverIds, dateRange]
+ *           properties:
+ *             dateRange:
+ *               type: string
+ *               enum: [today, yesterday, last_5_minutes, last_15_minutes, last_30_minutes, last_hour, last_24_hours, last_week, last_month, last_year]
+ *               description: Rango de fecha predefinido
+ *         - required: [serverIds, startDate, endDate]
+ *           properties:
+ *             startDate:
+ *               type: string
+ *               format: date-time
+ *               description: Fecha inicial del rango
+ *             endDate:
+ *               type: string
+ *               format: date-time
+ *               description: Fecha final del rango
  *     responses:
  *       200:
  *         description: Reporte de actividad paginado obtenido exitosamente

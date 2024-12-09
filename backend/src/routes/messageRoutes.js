@@ -41,7 +41,6 @@ router.get("/", messageController.getAllMessages);
  *         description: Serial del dispositivo
  *       - in: query
  *         name: serverIds
- *         required: false
  *         schema:
  *           type: array
  *           items:
@@ -80,6 +79,24 @@ router.get("/", messageController.getAllMessages);
  *           type: integer
  *           default: 50
  *         description: Cantidad de mensajes por página
+ *     schema:
+ *       oneOf:
+ *         - required: [dateRange]
+ *           properties:
+ *             dateRange:
+ *               type: string
+ *               enum: [today, yesterday, last_5_minutes, last_15_minutes, last_30_minutes, last_hour, last_24_hours, last_week, last_month, last_year]
+ *               description: Rango de fecha predefinido
+ *         - required: [startDate, endDate]
+ *           properties:
+ *             startDate:
+ *               type: string
+ *               format: date-time
+ *               description: Fecha inicial del rango
+ *             endDate:
+ *               type: string
+ *               format: date-time
+ *               description: Fecha final del rango
  *     responses:
  *       200:
  *         description: Lista de mensajes paginada
@@ -134,7 +151,6 @@ router.get("/search", messageController.searchMessages);
  *         description: Serial del dispositivo
  *       - in: query
  *         name: serverIds
- *         required: false
  *         schema:
  *           type: array
  *           items:
@@ -161,6 +177,24 @@ router.get("/search", messageController.searchMessages);
  *           type: string
  *           enum: [today, yesterday, last_5_minutes, last_15_minutes, last_30_minutes, last_hour, last_24_hours, last_week, last_month, last_year]
  *         description: Rango de fecha predefinido
+ *     schema:
+ *       oneOf:
+ *         - required: [dateRange]
+ *           properties:
+ *             dateRange:
+ *               type: string
+ *               enum: [today, yesterday, last_5_minutes, last_15_minutes, last_30_minutes, last_hour, last_24_hours, last_week, last_month, last_year]
+ *               description: Rango de fecha predefinido
+ *         - required: [startDate, endDate]
+ *           properties:
+ *             startDate:
+ *               type: string
+ *               format: date-time
+ *               description: Fecha inicial del rango
+ *             endDate:
+ *               type: string
+ *               format: date-time
+ *               description: Fecha final del rango
  *     responses:
  *       200:
  *         description: Estadísticas de mensajes

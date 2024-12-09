@@ -6,6 +6,7 @@ const {
   ConflictError,
 } = require("../utils/errors.js");
 const { Op } = require("sequelize");
+const { buildBaseWhere } = require("../utils/queryUtils.js");
 
 class DeviceService {
   //* Obtener todos los dispositivos
@@ -115,7 +116,7 @@ class DeviceService {
 
   //* Analizar estado de comunicación de los dispositivos
   async getDeviceActivityReport(params) {
-    const { serverIds, startDate, endDate, page = 1, limit = 50 } = params;
+    const { serverIds, page = 1, limit = 50 } = params;
 
     // Verificar que los servidores existen
     const servers = await Server.findAll({
@@ -130,11 +131,10 @@ class DeviceService {
       );
     }
 
+    const baseWhere = buildBaseWhere(params, "lastCommunication");
+
     const { count: totalItems, rows: devices } = await Device.findAndCountAll({
-      where: {
-        serverId: { [Op.in]: serverIds },
-        lastCommunication: { [Op.between]: [startDate, endDate] },
-      },
+      where: baseWhere,
       attributes: [
         "serial",
         "lastCommunication",
@@ -143,8 +143,12 @@ class DeviceService {
             SELECT COUNT(*)
             FROM messages AS message
             WHERE message.serial = Device.serial
-            AND message.timestamp >= '${startDate.toISOString()}'
-            AND message.timestamp <= '${endDate.toISOString()}'
+            AND message.timestamp >= '${baseWhere.lastCommunication[
+              Op.between
+            ][0].toISOString()}'
+            AND message.timestamp <= '${baseWhere.lastCommunication[
+              Op.between
+            ][1].toISOString()}'
           )`),
           "messageCount",
         ],
