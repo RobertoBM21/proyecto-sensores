@@ -8,7 +8,7 @@ const DEFAULT_FILTERS = {
   endDate: "",
   dateRange: "",
   page: 1,
-  limit: 10,
+  limit: 50,
 };
 
 export const useMessagesStore = defineStore("messages", {
@@ -25,12 +25,9 @@ export const useMessagesStore = defineStore("messages", {
     currentPage: (state) => state.metadata?.page || 1,
     totalPages: (state) => state.metadata?.totalPages || 0,
     hasActiveFilters: (state) => {
-      return Object.entries(state.filters).some(([key, value]) => {
-        if (Array.isArray(value)) return value.length > 0;
-        if (key === "page") return value !== 1;
-        if (key === "limit") return value !== 10;
-        return value !== "";
-      });
+      return Object.entries(state.filters).some(
+        ([key, value]) => value !== DEFAULT_FILTERS[key]
+      );
     },
   },
 

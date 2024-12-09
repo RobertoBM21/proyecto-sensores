@@ -20,6 +20,15 @@ import {
   NumberFieldIncrement,
   NumberFieldInput,
 } from "@/components/ui/number-field";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Icons
 import { ChevronDown } from "lucide-vue-next";
@@ -30,13 +39,28 @@ import { ref, computed } from "vue";
 
 // Constants
 const RESULT_FIELDS = [
-  { key: "topic", label: "Topic", defaultValue: "N/A" },
-  { key: "content", label: "Contenido", defaultValue: "N/A", expandable: true },
+  {
+    key: "id",
+    label: "ID",
+    defaultValue: "N/A",
+    width: "w-[100px]",
+    className: "font-medium",
+  },
+  { key: "serial", label: "Serial", defaultValue: "N/A", width: "w-[150px]" },
+  { key: "topic", label: "Topic", defaultValue: "N/A", width: "w-[150px]" },
+  {
+    key: "content",
+    label: "Contenido",
+    defaultValue: "N/A",
+    expandable: true,
+    width: "min-w-[200px] max-w-[400px]",
+  },
   {
     key: "timestamp",
     label: "Fecha",
     formatter: (value) => new Date(value).toLocaleString(),
     defaultValue: "N/A",
+    width: "w-[200px]",
   },
 ];
 
@@ -88,10 +112,10 @@ const formatFieldValue = (field, value) => {
         @update:model-value="handleLimitChange"
         class="w-[150px]"
       >
-        <Label>Resultados por página</Label>
+        <Label for="results-per-page">Resultados por página</Label>
         <NumberFieldContent>
           <NumberFieldDecrement />
-          <NumberFieldInput />
+          <NumberFieldInput id="results-per-page" />
           <NumberFieldIncrement />
         </NumberFieldContent>
       </NumberField>
@@ -129,32 +153,40 @@ const formatFieldValue = (field, value) => {
       </Card>
     </div>
 
-    <!-- Results Cards -->
-    <Card
-      v-for="result in results"
-      :key="result.id"
-      class="transition-colors duration-200 hover:bg-muted/50 cursor-pointer"
-      @click="toggleContent(result.id)"
-    >
-      <CardHeader>
-        <CardTitle class="text-lg text-foreground"
-          >Serial: {{ result.serial }}</CardTitle
-        >
-      </CardHeader>
-      <CardContent>
-        <div class="grid gap-4 md:grid-cols-3 text-sm text-muted-foreground">
-          <div
+    <!-- Results Table -->
+    <Table v-if="hasResults">
+      <TableCaption>Lista de mensajes</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead
             v-for="field in RESULT_FIELDS"
             :key="field.key"
-            class="space-y-1"
+            :class="field.width"
           >
-            <span class="font-medium text-foreground">{{ field.label }}</span>
+            {{ field.label }}
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow
+          v-for="result in results"
+          :key="result.id"
+          class="cursor-pointer hover:bg-muted/50"
+          @click="toggleContent(result.id)"
+        >
+          <TableCell
+            v-for="field in RESULT_FIELDS"
+            :key="field.key"
+            :class="[field.width, field.className]"
+          >
             <div class="flex items-start gap-2">
               <p
                 :class="[
-                  'text-muted-foreground transition-all duration-200',
+                  'transition-all duration-200',
                   field.expandable && {
-                    truncate: !expandedContents.has(result.id),
+                    'line-clamp-1': !expandedContents.has(result.id),
+                    'whitespace-normal': expandedContents.has(result.id),
+                    'whitespace-nowrap': !expandedContents.has(result.id),
                   },
                 ]"
               >
@@ -162,7 +194,7 @@ const formatFieldValue = (field, value) => {
               </p>
               <div
                 v-if="field.expandable"
-                class="inline-flex items-center justify-center h-6 w-6"
+                class="inline-flex items-center justify-center h-6 w-6 shrink-0"
               >
                 <ChevronDown
                   class="h-4 w-4 transition-transform duration-200"
@@ -170,10 +202,10 @@ const formatFieldValue = (field, value) => {
                 />
               </div>
             </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
 
     <!-- Pagination -->
     <nav v-if="search.metadata" class="mt-8 pb-8">
