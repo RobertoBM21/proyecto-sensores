@@ -132,6 +132,9 @@ router.post("/", deviceController.createDevice);
  *                 totalItems:
  *                   type: integer
  *                   description: Total de dispositivos encontrados
+ *                 totalDevices:
+ *                   type: integer
+ *                   description: Total de dispositivos únicos encontrados
  *                 page:
  *                   type: integer
  *                   description: Página actual
@@ -150,7 +153,7 @@ router.post("/", deviceController.createDevice);
  *       400:
  *         description: Parámetros inválidos
  *       404:
- *         description: Uno o más servidores especificados no fueron encontrados
+ *         description: No se encontraron dispositivos para los filtros proporcionados
  */
 router.get("/activity", deviceController.getDeviceActivityReport);
 

@@ -81,7 +81,9 @@ class MessageService {
       ]);
 
     if (messageCount === 0) {
-      throw new NotFoundError("No se encontraron mensajes");
+      throw new NotFoundError(
+        "No se encontraron mensajes para los filtros proporcionados"
+      );
     }
 
     const totalPages = Math.ceil(messageCount / limit);

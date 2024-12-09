@@ -110,7 +110,7 @@ router.get("/", messageController.getAllMessages);
  *       400:
  *         description: Parámetros inválidos
  *       404:
- *        description: Mensajes no encontrados
+ *        description: Mensajes no encontrados para los filtros proporcionados
  */
 router.get("/search", messageController.searchMessages);
 

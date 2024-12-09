@@ -81,11 +81,15 @@ const currentLimit = ref(search.filters.limit);
 // Computed
 const hasResults = computed(() => search.hasResults);
 const devicePercentage = computed(() => {
-  if (!search.metadata?.totalDevices) return "0%";
-  return `${(
-    (search.metadata.totalItems / search.metadata.totalDevices) *
-    100
-  ).toFixed(1)}%`;
+  const totalDevices = search.metadata?.totalDevices;
+  const totalItems = search.metadata?.totalItems;
+
+  if (!totalDevices || !totalItems) return "0%";
+
+  // Prevenir división por cero
+  if (totalDevices === 0) return "0%";
+
+  return `${((totalItems / totalDevices) * 100).toFixed(1)}%`;
 });
 
 // Methods

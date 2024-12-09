@@ -126,20 +126,23 @@ class DeviceService {
     if (servers.length !== serverIds.length) {
       const existingIds = servers.map((s) => s.id);
       const missingIds = serverIds.filter((id) => !existingIds.includes(id));
-      throw new NotFoundError(
-        `No se encontraron los servidores con IDs: ${missingIds.join(", ")}`
+      throw new BadRequestError(
+        `Los siguientes servidores no existen: ${missingIds.join(", ")}`
       );
     }
 
     const baseWhere = buildBaseWhere(params, "lastCommunication");
 
-    const { count: totalItems, rows: devices } = await Device.findAndCountAll({
-      where: baseWhere,
-      attributes: [
-        "serial",
-        "lastCommunication",
-        [
-          sequelize.literal(`(
+    // Ejecutar consultas en paralelo con promesas
+    const [{ count: totalItems, rows: devices }, totalDevices] =
+      await Promise.all([
+        Device.findAndCountAll({
+          where: baseWhere,
+          attributes: [
+            "serial",
+            "lastCommunication",
+            [
+              sequelize.literal(`(
             SELECT COUNT(*)
             FROM messages AS message
             WHERE message.serial = Device.serial
@@ -150,14 +153,22 @@ class DeviceService {
               Op.between
             ][1].toISOString()}'
           )`),
-          "messageCount",
-        ],
-      ],
-      order: [["lastCommunication", "DESC"]],
-      limit,
-      offset: (page - 1) * limit,
-      distinct: true,
-    });
+              "messageCount",
+            ],
+          ],
+          order: [["lastCommunication", "DESC"]],
+          limit,
+          offset: (page - 1) * limit,
+          distinct: true,
+        }),
+        Device.count(),
+      ]);
+
+    if (totalItems === 0) {
+      throw new NotFoundError(
+        "No se encontraron dispositivos para los filtros proporcionados"
+      );
+    }
 
     const totalPages = Math.ceil(totalItems / limit);
 
@@ -168,6 +179,7 @@ class DeviceService {
         messageCount: parseInt(d.getDataValue("messageCount")),
       })),
       totalItems,
+      totalDevices,
       page,
       totalPages,
       itemsPerPage: limit,
