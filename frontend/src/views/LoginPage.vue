@@ -47,11 +47,21 @@ const handleSocialLogin = (provider) => router.push("/");
           <form @submit.prevent="handleLogin" class="space-y-4">
             <div class="space-y-2">
               <Label for="username">Usuario</Label>
-              <Input id="username" type="text" v-model="username" />
+              <Input
+                id="username"
+                type="text"
+                autocomplete="username"
+                v-model="username"
+              />
             </div>
             <div class="space-y-2">
               <Label for="password">Contraseña</Label>
-              <Input id="password" type="password" v-model="password" />
+              <Input
+                id="password"
+                type="password"
+                autocomplete="current-password"
+                v-model="password"
+              />
             </div>
             <Button type="submit" class="w-full">Iniciar Sesión</Button>
           </form>

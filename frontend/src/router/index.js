@@ -12,7 +12,7 @@ const routes = [
   {
     path: "/",
     name: "home",
-    component: HomePage, // Carga estática
+    component: () => import("../views/HomePage.vue"),
     meta: {
       label: "Inicio",
     },
@@ -20,7 +20,7 @@ const routes = [
   {
     path: "/login",
     name: "login",
-    component: LoginPage,
+    component: () => import("../views/LoginPage.vue"),
     meta: {
       label: "Iniciar Sesión",
       hideInNav: true,
@@ -31,7 +31,7 @@ const routes = [
   {
     path: "/search/messages",
     name: "searchMessages",
-    component: () => import("../views/SearchMessagesPage.vue"), // Carga dinámica
+    component: () => import("../views/SearchMessagesPage.vue"),
     meta: {
       group: RouteGroups.SEARCH,
       label: "Mensajes",
@@ -59,8 +59,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  // Usamos createWebHistory sin parametro ya que no estamos desplegando en un subdirectorio
-  //? Si en el futuro necesitamos desplegar en un subdirectorio, podemos usar (import.meta.env.BASE_URL)
+  //? Si en el futuro necesitamos desplegar desde un subdirectorio, podemos usar (import.meta.env.BASE_URL)
   history: createWebHistory(),
   routes,
 });

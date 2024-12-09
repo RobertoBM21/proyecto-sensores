@@ -182,12 +182,13 @@ watch(
 
 <template>
   <div class="space-y-2">
-    <Label for="dateRange">Rango de fecha</Label>
+    <Label for="date-range-selector">Rango de fecha</Label>
     <Popover>
       <!-- Date Range Selector Button -->
       <div class="relative">
         <PopoverTrigger as-child>
           <Button
+            id="date-range-selector"
             variant="outline"
             :class="[
               'w-full pr-8 justify-start',

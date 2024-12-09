@@ -55,7 +55,7 @@ const fetchServers = async () => {
 
   try {
     const response = await fetch(`${apiUrl}/servers`);
-    if (!response.ok) throw new Error("Error al cargar servidores");
+    if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
 
     servers.value = await response.json();
     if (servers.value.length > 0) {
@@ -63,7 +63,10 @@ const fetchServers = async () => {
     }
   } catch (err) {
     console.error("Error fetching servers:", err);
-    error.value = "Error al cargar los servidores";
+    error.value =
+      err.name === "TypeError"
+        ? "No se puede conectar al servidor. Verifique que el servidor esté en ejecución."
+        : "Error al cargar los servidores";
   } finally {
     loading.value = false;
   }
@@ -119,7 +122,9 @@ onMounted(fetchServers);
 
         <!-- Error State -->
         <div v-else-if="error" class="px-2 py-1.5">
-          <p class="text-sm text-destructive text-center">{{ error }}</p>
+          <p class="text-sm text-destructive text-center whitespace-normal">
+            {{ error }}
+          </p>
         </div>
 
         <!-- Empty State -->
