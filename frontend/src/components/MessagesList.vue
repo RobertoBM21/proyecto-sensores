@@ -23,7 +23,6 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -73,8 +72,7 @@ const expandedContents = ref(new Set());
 const currentLimit = ref(search.filters.limit);
 
 // Computed properties
-const results = computed(() => search.results);
-const hasResults = computed(() => search.metadata && results.value.length > 0);
+const hasResults = computed(() => search.hasResults);
 
 // Methods
 const toggleContent = (id) => {
@@ -155,7 +153,6 @@ const formatFieldValue = (field, value) => {
 
     <!-- Results Table -->
     <Table v-if="hasResults">
-      <TableCaption>Lista de mensajes</TableCaption>
       <TableHeader>
         <TableRow>
           <TableHead
@@ -169,7 +166,7 @@ const formatFieldValue = (field, value) => {
       </TableHeader>
       <TableBody>
         <TableRow
-          v-for="result in results"
+          v-for="result in search.results"
           :key="result.id"
           class="cursor-pointer hover:bg-muted/50"
           @click="toggleContent(result.id)"
@@ -211,9 +208,9 @@ const formatFieldValue = (field, value) => {
     <nav v-if="search.metadata" class="mt-8 pb-8">
       <Pagination
         :total="search.metadata.totalItems"
-        :per-page="search.metadata.limit"
-        :default-page="search.metadata.page"
-        :sibling-count="1"
+        :per-page="search.filters.limit"
+        :default-page="search.currentPage"
+        :sibling-count="2"
         show-edges
         @update:page="handlePageChange"
         v-slot="{ page }"

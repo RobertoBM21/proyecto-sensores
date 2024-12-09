@@ -21,14 +21,9 @@ export const useMessagesStore = defineStore("messages", {
 
   getters: {
     hasStats: (state) => state.stats.length > 0,
-    hasResults: (state) => state.results.length > 0,
+    hasResults: (state) => state.results.length > 0 && state.metadata !== null,
     currentPage: (state) => state.metadata?.page || 1,
     totalPages: (state) => state.metadata?.totalPages || 0,
-    hasActiveFilters: (state) => {
-      return Object.entries(state.filters).some(
-        ([key, value]) => value !== DEFAULT_FILTERS[key]
-      );
-    },
   },
 
   actions: {
