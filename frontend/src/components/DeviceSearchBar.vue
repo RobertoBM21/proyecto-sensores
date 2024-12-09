@@ -73,7 +73,7 @@ defineExpose({ searchDevices });
 
 <template>
   <form @submit.prevent="searchDevices">
-    <div class="grid grid-cols-1 md:grid-cols-[2fr,1fr,auto] gap-4 items-end">
+    <div class="grid grid-cols-1 md:grid-cols-[0.5fr,1fr,auto] gap-4 items-end">
       <!-- Date Range Selector -->
       <div class="w-full">
         <DateRangeSelector ref="dateRangeSelectorRef" storeName="devices" />

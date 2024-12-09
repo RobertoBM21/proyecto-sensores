@@ -7,9 +7,13 @@ import MessagesList from "../components/MessagesList.vue";
 import MessagesChart from "../components/MessagesChart.vue";
 
 // Utilities
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { useMessagesStore } from "../stores/messages";
 
 const searchBarRef = ref(null);
+const route = useRoute();
+const messagesStore = useMessagesStore();
 
 const handlePageChange = () => {
   searchBarRef.value.searchMessagesOnly();
@@ -18,6 +22,26 @@ const handlePageChange = () => {
 const handleLimitChange = () => {
   searchBarRef.value.searchMessagesOnly();
 };
+
+// Si venimos de una redirección con filtros aplicados, buscamos automáticamente
+onMounted(() => {
+  const { serial, startDate, endDate, dateRange, serverIds, autoSearch } =
+    route.query;
+
+  if (autoSearch === "true") {
+    // Aplicar filtros desde la query
+    const filters = {
+      ...(serial && { serial }),
+      ...(startDate && { startDate }),
+      ...(endDate && { endDate }),
+      ...(dateRange && { dateRange }),
+      ...(serverIds && { selectedServers: serverIds.split(",").map(Number) }),
+    };
+
+    messagesStore.updateFilters(filters);
+    searchBarRef.value.searchMessagesOnly();
+  }
+});
 </script>
 
 <template>

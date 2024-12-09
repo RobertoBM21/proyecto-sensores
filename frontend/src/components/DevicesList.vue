@@ -35,10 +35,16 @@ import { ChevronDown } from "lucide-vue-next";
 // Store & Utilities
 import { useDevicesStore } from "../stores/devices";
 import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
 
 // Types & Constants
 const RESULT_FIELDS = [
-  { key: "serial", label: "Serial", width: "w-[150px]" },
+  {
+    key: "serial",
+    label: "Serial",
+    width: "w-[150px]",
+    className: "font-medium",
+  },
   {
     key: "lastCommunication",
     label: "Última conexión",
@@ -50,6 +56,13 @@ const RESULT_FIELDS = [
     label: "Mensajes",
     width: "w-[100px]",
     className: "text-right",
+    headerClassName: "pr-4",
+  },
+  {
+    key: "actions",
+    label: "Buscar",
+    width: "w-[120px]",
+    className: "px-4",
   },
 ].map((field) => ({
   ...field,
@@ -57,8 +70,9 @@ const RESULT_FIELDS = [
 }));
 
 // Component setup
-const emit = defineEmits(["pageChange", "limitChange"]);
+const router = useRouter();
 const search = useDevicesStore();
+const emit = defineEmits(["pageChange", "limitChange"]);
 
 // Component state
 const expandedContents = ref(new Set());
@@ -95,6 +109,20 @@ const handleLimitChange = (value) => {
 const formatFieldValue = (field, value) => {
   if (!value) return field.defaultValue;
   return field.formatter ? field.formatter(value) : value;
+};
+
+const navigateToMessages = (device) => {
+  router.push({
+    path: "/search/messages",
+    query: {
+      serial: device.serial,
+      startDate: search.filters.startDate,
+      endDate: search.filters.endDate,
+      dateRange: search.filters.dateRange,
+      serverIds: search.filters.selectedServers.join(","),
+      autoSearch: "true",
+    },
+  });
 };
 </script>
 
@@ -146,7 +174,7 @@ const formatFieldValue = (field, value) => {
           <TableHead
             v-for="field in RESULT_FIELDS"
             :key="field.key"
-            :class="field.width"
+            :class="[field.width, field.headerClassName || field.className]"
           >
             {{ field.label }}
           </TableHead>
@@ -160,7 +188,7 @@ const formatFieldValue = (field, value) => {
           @click="toggleContent(result.id)"
         >
           <TableCell
-            v-for="field in RESULT_FIELDS"
+            v-for="field in RESULT_FIELDS.filter((f) => f.key !== 'actions')"
             :key="field.key"
             :class="[field.width, field.className]"
           >
@@ -187,6 +215,15 @@ const formatFieldValue = (field, value) => {
                 />
               </div>
             </div>
+          </TableCell>
+          <TableCell class="w-[120px] px-4">
+            <Button
+              variant="outline"
+              size="sm"
+              @click.stop="navigateToMessages(result)"
+            >
+              Ver mensajes
+            </Button>
           </TableCell>
         </TableRow>
       </TableBody>
