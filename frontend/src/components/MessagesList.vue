@@ -2,6 +2,14 @@
 // UI components
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import {
+  NumberField,
+  NumberFieldContent,
+  NumberFieldDecrement,
+  NumberFieldIncrement,
+  NumberFieldInput,
+} from "@/components/ui/number-field";
 import {
   Pagination,
   PaginationEllipsis,
@@ -12,14 +20,6 @@ import {
   PaginationNext,
   PaginationPrev,
 } from "@/components/ui/pagination";
-import { Label } from "@/components/ui/label";
-import {
-  NumberField,
-  NumberFieldContent,
-  NumberFieldDecrement,
-  NumberFieldIncrement,
-  NumberFieldInput,
-} from "@/components/ui/number-field";
 import {
   Table,
   TableBody,
@@ -36,21 +36,19 @@ import { ChevronDown } from "lucide-vue-next";
 import { useMessagesStore } from "../stores/messages";
 import { ref, computed } from "vue";
 
-// Constants
+// Types & Constants
 const RESULT_FIELDS = [
   {
     key: "id",
     label: "ID",
-    defaultValue: "N/A",
     width: "w-[100px]",
     className: "font-medium",
   },
-  { key: "serial", label: "Serial", defaultValue: "N/A", width: "w-[150px]" },
-  { key: "topic", label: "Topic", defaultValue: "N/A", width: "w-[150px]" },
+  { key: "serial", label: "Serial", width: "w-[150px]" },
+  { key: "topic", label: "Topic", width: "w-[150px]" },
   {
     key: "content",
     label: "Contenido",
-    defaultValue: "N/A",
     expandable: true,
     width: "min-w-[200px] max-w-[400px]",
   },
@@ -58,20 +56,22 @@ const RESULT_FIELDS = [
     key: "timestamp",
     label: "Fecha",
     formatter: (value) => new Date(value).toLocaleString(),
-    defaultValue: "N/A",
     width: "w-[200px]",
   },
-];
+].map((field) => ({
+  ...field,
+  defaultValue: "N/A",
+}));
 
-// Store initialization
-const search = useMessagesStore();
+// Component setup
 const emit = defineEmits(["pageChange", "limitChange"]);
+const search = useMessagesStore();
 
 // Component state
 const expandedContents = ref(new Set());
 const currentLimit = ref(search.filters.limit);
 
-// Computed properties
+// Computed
 const hasResults = computed(() => search.hasResults);
 
 // Methods
@@ -121,32 +121,20 @@ const formatFieldValue = (field, value) => {
 
     <!-- Stats Cards -->
     <div v-if="hasResults" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <Card class="flex-1">
+      <Card
+        v-for="(value, label, index) in {
+          'Dispositivos únicos': search.metadata.totalDevices,
+          'Total mensajes': search.metadata.totalItems,
+          'Página actual': `${search.metadata.page} / ${search.metadata.totalPages}`,
+        }"
+        :key="index"
+        class="flex-1"
+      >
         <CardHeader>
-          <CardTitle class="text-sm">Dispositivos únicos</CardTitle>
+          <CardTitle class="text-sm">{{ label }}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p class="text-2xl font-bold">{{ search.metadata.totalDevices }}</p>
-        </CardContent>
-      </Card>
-
-      <Card class="flex-1">
-        <CardHeader>
-          <CardTitle class="text-sm">Total mensajes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p class="text-2xl font-bold">{{ search.metadata.totalItems }}</p>
-        </CardContent>
-      </Card>
-
-      <Card class="flex-1">
-        <CardHeader>
-          <CardTitle class="text-sm">Página actual</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p class="text-2xl font-bold">
-            {{ search.metadata.page }} / {{ search.metadata.totalPages }}
-          </p>
+          <p class="text-2xl font-bold">{{ value }}</p>
         </CardContent>
       </Card>
     </div>
