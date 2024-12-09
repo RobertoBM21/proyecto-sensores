@@ -52,9 +52,6 @@ const currentLimit = ref(search.filters.limit);
 const results = computed(() => search.results);
 const hasResults = computed(() => search.metadata && results.value.length > 0);
 
-// Key para la barra de paginación
-const paginationKey = computed(() => `pagination-${currentLimit.value}`);
-
 // Methods
 const toggleContent = (id) => {
   expandedContents.value.has(id)
@@ -89,6 +86,7 @@ const formatFieldValue = (field, value) => {
         :max="100"
         :step="5"
         @update:model-value="handleLimitChange"
+        class="w-[150px]"
       >
         <Label>Resultados por página</Label>
         <NumberFieldContent>
@@ -178,7 +176,7 @@ const formatFieldValue = (field, value) => {
     </Card>
 
     <!-- Pagination -->
-    <nav v-if="search.metadata" class="mt-8 pb-8" :key="paginationKey">
+    <nav v-if="search.metadata" class="mt-8 pb-8">
       <Pagination
         :total="search.metadata.totalItems"
         :per-page="search.metadata.limit"
