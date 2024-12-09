@@ -94,4 +94,13 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Estilos para el ícono del reloj en Inputs type="time" */
+  input[type="time"] {
+    @apply pr-[0.75rem] pl-3 relative;
+  }
+
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    @apply dark:invert cursor-pointer absolute right-0 top-1/2 -translate-y-1/2 mr-2;
+  }
 }
