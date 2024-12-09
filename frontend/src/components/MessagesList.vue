@@ -77,7 +77,7 @@ const formatFieldValue = (field, value) => {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto space-y-6">
+  <div class="space-y-6">
     <!-- Limit Selector -->
     <div v-if="hasResults" class="flex items-center gap-4">
       <NumberField
