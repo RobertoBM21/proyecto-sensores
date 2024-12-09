@@ -77,19 +77,19 @@ router.post("/", deviceController.createDevice);
  *         schema:
  *           type: string
  *           format: date-time
- *         description: Fecha inicial del rango
+ *         description: Fecha inicial del rango (requerida si no se usa dateRange)
  *       - in: query
  *         name: endDate
  *         schema:
  *           type: string
  *           format: date-time
- *         description: Fecha final del rango
+ *         description: Fecha final del rango (requerida si no se usa dateRange)
  *       - in: query
  *         name: dateRange
  *         schema:
  *           type: string
  *           enum: [today, yesterday, last_5_minutes, last_15_minutes, last_30_minutes, last_hour, last_24_hours, last_week, last_month, last_year]
- *         description: Rango de fecha predefinido
+ *         description: Rango de fecha predefinido (requerido si no se usa startDate/endDate)
  *       - in: query
  *         name: page
  *         schema:
@@ -102,24 +102,12 @@ router.post("/", deviceController.createDevice);
  *           type: integer
  *           default: 50
  *         description: Cantidad de dispositivos por página
- *     schema:
- *       oneOf:
- *         - required: [serverIds, dateRange]
- *           properties:
- *             dateRange:
- *               type: string
- *               enum: [today, yesterday, last_5_minutes, last_15_minutes, last_30_minutes, last_hour, last_24_hours, last_week, last_month, last_year]
- *               description: Rango de fecha predefinido
- *         - required: [serverIds, startDate, endDate]
- *           properties:
- *             startDate:
- *               type: string
- *               format: date-time
- *               description: Fecha inicial del rango
- *             endDate:
- *               type: string
- *               format: date-time
- *               description: Fecha final del rango
+ *     description: |
+ *       Los parámetros de fecha deben cumplir una de estas condiciones:
+ *       1. Proporcionar dateRange
+ *       2. Proporcionar startDate Y endDate
+ *
+ *       No se permite mezclar dateRange con startDate/endDate.
  *     responses:
  *       200:
  *         description: Reporte de actividad paginado obtenido exitosamente

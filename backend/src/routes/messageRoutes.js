@@ -47,8 +47,9 @@ router.get("/", messageController.getAllMessages);
  *             type: integer
  *         style: form
  *         explode: false
- *         description:
- *           Array de IDs de servidores a consultar. Formato: serverIds=1,2,3
+ *         description: |
+ *           Array de IDs de servidores a consultar.
+ *           Formato: serverIds=1,2,3
  *       - in: query
  *         name: startDate
  *         schema:
@@ -67,36 +68,12 @@ router.get("/", messageController.getAllMessages);
  *           type: string
  *           enum: [today, yesterday, last_5_minutes, last_15_minutes, last_30_minutes, last_hour, last_24_hours, last_week, last_month, last_year]
  *         description: Rango de fecha predefinido
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           default: 1
- *         description: Número de página
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           default: 50
- *         description: Cantidad de mensajes por página
- *     schema:
- *       oneOf:
- *         - required: [dateRange]
- *           properties:
- *             dateRange:
- *               type: string
- *               enum: [today, yesterday, last_5_minutes, last_15_minutes, last_30_minutes, last_hour, last_24_hours, last_week, last_month, last_year]
- *               description: Rango de fecha predefinido
- *         - required: [startDate, endDate]
- *           properties:
- *             startDate:
- *               type: string
- *               format: date-time
- *               description: Fecha inicial del rango
- *             endDate:
- *               type: string
- *               format: date-time
- *               description: Fecha final del rango
+ *     description: |
+ *       Los parámetros de fecha son opcionales, pero si se proporcionan deben cumplir una de estas condiciones:
+ *       1. Solo dateRange
+ *       2. Tanto startDate como endDate juntos
+ *
+ *       No se permite mezclar dateRange con startDate/endDate.
  *     responses:
  *       200:
  *         description: Lista de mensajes paginada
@@ -157,8 +134,9 @@ router.get("/search", messageController.searchMessages);
  *             type: integer
  *         style: form
  *         explode: false
- *         description:
- *           Array de IDs de servidores a consultar. Formato: serverIds=1,2,3
+ *         description: |
+ *           Array de IDs de servidores a consultar.
+ *           Formato: serverIds=1,2,3
  *       - in: query
  *         name: startDate
  *         schema:
@@ -177,24 +155,12 @@ router.get("/search", messageController.searchMessages);
  *           type: string
  *           enum: [today, yesterday, last_5_minutes, last_15_minutes, last_30_minutes, last_hour, last_24_hours, last_week, last_month, last_year]
  *         description: Rango de fecha predefinido
- *     schema:
- *       oneOf:
- *         - required: [dateRange]
- *           properties:
- *             dateRange:
- *               type: string
- *               enum: [today, yesterday, last_5_minutes, last_15_minutes, last_30_minutes, last_hour, last_24_hours, last_week, last_month, last_year]
- *               description: Rango de fecha predefinido
- *         - required: [startDate, endDate]
- *           properties:
- *             startDate:
- *               type: string
- *               format: date-time
- *               description: Fecha inicial del rango
- *             endDate:
- *               type: string
- *               format: date-time
- *               description: Fecha final del rango
+ *     description: |
+ *       Los parámetros de fecha son opcionales, pero si se proporcionan deben cumplir una de estas condiciones:
+ *       1. Solo dateRange
+ *       2. Tanto startDate como endDate juntos
+ *
+ *       No se permite mezclar dateRange con startDate/endDate.
  *     responses:
  *       200:
  *         description: Estadísticas de mensajes
