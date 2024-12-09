@@ -1,7 +1,4 @@
 <script setup>
-// Store
-import { useMessagesStore } from "../stores/messages";
-
 // UI components
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -25,12 +22,34 @@ import {
 // Icons
 import { X } from "lucide-vue-next";
 
+// Store
+import { useMessagesStore } from "../stores/messages";
+import { useDevicesStore } from "../stores/devices";
+
 // Utilities
 import { ref, computed, watch } from "vue";
 import { getLocalTimeZone } from "@internationalized/date";
 
-// Store initialization
-const search = useMessagesStore();
+// Prop para determinar qué store usar
+const props = defineProps({
+  storeName: {
+    type: String,
+    default: "messages",
+    validator: (value) => ["messages", "devices"].includes(value),
+  },
+});
+
+// Store initialization ajustado
+const getStore = () => {
+  switch (props.storeName) {
+    case "devices":
+      return useDevicesStore();
+    default:
+      return useMessagesStore();
+  }
+};
+
+const search = getStore();
 
 // Initial states
 const initialDateValue = { start: null, end: null };

@@ -33,30 +33,23 @@ import {
 import { ChevronDown } from "lucide-vue-next";
 
 // Store & Utilities
-import { useMessagesStore } from "../stores/messages";
+import { useDevicesStore } from "../stores/devices";
 import { ref, computed } from "vue";
 
 // Types & Constants
 const RESULT_FIELDS = [
-  {
-    key: "id",
-    label: "ID",
-    width: "w-[100px]",
-    className: "font-medium",
-  },
   { key: "serial", label: "Serial", width: "w-[150px]" },
-  { key: "topic", label: "Topic", width: "w-[150px]" },
   {
-    key: "content",
-    label: "Contenido",
-    expandable: true,
-    width: "min-w-[200px] max-w-[400px]",
-  },
-  {
-    key: "timestamp",
-    label: "Fecha",
+    key: "lastCommunication",
+    label: "Última conexión",
     formatter: (value) => new Date(value).toLocaleString(),
     width: "w-[200px]",
+  },
+  {
+    key: "messageCount",
+    label: "Mensajes",
+    width: "w-[100px]",
+    className: "text-right",
   },
 ].map((field) => ({
   ...field,
@@ -65,7 +58,7 @@ const RESULT_FIELDS = [
 
 // Component setup
 const emit = defineEmits(["pageChange", "limitChange"]);
-const search = useMessagesStore();
+const search = useDevicesStore();
 
 // Component state
 const expandedContents = ref(new Set());
@@ -73,6 +66,13 @@ const currentLimit = ref(search.filters.limit);
 
 // Computed
 const hasResults = computed(() => search.hasResults);
+const devicePercentage = computed(() => {
+  if (!search.metadata?.totalDevices) return "0%";
+  return `${(
+    (search.metadata.totalItems / search.metadata.totalDevices) *
+    100
+  ).toFixed(1)}%`;
+});
 
 // Methods
 const toggleContent = (id) => {
@@ -123,8 +123,8 @@ const formatFieldValue = (field, value) => {
     <div v-if="hasResults" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <Card
         v-for="(value, label, index) in {
-          'Dispositivos únicos': search.metadata.totalDevices,
-          'Total mensajes': search.metadata.totalItems,
+          'Cobertura de dispositivos': devicePercentage,
+          'Dispositivos activos': search.metadata.totalItems,
           Página: `${search.metadata.page} / ${search.metadata.totalPages}`,
         }"
         :key="index"

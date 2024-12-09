@@ -12,14 +12,35 @@ import {
 // Icons
 import { Server, X, Plus, Layers } from "lucide-vue-next";
 
+// Store
+import { useMessagesStore } from "../stores/messages";
+import { useDevicesStore } from "../stores/devices";
+
 // Utilities
 import { ref, computed, onMounted } from "vue";
 import { useConfigStore } from "../stores/config";
-import { useMessagesStore } from "../stores/messages";
+
+// Prop para determinar qué store usar
+const props = defineProps({
+  storeName: {
+    type: String,
+    default: "messages",
+    validator: (value) => ["messages", "devices"].includes(value),
+  },
+});
 
 // Store initialization
 const config = useConfigStore();
-const search = useMessagesStore();
+const getStore = () => {
+  switch (props.storeName) {
+    case "devices":
+      return useDevicesStore();
+    default:
+      return useMessagesStore();
+  }
+};
+
+const search = getStore();
 const apiUrl = config.getApiUrl;
 
 // Component state

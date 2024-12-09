@@ -2,19 +2,37 @@
 // Layout components
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
+import DeviceSearchBar from "../components/DeviceSearchBar.vue";
+import DevicesList from "../components/DevicesList.vue";
+
+// Utilities
+import { ref } from "vue";
+
+const searchBarRef = ref(null);
+
+const handlePageChange = () => {
+  searchBarRef.value.searchDevices();
+};
+
+const handleLimitChange = () => {
+  searchBarRef.value.searchDevices();
+};
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col">
     <Header />
-    <main class="flex-grow flex items-center justify-center">
-      <div class="text-center">
-        <h1
-          class="text-6xl font-bold text-amber-700 hover:text-amber-600 transition-colors duration-300 cursor-pointer"
-        >
-          Patata
-        </h1>
-        <div class="text-8xl mt-12 animate-bounce">🥔</div>
+    <main class="flex-grow">
+      <div class="container mx-auto px-4 py-4">
+        <!-- Search Controls -->
+        <DeviceSearchBar ref="searchBarRef" />
+        <!-- Results Table & List -->
+        <div class="mt-8">
+          <DevicesList
+            @page-change="handlePageChange"
+            @limit-change="handleLimitChange"
+          />
+        </div>
       </div>
     </main>
     <Footer />
