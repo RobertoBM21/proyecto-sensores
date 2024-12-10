@@ -30,7 +30,7 @@ const handleSocialLogin = (provider) => router.push("/");
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col">
+  <section class="min-h-screen flex flex-col">
     <Header />
     <main class="flex-grow flex items-center justify-center">
       <Card class="w-full max-w-md">
@@ -67,19 +67,19 @@ const handleSocialLogin = (provider) => router.push("/");
           </form>
 
           <!-- Social Login Separator -->
-          <div class="relative my-4">
+          <section class="relative my-4">
             <div class="absolute inset-0 flex items-center">
-              <div class="w-full border-border"></div>
+              <hr class="w-full border-border" />
             </div>
             <div class="relative flex justify-center text-sm">
               <span class="bg-background px-2 text-muted-foreground">
                 O CONTINUA CON
               </span>
             </div>
-          </div>
+          </section>
 
           <!-- Social Login Options -->
-          <div class="grid grid-cols-2 gap-4">
+          <nav class="grid grid-cols-2 gap-4">
             <Button
               @click="handleSocialLogin('google')"
               variant="outline"
@@ -104,10 +104,10 @@ const handleSocialLogin = (provider) => router.push("/");
               />
               GitHub
             </Button>
-          </div>
+          </nav>
         </CardContent>
       </Card>
     </main>
     <Footer />
-  </div>
+  </section>
 </template>

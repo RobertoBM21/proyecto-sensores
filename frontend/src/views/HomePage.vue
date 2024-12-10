@@ -15,21 +15,21 @@ import {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col">
+  <section class="min-h-screen flex flex-col">
     <Header />
     <main class="flex-grow flex items-center">
-      <div class="container mx-auto px-4 py-8">
+      <section class="container mx-auto px-4 py-8">
         <!-- Hero Section -->
-        <div class="text-center mb-12">
+        <header class="text-center mb-12">
           <h1 class="text-3xl font-bold text-foreground mb-6">Sensores</h1>
           <p class="text-muted-foreground max-w-2xl mx-auto">
             Bienvenido al sistema de gestión de sensores. Desde aquí podrás
             acceder a todas las funcionalidades del sistema.
           </p>
-        </div>
+        </header>
 
         <!-- Cards Grid -->
-        <div
+        <section
           class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-12"
         >
           <!-- Search Card -->
@@ -100,9 +100,9 @@ import {
               </ul>
             </CardContent>
           </Card>
-        </div>
-      </div>
+        </section>
+      </section>
     </main>
     <Footer />
-  </div>
+  </section>
 </template>
