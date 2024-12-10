@@ -50,6 +50,7 @@ const fetchData = async (endpoint, params = {}) => {
   return await response.json();
 };
 
+// Búsqueda de mensajes y estadísticas
 const searchMessages = async () => {
   // Update store with form values
   search.updateFilters({
@@ -80,7 +81,7 @@ const searchMessages = async () => {
   }
 };
 
-// Añadir nuevo método para búsqueda solo de mensajes
+// Búsqueda de mensajes únicamente
 const searchMessagesOnly = async () => {
   try {
     const baseParams = buildParams();

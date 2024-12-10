@@ -12,16 +12,11 @@ import { useRoute } from "vue-router";
 import { useMessagesStore } from "../stores/messages";
 
 const searchBarRef = ref(null);
-const route = useRoute();
 const messagesStore = useMessagesStore();
+const route = useRoute();
 
-const handlePageChange = () => {
-  searchBarRef.value.searchMessagesOnly();
-};
-
-const handleLimitChange = () => {
-  searchBarRef.value.searchMessagesOnly();
-};
+// Event handlers
+const handleSearch = () => searchBarRef.value?.searchMessagesOnly();
 
 // Si venimos de una redirección con filtros aplicados, buscamos automáticamente
 onMounted(() => {
@@ -29,7 +24,6 @@ onMounted(() => {
     route.query;
 
   if (autoSearch === "true") {
-    // Aplicar filtros desde la query
     const filters = {
       ...(serial && { serial }),
       ...(startDate && { startDate }),
@@ -39,7 +33,7 @@ onMounted(() => {
     };
 
     messagesStore.updateFilters(filters);
-    searchBarRef.value.searchMessagesOnly();
+    handleSearch();
   }
 });
 </script>
@@ -48,20 +42,13 @@ onMounted(() => {
   <div class="min-h-screen flex flex-col">
     <Header />
     <main class="flex-grow">
-      <div class="container mx-auto px-4 py-4">
-        <!-- Search Controls -->
+      <div class="container mx-auto px-4 py-4 space-y-8">
         <MessageSearchBar ref="searchBarRef" />
-        <!-- Chart -->
-        <div class="mt-8">
-          <MessagesChart />
-        </div>
-        <!-- Results Table & List -->
-        <div class="mt-8">
-          <MessagesList
-            @page-change="handlePageChange"
-            @limit-change="handleLimitChange"
-          />
-        </div>
+        <MessagesChart />
+        <MessagesList
+          @page-change="handleSearch"
+          @limit-change="handleSearch"
+        />
       </div>
     </main>
     <Footer />

@@ -9,30 +9,16 @@ import DevicesList from "../components/DevicesList.vue";
 import { ref } from "vue";
 
 const searchBarRef = ref(null);
-
-const handlePageChange = () => {
-  searchBarRef.value.searchDevices();
-};
-
-const handleLimitChange = () => {
-  searchBarRef.value.searchDevices();
-};
+const handleSearch = () => searchBarRef.value?.searchDevices();
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col">
     <Header />
     <main class="flex-grow">
-      <div class="container mx-auto px-4 py-4">
-        <!-- Search Controls -->
+      <div class="container mx-auto px-4 py-4 space-y-8">
         <DeviceSearchBar ref="searchBarRef" />
-        <!-- Results Table & List -->
-        <div class="mt-8">
-          <DevicesList
-            @page-change="handlePageChange"
-            @limit-change="handleLimitChange"
-          />
-        </div>
+        <DevicesList @page-change="handleSearch" @limit-change="handleSearch" />
       </div>
     </main>
     <Footer />
