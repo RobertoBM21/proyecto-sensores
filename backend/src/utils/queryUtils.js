@@ -50,14 +50,13 @@ function buildBaseWhere(params, dateField = "timestamp") {
   const { serial, apikey, serverIds, startDate, endDate, dateRange } = params;
   const baseWhere = {};
 
+  baseWhere["$Device.serverId$"] = { [Op.in]: serverIds };
+
   if (serial) {
     baseWhere.serial = { [Op.like]: `${serial}%` };
   }
   if (apikey) {
     baseWhere["$Device.apikey$"] = apikey;
-  }
-  if (serverIds) {
-    baseWhere["$Device.serverId$"] = { [Op.in]: serverIds };
   }
   if (startDate || endDate || dateRange) {
     if (dateRange) {

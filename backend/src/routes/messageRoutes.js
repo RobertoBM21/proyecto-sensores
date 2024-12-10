@@ -41,6 +41,7 @@ router.get("/", messageController.getAllMessages);
  *         description: Serial del dispositivo
  *       - in: query
  *         name: serverIds
+ *         required: true
  *         schema:
  *           type: array
  *           items:
@@ -128,6 +129,7 @@ router.get("/search", messageController.searchMessages);
  *         description: Serial del dispositivo
  *       - in: query
  *         name: serverIds
+ *         required: true
  *         schema:
  *           type: array
  *           items:

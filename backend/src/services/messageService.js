@@ -1,5 +1,6 @@
-const { Message, Device } = require("../models");
+const { Message, Device, Server } = require("../models");
 const { NotFoundError, BadRequestError } = require("../utils/errors.js");
+const { Op } = require("sequelize");
 const { buildBaseWhere } = require("../utils/queryUtils.js");
 
 class MessageService {
@@ -56,7 +57,20 @@ class MessageService {
 
   //* Buscar mensajes mediante filtros
   async searchMessages(params) {
-    const { page = 1, limit = 50 } = params;
+    const { serverIds, page = 1, limit = 50 } = params;
+
+    // Verificar que los servidores existen
+    const servers = await Server.findAll({
+      where: { id: { [Op.in]: serverIds } },
+    });
+
+    if (servers.length !== serverIds.length) {
+      const existingIds = servers.map((s) => s.id);
+      const missingIds = serverIds.filter((id) => !existingIds.includes(id));
+      throw new BadRequestError(
+        `Los siguientes servidores no existen: ${missingIds.join(", ")}`
+      );
+    }
 
     const baseWhere = buildBaseWhere(params);
     const baseOptions = {
@@ -102,6 +116,21 @@ class MessageService {
 
   //* Obtener estadísticas de mensajes (para la gráfica)
   async getMessagesStats(params) {
+    const { serverIds } = params;
+
+    // Verificar que los servidores existen
+    const servers = await Server.findAll({
+      where: { id: { [Op.in]: serverIds } },
+    });
+
+    if (servers.length !== serverIds.length) {
+      const existingIds = servers.map((s) => s.id);
+      const missingIds = serverIds.filter((id) => !existingIds.includes(id));
+      throw new BadRequestError(
+        `Los siguientes servidores no existen: ${missingIds.join(", ")}`
+      );
+    }
+
     const baseWhere = buildBaseWhere(params);
 
     const messages = await Message.findAll({

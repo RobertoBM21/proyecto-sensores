@@ -31,12 +31,13 @@ const baseSearchSchema = Joi.object({
   apikey: Joi.string(),
   serverIds: Joi.array()
     .items(Joi.number().integer().positive())
-    .optional()
+    .required()
     .messages({
       "array.base": 'El campo "serverIds" debe ser un array.',
       "number.base": "Los IDs de servidor deben ser números.",
       "number.integer": "Los IDs de servidor deben ser números enteros.",
       "number.positive": "Los IDs de servidor deben ser números positivos.",
+      "any.required": 'El campo "serverIds" es obligatorio.',
     }),
   ...dateRangeSchema,
 }).concat(createOptionalDateValidation());
