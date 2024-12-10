@@ -302,37 +302,41 @@ const yFormatter = (value) => value.toLocaleString("es-ES");
 </script>
 
 <template>
-  <div v-if="store.hasStats">
-    <Card>
-      <CardHeader class="flex flex-row items-center justify-between">
-        <CardTitle>Mensajes Recibidos</CardTitle>
-        <div
-          class="inline-flex items-center rounded-md border bg-muted p-1 text-muted-foreground"
-        >
-          <Button
-            v-for="range in DATE_CONFIG.timeRanges"
-            :key="range.id"
-            @click="selectedRange = range.id"
-            :variant="selectedRange === range.id ? 'default' : 'ghost'"
-            class="px-2.5"
-            :title="range.description"
-          >
-            {{ range.label }}
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <AreaChart
-          class="h-[300px]"
-          :data="chartData"
-          index="timestamp"
-          :categories="['mensajes']"
-          :curve-type="CurveType.MonotoneX"
-          :y-formatter="yFormatter"
-          :x-formatter="xFormatter"
-          :show-gradiant="true"
-        />
-      </CardContent>
-    </Card>
-  </div>
+  <section class="chart-section">
+    <template v-if="store.hasStats">
+      <Card>
+        <header>
+          <CardHeader class="flex flex-row items-center justify-between">
+            <CardTitle>Mensajes Recibidos</CardTitle>
+            <nav
+              class="inline-flex items-center rounded-md border bg-muted p-1 text-muted-foreground"
+            >
+              <Button
+                v-for="range in DATE_CONFIG.timeRanges"
+                :key="range.id"
+                @click="selectedRange = range.id"
+                :variant="selectedRange === range.id ? 'default' : 'ghost'"
+                class="px-2.5"
+                :title="range.description"
+              >
+                {{ range.label }}
+              </Button>
+            </nav>
+          </CardHeader>
+        </header>
+        <CardContent>
+          <AreaChart
+            class="h-[300px]"
+            :data="chartData"
+            index="timestamp"
+            :categories="['mensajes']"
+            :curve-type="CurveType.MonotoneX"
+            :y-formatter="yFormatter"
+            :x-formatter="xFormatter"
+            :show-gradiant="true"
+          />
+        </CardContent>
+      </Card>
+    </template>
+  </section>
 </template>

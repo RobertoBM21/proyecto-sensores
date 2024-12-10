@@ -7,17 +7,24 @@ const mode = useColorMode();
   <footer
     class="py-3 md:px-8 md:py-0 bg-background/80 backdrop-blur-sm border-t border-border"
   >
-    <div
-      class="container flex flex-col items-center justify-center gap-4 md:h-16 md:flex-row"
-    >
-      <p
-        class="text-muted-foreground text-center italic group text-xl md:text-2xl"
+    <div class="container">
+      <article
+        class="flex flex-col items-center justify-center gap-4 md:h-16 md:flex-row"
       >
-        <span class="text-3xl md:text-4xl">🚧</span> Sitio en construcción...
-        <span class="inline-block sleep-animation text-3xl md:text-4xl"
-          >💤</span
+        <p
+          class="text-muted-foreground text-center italic group text-xl md:text-2xl"
         >
-      </p>
+          <strong class="text-3xl md:text-4xl" title="En construcción"
+            >🚧</strong
+          >
+          <span>Sitio en construcción...</span>
+          <strong
+            class="inline-block sleep-animation text-3xl md:text-4xl"
+            title="Durmiendo"
+            >💤</strong
+          >
+        </p>
+      </article>
     </div>
   </footer>
 </template>

@@ -121,40 +121,36 @@ defineExpose({ searchMessagesOnly });
       class="grid grid-cols-1 md:grid-cols-[2fr,1.5fr,2fr,auto,auto,auto] gap-4 items-end"
     >
       <!-- Serial Input -->
-      <div>
-        <div class="space-y-2">
-          <Label for="serial">Número de serie</Label>
-          <Input
-            type="text"
-            id="serial"
-            v-model="serial"
-            placeholder="Introduce el número de serie"
-          />
-        </div>
-      </div>
+      <fieldset class="space-y-2">
+        <Label for="serial">Número de serie</Label>
+        <Input
+          type="text"
+          id="serial"
+          v-model="serial"
+          placeholder="Introduce el número de serie"
+        />
+      </fieldset>
 
       <!-- API Key Input -->
-      <div>
-        <div class="space-y-2">
-          <Label for="apikey">API Key</Label>
-          <Input
-            type="text"
-            id="apikey"
-            v-model="apikey"
-            placeholder="Introduce la API Key"
-          />
-        </div>
-      </div>
+      <fieldset class="space-y-2">
+        <Label for="apikey">API Key</Label>
+        <Input
+          type="text"
+          id="apikey"
+          v-model="apikey"
+          placeholder="Introduce la API Key"
+        />
+      </fieldset>
 
       <!-- Date Range Selector -->
-      <div>
+      <fieldset>
         <DateRangeSelector ref="dateRangeSelectorRef" />
-      </div>
+      </fieldset>
 
       <!-- Server Selector -->
-      <div class="flex items-end">
+      <fieldset class="flex items-end">
         <ServerSelector />
-      </div>
+      </fieldset>
 
       <!-- Action Buttons -->
       <div class="flex items-end gap-4">

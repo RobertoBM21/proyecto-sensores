@@ -200,11 +200,13 @@ watch(
 </script>
 
 <template>
-  <div class="space-y-2">
-    <Label for="date-range-selector">Rango de fecha</Label>
+  <fieldset class="space-y-2">
+    <legend>
+      <Label for="date-range-selector">Rango de fecha</Label>
+    </legend>
     <Popover>
       <!-- Date Range Selector Button -->
-      <div class="relative">
+      <header class="relative">
         <PopoverTrigger as-child>
           <Button
             id="date-range-selector"
@@ -218,29 +220,30 @@ watch(
             {{ selectedDateLabel }}
           </Button>
         </PopoverTrigger>
-        <div
+        <button
           v-if="hasDateSelection"
+          type="button"
           class="absolute right-2 top-1/2 -translate-y-1/2"
           @click.stop="clearAll"
         >
           <X
             class="h-4 w-4 text-muted-foreground hover:text-foreground cursor-pointer"
           />
-        </div>
-      </div>
+        </button>
+      </header>
 
       <!-- Popover Content -->
       <PopoverContent class="w-auto">
-        <div class="grid gap-4">
+        <article class="grid gap-4">
           <!-- Header -->
-          <div class="space-y-2">
+          <header class="space-y-2">
             <h4 class="font-medium leading-none">Rango de fechas</h4>
             <p class="text-sm text-muted-foreground">
               Selecciona un período de tiempo para la búsqueda
             </p>
-          </div>
+          </header>
 
-          <!-- Date Selection Controls -->
+          <!-- Selection Controls Container -->
           <div class="space-y-4">
             <!-- Quick Date Range Select -->
             <Select v-model="dateRange" class="w-full">
@@ -260,13 +263,14 @@ watch(
               </SelectContent>
             </Select>
 
-            <div class="border-border border-t"></div>
+            <hr class="border-border border-t" />
 
             <!-- Custom Date Range -->
             <p class="text-sm text-muted-foreground">
               O escoge los días y horas que desees
             </p>
 
+            <!-- Grid Container -->
             <div class="grid grid-cols-[1fr,180px] gap-4">
               <!-- Calendar -->
               <RangeCalendar
@@ -276,37 +280,41 @@ watch(
               />
 
               <!-- Time Selection -->
-              <div class="space-y-4 p-3 border-border border rounded-md">
+              <fieldset class="space-y-4 p-3 border-border border rounded-md">
                 <div>
-                  <div class="flex items-center space-x-2">
+                  <legend class="flex items-center space-x-2">
                     <Label for="time-selection">Especificar Hora</Label>
                     <Switch
                       id="time-selection"
                       :checked="showTimeSelection"
                       @update:checked="showTimeSelection = $event"
                     />
-                  </div>
+                  </legend>
                 </div>
 
                 <div v-show="showTimeSelection" class="space-y-3">
-                  <div class="space-y-1.5">
-                    <Label for="start-time">Hora inicio</Label>
+                  <fieldset class="space-y-1.5">
+                    <legend>
+                      <Label for="start-time">Hora inicio</Label>
+                    </legend>
                     <Input
                       id="start-time"
                       type="time"
                       v-model="timeValue.start"
                     />
-                  </div>
-                  <div class="space-y-1.5">
-                    <Label for="end-time">Hora fin</Label>
+                  </fieldset>
+                  <fieldset class="space-y-1.5">
+                    <legend>
+                      <Label for="end-time">Hora fin</Label>
+                    </legend>
                     <Input id="end-time" type="time" v-model="timeValue.end" />
-                  </div>
+                  </fieldset>
                 </div>
-              </div>
+              </fieldset>
             </div>
           </div>
-        </div>
+        </article>
       </PopoverContent>
     </Popover>
-  </div>
+  </fieldset>
 </template>

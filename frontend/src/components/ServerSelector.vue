@@ -119,20 +119,18 @@ onMounted(fetchServers);
 </script>
 
 <template>
-  <div>
+  <div class="server-selector">
     <DropdownMenu>
-      <!-- Dropdown Trigger -->
       <DropdownMenuTrigger as-child>
         <Button
           variant="outline"
           class="w-auto gap-2 hover:bg-muted/50 transition-colors duration-200"
         >
           <Server class="h-4 w-4" />
-          Servidores ({{ search.filters.selectedServers.length }})
+          <span>Servidores ({{ search.filters.selectedServers.length }})</span>
         </Button>
       </DropdownMenuTrigger>
 
-      <!-- Dropdown Content -->
       <DropdownMenuContent class="w-auto">
         <!-- Loading State -->
         <div v-if="loading" class="px-2 py-1.5">
@@ -156,38 +154,39 @@ onMounted(fetchServers);
         </div>
 
         <!-- Server List -->
-        <div v-else>
-          <!-- Header -->
-          <div class="flex items-center justify-between px-2 py-2.5 border-b">
+        <section v-else>
+          <header
+            class="flex items-center justify-between px-2 py-2.5 border-b"
+          >
             <Label>Servidores disponibles</Label>
             <Button
               variant="ghost"
               size="icon"
               class="h-4 w-4 text-muted-foreground hover:text-foreground ml-4"
               @click="toggleAllServers"
-              :title="selectionTitle"
             >
               <component :is="selectionIcon" class="h-4 w-4" />
             </Button>
-          </div>
+          </header>
 
-          <!-- Server Items -->
-          <div
-            v-for="server in servers"
-            :key="server.id"
-            class="flex items-center space-x-2 px-2 py-2.5 hover:bg-muted/50 transition-colors duration-200 cursor-pointer"
-            @click="handleServerChange(server.id)"
-          >
-            <Checkbox
-              :id="'server-' + server.id"
-              :checked="isServerSelected(server.id)"
-              @click.stop
-            />
-            <Label :for="'server-' + server.id" class="cursor-pointer">{{
-              server.name
-            }}</Label>
-          </div>
-        </div>
+          <ul class="list-none m-0 p-0">
+            <li
+              v-for="server in servers"
+              :key="server.id"
+              class="flex items-center space-x-2 px-2 py-2.5 hover:bg-muted/50 transition-colors duration-200 cursor-pointer"
+              @click="handleServerChange(server.id)"
+            >
+              <Checkbox
+                :id="'server-' + server.id"
+                :checked="isServerSelected(server.id)"
+                @click.stop
+              />
+              <Label :for="'server-' + server.id" class="cursor-pointer">
+                {{ server.name }}
+              </Label>
+            </li>
+          </ul>
+        </section>
       </DropdownMenuContent>
     </DropdownMenu>
   </div>

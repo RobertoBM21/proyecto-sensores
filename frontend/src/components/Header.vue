@@ -65,70 +65,75 @@ const groupedRoutes = router.options.routes.reduce((groups, route) => {
     class="sticky z-40 top-0 bg-background/80 backdrop-blur-lg border-b border-border"
   >
     <div class="container flex h-14 items-center justify-between">
-      <NavigationMenu>
-        <NavigationMenuList>
-          <!-- Main routes -->
-          <NavigationMenuItem v-for="link in mainRoutes" :key="link.path">
-            <NavigationMenuLink asChild>
-              <router-link
-                :to="link.path"
+      <!-- Main Navigation -->
+      <nav class="primary-navigation">
+        <NavigationMenu>
+          <NavigationMenuList>
+            <!-- Main routes -->
+            <NavigationMenuItem v-for="link in mainRoutes" :key="link.path">
+              <NavigationMenuLink asChild>
+                <router-link
+                  :to="link.path"
+                  :class="[
+                    navigationMenuTriggerStyle(),
+                    'text-foreground/60 hover:text-foreground/80',
+                    route.path === link.path && '!text-foreground',
+                  ]"
+                >
+                  {{ link.label }}
+                </router-link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+
+            <!-- Grouped routes -->
+            <NavigationMenuItem
+              v-for="(group, groupId) in groupedRoutes"
+              :key="groupId"
+            >
+              <NavigationMenuTrigger
                 :class="[
-                  navigationMenuTriggerStyle(),
                   'text-foreground/60 hover:text-foreground/80',
-                  route.path === link.path && '!text-foreground',
+                  route.path.startsWith(`/${groupId}`) && '!text-foreground',
                 ]"
               >
-                {{ link.label }}
-              </router-link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-
-          <!-- Grouped routes -->
-          <NavigationMenuItem
-            v-for="(group, groupId) in groupedRoutes"
-            :key="groupId"
-          >
-            <NavigationMenuTrigger
-              :class="[
-                'text-foreground/60 hover:text-foreground/80',
-                route.path.startsWith(`/${groupId}`) && '!text-foreground',
-              ]"
-            >
-              {{ group.label }}
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul class="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                <li v-for="groupRoute in group.routes" :key="groupRoute.path">
-                  <NavigationMenuLink asChild>
-                    <router-link
-                      :to="groupRoute.path"
-                      class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                    >
-                      <div class="text-sm font-medium leading-none">
-                        {{ groupRoute.label }}
-                      </div>
-                      <p
-                        v-if="groupRoute.description"
-                        class="line-clamp-2 text-sm leading-snug text-muted-foreground"
+                {{ group.label }}
+              </NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul
+                  class="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2"
+                >
+                  <li v-for="groupRoute in group.routes" :key="groupRoute.path">
+                    <NavigationMenuLink asChild>
+                      <router-link
+                        :to="groupRoute.path"
+                        class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                       >
-                        {{ groupRoute.description }}
-                      </p>
-                    </router-link>
-                  </NavigationMenuLink>
-                </li>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
+                        <strong class="text-sm font-medium leading-none">
+                          {{ groupRoute.label }}
+                        </strong>
+                        <p
+                          v-if="groupRoute.description"
+                          class="line-clamp-2 text-sm leading-snug text-muted-foreground"
+                        >
+                          {{ groupRoute.description }}
+                        </p>
+                      </router-link>
+                    </NavigationMenuLink>
+                  </li>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+      </nav>
 
-      <!-- Actions -->
-      <div class="flex items-center gap-2">
-        <!-- Theme Toggle -->
+      <!-- Actions Menu -->
+      <nav class="flex items-center gap-2">
         <Button
           variant="ghost"
           size="icon"
           @click="mode = mode === 'dark' ? 'light' : 'dark'"
+          title="Cambiar Tema"
         >
           <Icon
             icon="radix-icons:sun"
@@ -141,16 +146,16 @@ const groupedRoutes = router.options.routes.reduce((groups, route) => {
           <span class="sr-only">Cambiar Tema</span>
         </Button>
 
-        <!-- User Button -->
-        <Button variant="ghost" size="icon" @click="router.push('/login')">
+        <Button
+          variant="ghost"
+          size="icon"
+          @click="router.push('/login')"
+          title="Usuario"
+        >
           <Icon icon="lucide:circle-user-round" class="h-4 w-4" />
           <span class="sr-only">Usuario</span>
         </Button>
-      </div>
+      </nav>
     </div>
   </header>
 </template>
-
-<style scoped>
-/* Eliminamos los estilos personalizados ya que usaremos los predeterminados */
-</style>

@@ -143,10 +143,10 @@ const navigateToMessages = (device) => {
 </script>
 
 <template>
-  <div class="space-y-6">
+  <section class="space-y-6">
     <template v-if="store.hasResults">
       <!-- Results per page selector -->
-      <div>
+      <header>
         <NumberField
           v-model="currentLimit"
           :min="5"
@@ -162,10 +162,10 @@ const navigateToMessages = (device) => {
             <NumberFieldIncrement />
           </NumberFieldContent>
         </NumberField>
-      </div>
+      </header>
 
       <!-- Stats Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card v-for="stat in statsData" :key="stat.label" class="flex-1">
           <CardHeader>
             <CardTitle class="text-sm">{{ stat.label }}</CardTitle>
@@ -174,7 +174,7 @@ const navigateToMessages = (device) => {
             <p class="text-2xl font-bold">{{ stat.value }}</p>
           </CardContent>
         </Card>
-      </div>
+      </section>
 
       <!-- Results Table -->
       <Table>
@@ -242,7 +242,7 @@ const navigateToMessages = (device) => {
       </Table>
 
       <!-- Pagination -->
-      <nav class="mt-8 pb-8" aria-label="Paginación">
+      <nav class="mt-8 pb-8">
         <Pagination
           :total="store.metadata.totalItems"
           :per-page="store.filters.limit"
@@ -269,6 +269,7 @@ const navigateToMessages = (device) => {
                 <Button
                   class="w-10 h-10 p-0"
                   :variant="item.value === page ? 'default' : 'outline'"
+                  :aria-current="item.value === page ? 'page' : undefined"
                 >
                   {{ item.value }}
                 </Button>
@@ -282,5 +283,5 @@ const navigateToMessages = (device) => {
         </Pagination>
       </nav>
     </template>
-  </div>
+  </section>
 </template>

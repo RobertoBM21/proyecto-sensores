@@ -122,10 +122,10 @@ const formatFieldValue = (field, value) => {
 </script>
 
 <template>
-  <div class="space-y-6">
+  <section class="space-y-6">
     <template v-if="store.hasResults">
       <!-- Results per page selector -->
-      <div>
+      <header>
         <NumberField
           v-model="currentLimit"
           :min="5"
@@ -141,10 +141,10 @@ const formatFieldValue = (field, value) => {
             <NumberFieldIncrement />
           </NumberFieldContent>
         </NumberField>
-      </div>
+      </header>
 
       <!-- Stats Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card v-for="stat in statsData" :key="stat.label" class="flex-1">
           <CardHeader>
             <CardTitle class="text-sm">{{ stat.label }}</CardTitle>
@@ -153,64 +153,67 @@ const formatFieldValue = (field, value) => {
             <p class="text-2xl font-bold">{{ stat.value }}</p>
           </CardContent>
         </Card>
-      </div>
+      </section>
 
       <!-- Results Table -->
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead
-              v-for="field in tableFields"
-              :key="field.key"
-              :class="field.width"
+      <section>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead
+                v-for="field in tableFields"
+                :key="field.key"
+                :class="[field.width, field.headerClassName]"
+                scope="col"
+              >
+                {{ field.label }}
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow
+              v-for="result in store.results"
+              :key="result.id"
+              class="cursor-pointer hover:bg-muted/50 transition-colors"
+              @click="toggleContent(result.id)"
             >
-              {{ field.label }}
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          <TableRow
-            v-for="result in store.results"
-            :key="result.id"
-            class="cursor-pointer hover:bg-muted/50 transition-colors"
-            @click="toggleContent(result.id)"
-          >
-            <TableCell
-              v-for="field in tableFields"
-              :key="field.key"
-              :class="[field.width, field.className]"
-            >
-              <div class="flex items-start gap-2">
-                <p
-                  :class="[
-                    'transition-all duration-200',
-                    field.expandable && {
-                      'line-clamp-1': !expandedContents.has(result.id),
-                      'whitespace-normal': expandedContents.has(result.id),
-                      'whitespace-nowrap': !expandedContents.has(result.id),
-                    },
-                  ]"
-                >
-                  {{ formatFieldValue(field, result[field.key]) }}
-                </p>
-                <div
-                  v-if="field.expandable"
-                  class="inline-flex items-center justify-center h-6 w-6 shrink-0"
-                >
-                  <ChevronDown
-                    class="h-4 w-4 transition-transform duration-200"
-                    :class="{ 'rotate-180': expandedContents.has(result.id) }"
-                    aria-hidden="true"
-                  />
+              <TableCell
+                v-for="field in tableFields"
+                :key="field.key"
+                :class="[field.width, field.className]"
+              >
+                <div class="flex items-start gap-2">
+                  <p
+                    :class="[
+                      'transition-all duration-200',
+                      field.expandable && {
+                        'line-clamp-1': !expandedContents.has(result.id),
+                        'whitespace-normal': expandedContents.has(result.id),
+                        'whitespace-nowrap': !expandedContents.has(result.id),
+                      },
+                    ]"
+                  >
+                    {{ formatFieldValue(field, result[field.key]) }}
+                  </p>
+                  <div
+                    v-if="field.expandable"
+                    class="inline-flex items-center justify-center h-6 w-6 shrink-0"
+                  >
+                    <ChevronDown
+                      class="h-4 w-4 transition-transform duration-200"
+                      :class="{ 'rotate-180': expandedContents.has(result.id) }"
+                      aria-hidden="true"
+                    />
+                  </div>
                 </div>
-              </div>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </section>
 
       <!-- Pagination -->
-      <nav class="mt-8 pb-8" aria-label="Paginación">
+      <nav class="mt-8 pb-8">
         <Pagination
           :total="store.metadata.totalItems"
           :per-page="store.filters.limit"
@@ -237,6 +240,7 @@ const formatFieldValue = (field, value) => {
                 <Button
                   class="w-10 h-10 p-0"
                   :variant="item.value === page ? 'default' : 'outline'"
+                  :aria-current="item.value === page ? 'page' : undefined"
                 >
                   {{ item.value }}
                 </Button>
@@ -250,5 +254,5 @@ const formatFieldValue = (field, value) => {
         </Pagination>
       </nav>
     </template>
-  </div>
+  </section>
 </template>
