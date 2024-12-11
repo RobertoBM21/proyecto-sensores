@@ -217,7 +217,6 @@ const navigateToMessages = (device) => {
           :items-per-page="store.filters.limit"
           :sibling-count="2"
           show-edges
-          @update:page="handlePageChange"
           v-slot="{ page }"
         >
           <PaginationList
@@ -238,7 +237,11 @@ const navigateToMessages = (device) => {
                   class="w-10 h-10 p-0"
                   :variant="item.value === page ? 'default' : 'outline'"
                   :aria-current="item.value === page ? 'page' : undefined"
-                  @click="item.value === page && (isDialogOpen = true)"
+                  @click.stop="
+                    item.value === page
+                      ? (isDialogOpen = true)
+                      : handlePageChange(item.value)
+                  "
                 >
                   {{ item.value }}
                 </Button>
