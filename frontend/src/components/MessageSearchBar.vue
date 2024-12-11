@@ -52,7 +52,8 @@ const fetchData = async (endpoint, params = {}) => {
 
 // Búsqueda de mensajes y estadísticas
 const searchMessages = async () => {
-  // Update store with form values
+  // Resetear la pagina y actualizar filtros de búsqueda con los valores del formulario
+  search.resetPage();
   search.updateFilters({
     serial: serial.value,
     apikey: apikey.value,

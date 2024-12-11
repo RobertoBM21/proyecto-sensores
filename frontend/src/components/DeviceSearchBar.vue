@@ -43,6 +43,7 @@ const fetchData = async (params = {}) => {
 };
 
 const searchDevices = async () => {
+  search.resetPage();
   try {
     const baseParams = buildParams();
     const searchData = await fetchData({

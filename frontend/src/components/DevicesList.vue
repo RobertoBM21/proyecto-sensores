@@ -211,7 +211,7 @@ const navigateToMessages = (device) => {
       <nav class="mt-8 pb-8">
         <Pagination
           :total="store.metadata.totalItems"
-          :per-page="store.filters.limit"
+          :items-per-page="store.filters.limit"
           :default-page="store.currentPage"
           :sibling-count="2"
           show-edges

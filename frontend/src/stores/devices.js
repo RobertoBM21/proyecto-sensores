@@ -51,6 +51,10 @@ export const useDevicesStore = defineStore("devices", {
       };
     },
 
+    resetPage() {
+      this.filters.page = DEFAULT_FILTERS.page;
+    },
+
     resetFilters() {
       this.filters = { ...DEFAULT_FILTERS };
       this.clearResults();
