@@ -45,10 +45,7 @@ onMounted(() => {
       <div class="container mx-auto px-4 py-4 space-y-8">
         <MessageSearchBar ref="searchBarRef" />
         <MessagesChart />
-        <MessagesList
-          @page-change="handleSearch"
-          @limit-change="handleSearch"
-        />
+        <MessagesList @page-change="handleSearch" />
       </div>
     </main>
     <Footer />

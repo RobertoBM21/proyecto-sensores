@@ -18,7 +18,7 @@ const handleSearch = () => searchBarRef.value?.searchDevices();
     <main class="flex-grow">
       <div class="container mx-auto px-4 py-4 space-y-8">
         <DeviceSearchBar ref="searchBarRef" />
-        <DevicesList @page-change="handleSearch" @limit-change="handleSearch" />
+        <DevicesList @page-change="handleSearch" />
       </div>
     </main>
     <Footer />

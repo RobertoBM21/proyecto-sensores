@@ -2,14 +2,6 @@
 // UI components
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import {
-  NumberField,
-  NumberFieldContent,
-  NumberFieldDecrement,
-  NumberFieldIncrement,
-  NumberFieldInput,
-} from "@/components/ui/number-field";
 import {
   Pagination,
   PaginationEllipsis,
@@ -87,11 +79,10 @@ const STATS_CONFIG = [
 // Component setup
 const router = useRouter();
 const store = useDevicesStore();
-const emit = defineEmits(["pageChange", "limitChange"]);
+const emit = defineEmits(["pageChange"]);
 
 // Component state
 const expandedContents = ref(new Set());
-const currentLimit = ref(store.filters.limit);
 
 // Computed properties
 const tableFields = computed(() => Object.values(TableFieldConfig));
@@ -114,12 +105,6 @@ const toggleContent = (id) => {
 const handlePageChange = (page) => {
   store.updatePage(page);
   emit("pageChange");
-};
-
-const handleLimitChange = (value) => {
-  currentLimit.value = value;
-  store.updateFilters({ limit: value, page: 1 });
-  emit("limitChange");
 };
 
 const formatFieldValue = (field, value) => {
@@ -145,25 +130,6 @@ const navigateToMessages = (device) => {
 <template>
   <section class="space-y-6">
     <template v-if="store.hasResults">
-      <!-- Results per page selector -->
-      <header>
-        <NumberField
-          v-model="currentLimit"
-          :min="5"
-          :max="100"
-          :step="5"
-          @update:model-value="handleLimitChange"
-          class="w-[150px]"
-        >
-          <Label for="results-per-page">Resultados por página</Label>
-          <NumberFieldContent>
-            <NumberFieldDecrement />
-            <NumberFieldInput id="results-per-page" />
-            <NumberFieldIncrement />
-          </NumberFieldContent>
-        </NumberField>
-      </header>
-
       <!-- Stats Cards -->
       <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card v-for="stat in statsData" :key="stat.label" class="flex-1">
