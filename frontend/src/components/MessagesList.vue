@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/table";
 
 // Icons
-import { ChevronDown } from "lucide-vue-next";
+import { ChevronDown, Cpu, Mails, BookOpen } from "lucide-vue-next";
 
 // Store & Utilities
 import { useMessagesStore } from "../stores/messages";
@@ -63,11 +63,23 @@ const TableFieldConfig = {
 };
 
 const STATS_CONFIG = [
-  { key: "totalDevices", label: "Dispositivos únicos" },
-  { key: "totalItems", label: "Total mensajes" },
   {
-    value: (meta) => `${meta.page} / ${meta.totalPages}`,
+    key: "totalDevices",
+    label: "Dispositivos únicos",
+    icon: Cpu,
+    description: "Número total de dispositivos que han enviado mensajes",
+  },
+  {
+    key: "totalItems",
+    label: "Mensajes totales",
+    icon: Mails,
+    description: "Número total de mensajes recibidos",
+  },
+  {
     label: "Página actual",
+    icon: BookOpen,
+    value: (meta) => `${meta.page} / ${meta.totalPages}`,
+    description: "Página actual de los resultados",
   },
 ];
 
@@ -84,9 +96,11 @@ const tableFields = computed(() => Object.values(TableFieldConfig));
 
 const statsData = computed(() => {
   if (!store.metadata) return [];
-  return STATS_CONFIG.map(({ key, label, value }) => ({
+  return STATS_CONFIG.map(({ key, label, icon, value, description }) => ({
     label,
+    icon,
     value: value ? value(store.metadata) : store.metadata[key],
+    description,
   }));
 });
 
@@ -112,13 +126,23 @@ const formatFieldValue = (field, value) => {
   <section class="space-y-6">
     <template v-if="store.hasResults">
       <!-- Stats Cards -->
-      <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card v-for="stat in statsData" :key="stat.label" class="flex-1">
-          <CardHeader>
-            <CardTitle class="text-sm">{{ stat.label }}</CardTitle>
+      <section class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Card
+          v-for="stat in statsData"
+          :key="stat.label"
+          class="transition-all hover:shadow-lg hover:shadow-foreground/5 hover:bg-muted/50"
+        >
+          <CardHeader
+            class="flex flex-row items-center justify-between space-y-0 pb-2"
+          >
+            <CardTitle class="text-sm font-medium">{{ stat.label }}</CardTitle>
+            <component :is="stat.icon" class="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <p class="text-2xl font-bold">{{ stat.value }}</p>
+            <div class="text-2xl font-bold">{{ stat.value }}</div>
+            <p class="text-xs text-muted-foreground">
+              {{ stat.description }}
+            </p>
           </CardContent>
         </Card>
       </section>
