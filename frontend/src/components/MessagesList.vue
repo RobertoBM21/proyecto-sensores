@@ -12,6 +12,7 @@ import {
   PaginationListItem,
   PaginationNext,
   PaginationPrev,
+  PageSelectDialog,
 } from "@/components/ui/pagination";
 import {
   Table,
@@ -76,6 +77,7 @@ const store = useMessagesStore();
 
 // Component state
 const expandedContents = ref(new Set());
+const isDialogOpen = ref(false);
 
 // Computed properties
 const tableFields = computed(() => Object.values(TableFieldConfig));
@@ -181,9 +183,9 @@ const formatFieldValue = (field, value) => {
       <!-- Pagination -->
       <nav class="mt-8 pb-8">
         <Pagination
+          v-model:page="store.filters.page"
           :total="store.metadata.totalItems"
           :items-per-page="store.filters.limit"
-          :default-page="store.currentPage"
           :sibling-count="2"
           show-edges
           @update:page="handlePageChange"
@@ -207,6 +209,7 @@ const formatFieldValue = (field, value) => {
                   class="w-10 h-10 p-0"
                   :variant="item.value === page ? 'default' : 'outline'"
                   :aria-current="item.value === page ? 'page' : undefined"
+                  @click="item.value === page && (isDialogOpen = true)"
                 >
                   {{ item.value }}
                 </Button>
@@ -221,4 +224,11 @@ const formatFieldValue = (field, value) => {
       </nav>
     </template>
   </section>
+
+  <PageSelectDialog
+    v-model:is-open="isDialogOpen"
+    :current-page="store.filters.page"
+    :total-pages="store.totalPages"
+    @select="handlePageChange"
+  />
 </template>

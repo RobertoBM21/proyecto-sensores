@@ -43,7 +43,6 @@ const fetchData = async (params = {}) => {
 };
 
 const searchDevices = async () => {
-  search.resetPage();
   try {
     const baseParams = buildParams();
     const searchData = await fetchData({
@@ -57,6 +56,12 @@ const searchDevices = async () => {
     console.error("Error fetching devices:", error);
     search.clearResults();
   }
+};
+
+// Resetea la página y vuelve a buscar (utilizado por el botón de búsqueda)
+const searchDevicesWithReset = async () => {
+  search.resetPage();
+  await searchDevices();
 };
 
 const clearFilters = () => {
@@ -73,7 +78,7 @@ defineExpose({ searchDevices });
 </script>
 
 <template>
-  <form @submit.prevent="searchDevices">
+  <form @submit.prevent="searchDevicesWithReset">
     <div class="grid grid-cols-1 md:grid-cols-[0.5fr,1fr,auto] gap-4 items-end">
       <!-- Date Range Selector -->
       <fieldset>
