@@ -104,10 +104,10 @@ router.post("/", deviceController.createDevice);
  *         description: Cantidad de dispositivos por página
  *     description: |
  *       Los parámetros de fecha deben cumplir una de estas condiciones:
- *       1. Proporcionar dateRange
- *       2. Proporcionar startDate Y endDate
+ *       1. Proporcionar solo dateRange
+ *       2. Proporcionar tanto startDate como endDate juntos
  *
- *       No se permite mezclar dateRange con startDate/endDate.
+ *       No se permite mezclar dateRange con startDate/endDate
  *     responses:
  *       200:
  *         description: Reporte de actividad paginado obtenido exitosamente

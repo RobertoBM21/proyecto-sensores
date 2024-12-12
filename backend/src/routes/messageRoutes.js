@@ -40,6 +40,11 @@ router.get("/", messageController.getAllMessages);
  *           type: string
  *         description: Serial del dispositivo
  *       - in: query
+ *         name: apikey
+ *         schema:
+ *           type: string
+ *         description: API Key del dispositivo
+ *       - in: query
  *         name: serverIds
  *         required: true
  *         schema:
@@ -71,10 +76,10 @@ router.get("/", messageController.getAllMessages);
  *         description: Rango de fecha predefinido
  *     description: |
  *       Los parámetros de fecha son opcionales, pero si se proporcionan deben cumplir una de estas condiciones:
- *       1. Solo dateRange
- *       2. Tanto startDate como endDate juntos
+ *       1. Proporcionar solo dateRange
+ *       2. Proporcionar tanto startDate como endDate juntos
  *
- *       No se permite mezclar dateRange con startDate/endDate.
+ *       No se permite mezclar dateRange con startDate/endDate
  *     responses:
  *       200:
  *         description: Lista de mensajes paginada
@@ -128,6 +133,11 @@ router.get("/search", messageController.searchMessages);
  *           type: string
  *         description: Serial del dispositivo
  *       - in: query
+ *         name: apikey
+ *         schema:
+ *           type: string
+ *         description: API Key del dispositivo
+ *       - in: query
  *         name: serverIds
  *         required: true
  *         schema:
@@ -159,10 +169,10 @@ router.get("/search", messageController.searchMessages);
  *         description: Rango de fecha predefinido
  *     description: |
  *       Los parámetros de fecha son opcionales, pero si se proporcionan deben cumplir una de estas condiciones:
- *       1. Solo dateRange
- *       2. Tanto startDate como endDate juntos
+ *       1. Proporcionar solo dateRange
+ *       2. Proporcionar tanto startDate como endDate juntos
  *
- *       No se permite mezclar dateRange con startDate/endDate.
+ *       No se permite mezclar dateRange con startDate/endDate
  *     responses:
  *       200:
  *         description: Estadísticas de mensajes
