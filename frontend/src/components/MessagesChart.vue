@@ -326,7 +326,7 @@ const yFormatter = (value) => value.toLocaleString("es-ES");
         </header>
         <CardContent>
           <AreaChart
-            class="h-[300px]"
+            class="h-[350px]"
             :data="chartData"
             index="timestamp"
             :categories="['mensajes']"
