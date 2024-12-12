@@ -1,108 +1,143 @@
 <script setup>
-// Layout components
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
-
-// UI components
 import { Button } from "../components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
+import { useDevicesStore } from "../stores/devices";
+import { useMessagesStore } from "../stores/messages";
+import { computed, onMounted } from "vue";
+import { Activity, Search, BarChart3, Cpu } from "lucide-vue-next";
+
+const devices = useDevicesStore();
+const messages = useMessagesStore();
+
+// Load initial data
+onMounted(async () => {
+  await devices.searchDevices();
+  await messages.searchMessages();
+});
+
+const stats = computed(() => [
+  {
+    label: "Dispositivos Activos",
+    value: devices.metadata?.totalItems || 0,
+    icon: Cpu,
+    description: "Sensores que han enviado datos recientemente",
+  },
+  {
+    label: "Mensajes Procesados",
+    value: messages.metadata?.totalItems || 0,
+    icon: BarChart3,
+    description: "Total de mensajes recibidos y procesados",
+  },
+  {
+    label: "Cobertura",
+    value: devices.metadata
+      ? `${(
+          (devices.metadata.totalItems / devices.metadata.totalDevices) *
+          100
+        ).toFixed(1)}%`
+      : "0%",
+    icon: Activity,
+    description: "Porcentaje de dispositivos activos",
+  },
+]);
 </script>
 
 <template>
-  <section class="min-h-screen flex flex-col">
+  <div class="min-h-screen flex flex-col">
     <Header />
-    <main class="flex-grow flex items-center">
-      <section class="container mx-auto px-4 py-8">
-        <!-- Hero Section -->
-        <header class="text-center mb-12">
-          <h1 class="text-3xl font-bold text-foreground mb-6">Sensores</h1>
-          <p class="text-muted-foreground max-w-2xl mx-auto">
-            Bienvenido al sistema de gestión de sensores. Desde aquí podrás
-            acceder a todas las funcionalidades del sistema.
-          </p>
-        </header>
-
-        <!-- Cards Grid -->
-        <section
-          class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-12"
-        >
-          <!-- Search Card -->
-          <Card class="md:col-span-3 w-fit mx-auto">
-            <CardHeader class="text-center">
-              <CardTitle>Búsqueda de Sensores</CardTitle>
-              <CardDescription>
-                Accede a la información de los sensores registrados en el
-                sistema
-              </CardDescription>
-            </CardHeader>
-            <CardContent class="flex justify-center space-x-6">
-              <Button asChild>
-                <router-link to="/search/messages">Buscar Mensajes</router-link>
-              </Button>
-              <Button asChild>
-                <router-link to="/search/devices"
-                  >Buscar Dispositivos</router-link
+    <main class="flex-grow">
+      <!-- Hero Section -->
+      <section class="relative bg-background py-20">
+        <div class="container px-4 mx-auto">
+          <div class="max-w-3xl mx-auto text-center">
+            <h1
+              class="text-4xl font-bold tracking-tight text-foreground sm:text-6xl"
+            >
+              Sistema de Monitoreo de Sensores
+            </h1>
+            <p class="mt-6 text-lg text-muted-foreground text-balance">
+              Plataforma centralizada para el seguimiento, análisis y gestión de
+              datos de sensores en tiempo real.
+            </p>
+            <div class="mt-10 flex items-center justify-center gap-x-6">
+              <Button size="lg" asChild>
+                <router-link to="/search/messages"
+                  >Explorar Mensajes</router-link
                 >
               </Button>
-            </CardContent>
-          </Card>
+              <Button size="lg" variant="outline" asChild>
+                <router-link to="/search/devices">Ver Dispositivos</router-link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
 
-          <!-- Messages API Card -->
-          <Card class="md:col-span-3 lg:col-span-1">
-            <CardHeader>
-              <CardTitle>Búsqueda de Mensajes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p class="text-sm text-muted-foreground mb-4">
-                El endpoint
-                <code class="bg-muted text-foreground px-1 rounded"
-                  >/messages/search</code
-                >
-                permite filtrar mensajes por:
-              </p>
-              <ul
-                class="text-sm text-muted-foreground list-disc list-inside mb-4"
+      <!-- Stats Section -->
+      <section class="py-12">
+        <div class="container px-4 mx-auto">
+          <div class="grid md:grid-cols-3 gap-8">
+            <Card
+              v-for="stat in stats"
+              :key="stat.label"
+              class="transition-all hover:shadow-lg hover:shadow-foreground/5 hover:bg-muted/50"
+            >
+              <CardHeader
+                class="flex flex-row items-center justify-between space-y-0 pb-2"
               >
-                <li>Número de serie</li>
-                <li>Servidor específico</li>
-                <li>Rango de fechas personalizado</li>
-                <li>Rangos predefinidos (última hora, día, etc.)</li>
-              </ul>
-            </CardContent>
-          </Card>
+                <CardTitle class="text-lg font-medium">{{
+                  stat.label
+                }}</CardTitle>
+                <component
+                  :is="stat.icon"
+                  class="h-5 w-5 text-muted-foreground"
+                />
+              </CardHeader>
+              <CardContent>
+                <div class="text-3xl font-bold">{{ stat.value }}</div>
+                <p class="text-sm text-muted-foreground mt-1">
+                  {{ stat.description }}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
 
-          <!-- Activity Report Card -->
-          <Card class="md:col-span-3 lg:col-span-1">
-            <CardHeader>
-              <CardTitle>Reporte de Actividad</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p class="text-sm text-muted-foreground mb-4">
-                El endpoint
-                <code class="bg-muted text-foreground px-1 rounded"
-                  >/devices/activity</code
-                >
-                proporciona informes detallados de:
+      <!-- Features Section -->
+      <section class="py-16">
+        <div class="container px-4 mx-auto">
+          <h2 class="text-3xl font-bold text-center mb-12">
+            Características Principales
+          </h2>
+          <div class="grid md:grid-cols-2 gap-8">
+            <div class="space-y-4">
+              <Search class="h-8 w-8 text-primary" />
+              <h3 class="text-xl font-semibold">Búsqueda Avanzada</h3>
+              <p class="text-muted-foreground">
+                Encuentra mensajes y dispositivos específicos utilizando filtros
+                por número de serie, rango de fechas y servidor.
               </p>
-              <ul
-                class="text-sm text-muted-foreground list-disc list-inside mb-4"
-              >
-                <li>Dispositivos activos por período</li>
-                <li>Última comunicación</li>
-                <li>Estadísticas por servidor</li>
-                <li>Resumen de actividad</li>
-              </ul>
-            </CardContent>
-          </Card>
-        </section>
+            </div>
+            <div class="space-y-4">
+              <Activity class="h-8 w-8 text-primary" />
+              <h3 class="text-xl font-semibold">Monitoreo en Tiempo Real</h3>
+              <p class="text-muted-foreground">
+                Visualiza la actividad de los sensores, estadísticas de mensajes
+                y estado de los dispositivos en tiempo real.
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
     <Footer />
-  </section>
+  </div>
 </template>

@@ -8,6 +8,10 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "keywords": [],
+  "author": "Roberto Burruezo Martínez",
+  "license": "ISC",
+  "description": "Frontend del sistema de monitoreo de sensores",
   "dependencies": {
     "@internationalized/date": "^3.6.0",
     "@unovis/ts": "^1.4.5",

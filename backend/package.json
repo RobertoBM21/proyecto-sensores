@@ -7,9 +7,9 @@
     "dev": "node --watch src/server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Roberto Burruezo Martínez",
   "license": "ISC",
-  "description": "Backend del proyecto sensores",
+  "description": "Backend del sistema de monitoreo de sensores",
   "dependencies": {
     "cors": "2.8.5",
     "express": "5.0.1",
