@@ -16,7 +16,6 @@ import { ref } from "vue";
 // Store initialization
 const config = useConfigStore();
 const search = useDevicesStore();
-const apiUrl = config.getApiUrl;
 const dateRangeSelectorRef = ref(null);
 
 // Methods

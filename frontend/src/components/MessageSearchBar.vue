@@ -15,14 +15,21 @@ import { useMessagesStore } from "../stores/messages";
 // Utilities
 import { ref } from "vue";
 
+// Prop para inicializar el formulario con valores iniciales
+const props = defineProps({
+  initialValues: {
+    type: Object,
+    default: () => ({}),
+  },
+});
+
 // Store initialization
 const config = useConfigStore();
 const search = useMessagesStore();
-const apiUrl = config.getApiUrl;
 const dateRangeSelectorRef = ref(null);
 
 // Form state
-const serial = ref("");
+const serial = ref(props.initialValues.serial || "");
 const apikey = ref("");
 
 // Methods
@@ -56,8 +63,10 @@ const fetchData = async (endpoint, params = {}) => {
 
 // Búsqueda de mensajes y estadísticas
 const searchMessages = async () => {
-  // Resetear la pagina y actualizar filtros de búsqueda con los valores del formulario
+  // Resetear la pagina y flag de redirrecion
   search.resetPage();
+  search.resetRedirectState();
+  // Actualizar filtros del formulario
   search.updateFilters({
     serial: serial.value,
     apikey: apikey.value,
@@ -117,7 +126,7 @@ const clearFilters = () => {
   search.resetFilters();
 };
 
-defineExpose({ searchMessagesOnly });
+defineExpose({ searchMessages, searchMessagesOnly });
 </script>
 
 <template>

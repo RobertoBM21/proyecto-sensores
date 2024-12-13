@@ -27,6 +27,7 @@ import { ChevronDown, Activity, Cpu, BookOpen } from "lucide-vue-next";
 
 // Store & Utilities
 import { useDevicesStore } from "../stores/devices";
+import { useMessagesStore } from "../stores/messages";
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 
@@ -89,6 +90,7 @@ const STATS_CONFIG = [
 // Component setup
 const router = useRouter();
 const store = useDevicesStore();
+const messagesStore = useMessagesStore();
 const emit = defineEmits(["pageChange"]);
 
 // Component state
@@ -126,6 +128,7 @@ const formatFieldValue = (field, value) => {
 };
 
 const navigateToMessages = (device) => {
+  messagesStore.updateRedirectState(true);
   router.push({
     path: "/search/messages",
     query: {
@@ -134,7 +137,6 @@ const navigateToMessages = (device) => {
       endDate: store.filters.endDate,
       dateRange: store.filters.dateRange,
       serverIds: store.filters.selectedServers.join(","),
-      autoSearch: "true",
     },
   });
 };

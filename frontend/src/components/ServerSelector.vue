@@ -27,6 +27,10 @@ const props = defineProps({
     default: "messages",
     validator: (value) => ["messages", "devices"].includes(value),
   },
+  initialValues: {
+    type: Object,
+    default: () => ({}),
+  },
 });
 
 // Store initialization
@@ -41,7 +45,6 @@ const getStore = () => {
 };
 
 const search = getStore();
-const apiUrl = config.getApiUrl;
 
 // Component state
 const servers = ref([]);
@@ -79,8 +82,14 @@ const fetchServers = async () => {
     if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
 
     servers.value = await response.json();
+
+    // Inicializar selección solo si hay servidores y no hay valores iniciales
     if (servers.value.length > 0) {
-      search.updateServerSelection(servers.value.map((server) => server.id));
+      if (props.initialValues?.selectedServers?.length) {
+        search.updateServerSelection(props.initialValues.selectedServers);
+      } else {
+        search.updateServerSelection(servers.value.map((server) => server.id));
+      }
     }
   } catch (err) {
     console.error("Error fetching servers:", err);
@@ -114,7 +123,7 @@ const toggleAllServers = () => {
   search.updateServerSelection(newSelection);
 };
 
-// Initial data fetch
+// Inicializar la lista de servidores al montar el componente
 onMounted(fetchServers);
 </script>
 

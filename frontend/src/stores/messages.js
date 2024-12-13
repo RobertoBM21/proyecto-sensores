@@ -9,6 +9,7 @@ const DEFAULT_FILTERS = {
   dateRange: "",
   page: 1,
   limit: 50,
+  isRedirected: false,
 };
 
 export const useMessagesStore = defineStore("messages", {
@@ -46,6 +47,10 @@ export const useMessagesStore = defineStore("messages", {
       this.filters.selectedServers = servers;
     },
 
+    updateRedirectState(isRedirected) {
+      this.filters.isRedirected = isRedirected;
+    },
+
     updateSearchResults(data) {
       this.results = data.messages || [];
       this.metadata = {
@@ -63,10 +68,15 @@ export const useMessagesStore = defineStore("messages", {
       this.filters.page = DEFAULT_FILTERS.page;
     },
 
+    resetRedirectState() {
+      this.filters.isRedirected = DEFAULT_FILTERS.isRedirected;
+    },
+
     resetFilters() {
       this.filters = { ...DEFAULT_FILTERS };
       this.clearStats();
       this.clearResults();
+      this.resetRedirectState();
     },
 
     clearStats() {
