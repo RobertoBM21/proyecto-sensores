@@ -29,6 +29,9 @@ import { useDevicesStore } from "../stores/devices";
 // Utilities
 import { ref, computed, watch } from "vue";
 
+// Importar utilidades de @internationalized/date
+import { CalendarDate } from "@internationalized/date";
+
 // Props
 const props = defineProps({
   storeName: {
@@ -58,10 +61,58 @@ const search = getStore();
 const initialDateValue = { start: null, end: null };
 const initialTimeValue = { start: "00:00", end: "23:59" };
 
-// Component state
-const dateValue = ref({ ...initialDateValue });
-const timeValue = ref({ ...initialTimeValue });
-const showTimeSelection = ref(false);
+// Funciones helper para convertir fechas
+const toCalendarDate = (date) => {
+  if (!date) return null;
+  const tzOffset = new Date().getTimezoneOffset() * 60000;
+  const localDate = new Date(new Date(date).getTime() + tzOffset);
+  return new CalendarDate(
+    localDate.getFullYear(),
+    localDate.getMonth() + 1,
+    localDate.getDate()
+  );
+};
+
+const fromCalendarDate = (calendarDate) => {
+  if (!calendarDate) return null;
+  return new Date(calendarDate.year, calendarDate.month - 1, calendarDate.day);
+};
+
+// Initial states con soporte para valores iniciales
+const getInitialDateValue = () => {
+  if (props.initialValues.startDate && props.initialValues.endDate) {
+    return {
+      start: toCalendarDate(props.initialValues.startDate),
+      end: toCalendarDate(props.initialValues.endDate),
+    };
+  }
+  return { ...initialDateValue };
+};
+
+const getInitialTimeValue = () => {
+  if (props.initialValues.startDate && props.initialValues.endDate) {
+    const startDate = new Date(props.initialValues.startDate);
+    const endDate = new Date(props.initialValues.endDate);
+    return {
+      start: `${String(startDate.getHours()).padStart(2, "0")}:${String(
+        startDate.getMinutes()
+      ).padStart(2, "0")}`,
+      end: `${String(endDate.getHours()).padStart(2, "0")}:${String(
+        endDate.getMinutes()
+      ).padStart(2, "0")}`,
+    };
+  }
+  return { ...initialTimeValue };
+};
+
+// Component state actualizado
+const dateValue = ref(getInitialDateValue());
+const timeValue = ref(getInitialTimeValue());
+const showTimeSelection = ref(
+  props.initialValues.startDate &&
+    (new Date(props.initialValues.startDate).getHours() !== 0 ||
+      new Date(props.initialValues.startDate).getMinutes() !== 0)
+);
 const calendarKey = ref(0);
 const dateRange = ref(props.initialValues.dateRange || "");
 
@@ -105,8 +156,8 @@ const hasDateSelection = computed(
 const updateDateRange = (range) => {
   if (!range.start || !range.end) return;
 
-  const startDate = new Date(range.start);
-  const endDate = new Date(range.end);
+  const startDate = fromCalendarDate(range.start);
+  const endDate = fromCalendarDate(range.end);
 
   if (showTimeSelection.value) {
     setTimeOnDate(startDate, timeValue.value.start);
@@ -125,8 +176,8 @@ const updateDateRange = (range) => {
 
 // Reset methods
 const resetToDefaults = () => {
-  dateValue.value = { ...initialDateValue };
-  timeValue.value = { ...initialTimeValue };
+  dateValue.value = getInitialDateValue();
+  timeValue.value = getInitialTimeValue();
   showTimeSelection.value = false;
 };
 
