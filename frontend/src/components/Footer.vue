@@ -1,9 +1,19 @@
 <script setup>
 import { useColorMode } from "@vueuse/core";
 import { Button } from "@/components/ui/button";
-import { Github } from "lucide-vue-next";
+import { useConfigStore } from "@/stores/config";
+import { computed } from "vue";
+
+// Icons
+import githubDark from "@/assets/icons/github-dark.svg";
+import githubLight from "@/assets/icons/github-light.svg";
 
 const mode = useColorMode();
+const config = useConfigStore();
+
+const githubIcon = computed(() =>
+  mode.value === "light" ? githubLight : githubDark
+);
 
 const links = [
   { label: "Inicio", to: "/" },
@@ -12,15 +22,31 @@ const links = [
 ];
 
 const resources = [
-  { label: "Documentación API", href: "#" },
-  { label: "Guía de Uso", href: "#" },
-  { label: "Estado del Sistema", href: "#" },
+  {
+    label: "Documentación API",
+    href: config.getApiDocsUrl,
+  },
+  {
+    label: "Guía de Uso",
+    href: config.getRepoReadmeUrl,
+  },
 ];
 
 const contact = {
   email: "roberto.burruezom@gmail.com",
   github: "https://github.com/RobertoBM21",
 };
+
+const quickLinks = [
+  {
+    label: "Reportar Problema",
+    href: config.getRepoIssuesUrl,
+  },
+  {
+    label: "Repositorio",
+    href: config.getRepoUrl,
+  },
+];
 </script>
 
 <template>
@@ -47,7 +73,7 @@ const contact = {
                 rel="noopener noreferrer"
                 title="GitHub"
               >
-                <Github class="h-4 w-4" />
+                <img :src="githubIcon" alt="GitHub" class="h-4 w-4" />
               </a>
             </Button>
             <a
@@ -82,7 +108,9 @@ const contact = {
               v-for="resource in resources"
               :key="resource.label"
               :href="resource.href"
-              class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             >
               {{ resource.label }}
             </a>
@@ -94,16 +122,14 @@ const contact = {
           <h3 class="font-semibold">Enlaces Rápidos</h3>
           <nav class="flex flex-col gap-2">
             <a
-              href="#"
+              v-for="link in quickLinks"
+              :key="link.label"
+              :href="link.href"
+              target="_blank"
+              rel="noopener noreferrer"
               class="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              Política de Privacidad
-            </a>
-            <a
-              href="#"
-              class="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Términos de Uso
+              {{ link.label }}
             </a>
           </nav>
         </div>

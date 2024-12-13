@@ -1,6 +1,9 @@
 <script setup>
+// Layout components
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
+
+// UI components
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -8,11 +11,14 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
+
+// Store and utilities
 import { useDevicesStore } from "../stores/devices";
 import { useMessagesStore } from "../stores/messages";
 import { computed, onMounted } from "vue";
 import { Activity, Search, BarChart3, Cpu } from "lucide-vue-next";
 
+// Store initialization
 const devices = useDevicesStore();
 const messages = useMessagesStore();
 

@@ -75,7 +75,7 @@ const fetchServers = async () => {
   error.value = null;
 
   try {
-    const response = await fetch(`${apiUrl}/servers`);
+    const response = await fetch(config.getServersUrl);
     if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
 
     servers.value = await response.json();

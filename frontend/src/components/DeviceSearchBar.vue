@@ -32,7 +32,7 @@ const buildParams = () => {
 };
 
 const fetchData = async (params = {}) => {
-  const url = new URL(`${apiUrl}/devices/activity`);
+  const url = new URL(config.getDevicesActivityUrl);
   Object.entries(params).forEach(([key, value]) => {
     url.searchParams.append(key, value);
   });

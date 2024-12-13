@@ -16,17 +16,27 @@ import {
 } from "../components/ui/card";
 
 // Utilities
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useColorMode } from "@vueuse/core";
+
+// Icons
+import githubDark from "@/assets/icons/github-dark.svg";
+import githubLight from "@/assets/icons/github-light.svg";
 
 // Estado del formulario
 const username = ref("");
 const password = ref("");
 const router = useRouter();
+const mode = useColorMode();
+
+const githubIcon = computed(() =>
+  mode.value === "light" ? githubLight : githubDark
+);
 
 // Mock de autenticación => será reemplazado por Keycloak
 const handleLogin = () => router.push("/");
-const handleSocialLogin = (provider) => router.push("/");
+const handleSocialLogin = (_provider) => router.push("/");
 </script>
 
 <template>
@@ -97,11 +107,7 @@ const handleSocialLogin = (provider) => router.push("/");
               variant="outline"
               class="hover:bg-muted/50"
             >
-              <img
-                src="@/assets/icons/github-light.svg"
-                alt="GitHub"
-                class="w-5 h-5 mr-2"
-              />
+              <img :src="githubIcon" alt="GitHub" class="w-5 h-5 mr-2" />
               GitHub
             </Button>
           </nav>

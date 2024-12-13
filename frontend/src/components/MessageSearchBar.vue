@@ -40,7 +40,11 @@ const buildParams = () => {
 };
 
 const fetchData = async (endpoint, params = {}) => {
-  const url = new URL(`${apiUrl}/messages/${endpoint}`);
+  const baseUrl =
+    endpoint === "search"
+      ? config.getMessagesSearchUrl
+      : config.getMessagesStatsUrl;
+  const url = new URL(baseUrl);
   Object.entries(params).forEach(([key, value]) => {
     url.searchParams.append(key, value);
   });
