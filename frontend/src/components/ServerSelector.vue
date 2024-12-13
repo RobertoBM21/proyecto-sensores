@@ -83,8 +83,8 @@ const fetchServers = async () => {
 
     servers.value = await response.json();
 
-    // Inicializar selección solo si hay servidores y no hay valores iniciales
-    if (servers.value.length > 0) {
+    // Se actualiza la selección de servidores en función de si es una búsqueda nueva o una redirección
+    if (servers.value.length > 0 && !search.filters.selectedServers.length) {
       if (props.initialValues?.selectedServers?.length) {
         search.updateServerSelection(props.initialValues.selectedServers);
       } else {

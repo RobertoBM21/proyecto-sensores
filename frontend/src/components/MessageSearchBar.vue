@@ -158,12 +158,15 @@ defineExpose({ searchMessages, searchMessagesOnly });
 
       <!-- Date Range Selector -->
       <fieldset>
-        <DateRangeSelector ref="dateRangeSelectorRef" />
+        <DateRangeSelector
+          ref="dateRangeSelectorRef"
+          :initial-values="initialValues"
+        />
       </fieldset>
 
       <!-- Server Selector -->
       <fieldset class="flex items-end">
-        <ServerSelector />
+        <ServerSelector :initial-values="initialValues" />
       </fieldset>
 
       <!-- Action Buttons -->

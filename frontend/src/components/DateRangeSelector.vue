@@ -30,12 +30,16 @@ import { useDevicesStore } from "../stores/devices";
 import { ref, computed, watch } from "vue";
 import { getLocalTimeZone } from "@internationalized/date";
 
-// Prop para determinar qué store usar
+// Props
 const props = defineProps({
   storeName: {
     type: String,
     default: "messages",
     validator: (value) => ["messages", "devices"].includes(value),
+  },
+  initialValues: {
+    type: Object,
+    default: () => ({}),
   },
 });
 
@@ -60,7 +64,7 @@ const dateValue = ref({ ...initialDateValue });
 const timeValue = ref({ ...initialTimeValue });
 const showTimeSelection = ref(false);
 const calendarKey = ref(0);
-const dateRange = ref("");
+const dateRange = ref(props.initialValues.dateRange || "");
 
 // Date range options
 const dateRangeOptions = [
