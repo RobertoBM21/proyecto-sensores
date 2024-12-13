@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@internationalized/date':
-        specifier: ^3.6.0
-        version: 3.6.0
       '@unovis/ts':
         specifier: ^1.4.5
         version: 1.4.5

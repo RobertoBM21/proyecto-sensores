@@ -13,7 +13,6 @@
   "license": "ISC",
   "description": "Frontend del sistema de monitoreo de sensores",
   "dependencies": {
-    "@internationalized/date": "^3.6.0",
     "@unovis/ts": "^1.4.5",
     "@unovis/vue": "^1.4.5",
     "@vueuse/core": "11.2.0",

@@ -173,6 +173,7 @@ onMounted(fetchServers);
               size="icon"
               class="h-4 w-4 text-muted-foreground hover:text-foreground ml-4"
               @click="toggleAllServers"
+              :title="selectionTitle"
             >
               <component :is="selectionIcon" class="h-4 w-4" />
             </Button>

@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
 
@@ -44,6 +45,9 @@ const handleSubmit = () => {
     <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
         <DialogTitle>Ir a la página</DialogTitle>
+        <DialogDescription>
+          Ingresa el número de página a la que deseas ir
+        </DialogDescription>
       </DialogHeader>
       <div class="grid gap-4 py-4">
         <NumberField

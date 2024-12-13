@@ -38,6 +38,8 @@ onMounted(() => {
   if (!messagesStore.filters.isRedirected) return;
 
   const { serial, startDate, endDate, dateRange, serverIds } = route.query;
+  messagesStore.resetFilters();
+
   const filters = {
     ...(serial && { serial }),
     ...(startDate && { startDate }),

@@ -28,7 +28,6 @@ import { useDevicesStore } from "../stores/devices";
 
 // Utilities
 import { ref, computed, watch } from "vue";
-import { getLocalTimeZone } from "@internationalized/date";
 
 // Props
 const props = defineProps({
@@ -91,7 +90,7 @@ const selectedDateLabel = computed(() => {
   if (dateRange.value) return selectedDateRangeLabel.value;
   if (dateValue.value.start && dateValue.value.end) {
     const [start, end] = [dateValue.value.start, dateValue.value.end].map(
-      (date) => date.toDate(getLocalTimeZone()).toLocaleDateString()
+      (date) => new Date(date).toLocaleDateString()
     );
     return `${start} - ${end}`;
   }
@@ -106,8 +105,8 @@ const hasDateSelection = computed(
 const updateDateRange = (range) => {
   if (!range.start || !range.end) return;
 
-  const startDate = range.start.toDate(getLocalTimeZone());
-  const endDate = range.end.toDate(getLocalTimeZone());
+  const startDate = new Date(range.start);
+  const endDate = new Date(range.end);
 
   if (showTimeSelection.value) {
     setTimeOnDate(startDate, timeValue.value.start);
