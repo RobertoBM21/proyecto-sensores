@@ -62,7 +62,6 @@ const TableFieldConfig = {
 
 const STATS_CONFIG = [
   {
-    key: "coverage",
     label: "Cobertura de dispositivos",
     icon: Activity,
     description: "Porcentaje de dispositivos que no han vuelto a comunicar",

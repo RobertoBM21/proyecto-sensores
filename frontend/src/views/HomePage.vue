@@ -15,44 +15,55 @@ import {
 // Store and utilities
 import { useDevicesStore } from "../stores/devices";
 import { useMessagesStore } from "../stores/messages";
+import { useHomeStore } from "../stores/home";
 import { computed, onMounted } from "vue";
 import { Activity, Search, BarChart3, Cpu } from "lucide-vue-next";
 
 // Store initialization
-const devices = useDevicesStore();
-const messages = useMessagesStore();
+const home = useHomeStore();
 
 // Load initial data
 onMounted(async () => {
-  await devices.searchDevices();
-  await messages.searchMessages();
+  await home.fetchAllStats();
 });
 
-const stats = computed(() => [
+const STATS_CONFIG = [
   {
     label: "Dispositivos Activos",
-    value: devices.metadata?.totalItems || 0,
+    value: (data) => data?.activeDevices || 0,
     icon: Cpu,
-    description: "Sensores que han enviado datos recientemente",
+    description: "Sensores que han enviado datos en la última hora",
   },
   {
-    label: "Mensajes Procesados",
-    value: messages.metadata?.totalItems || 0,
+    label: "Mensajes Recibidos",
+    value: (data) => data?.recentMessages || 0,
     icon: BarChart3,
-    description: "Total de mensajes recibidos y procesados",
+    description: "Mensajes recibidos en las últimas 24 horas",
   },
   {
-    label: "Cobertura",
-    value: devices.metadata
-      ? `${(
-          (devices.metadata.totalItems / devices.metadata.totalDevices) *
-          100
-        ).toFixed(1)}%`
-      : "0%",
+    label: "Cobertura Semanal",
+    value: (data) => {
+      if (!data?.weeklyStats?.totalDevices || !data?.weeklyStats?.totalItems)
+        return "0%";
+      return `${(
+        (data.weeklyStats.totalItems / data.weeklyStats.totalDevices) *
+        100
+      ).toFixed(1)}%`;
+    },
     icon: Activity,
-    description: "Porcentaje de dispositivos activos",
+    description: "Dispositivos activos en los últimos 7 días",
   },
-]);
+];
+
+const stats = computed(() =>
+  STATS_CONFIG.map((stat) => ({
+    ...stat,
+    value: stat.value(home),
+  }))
+);
+
+const loading = computed(() => home.loading);
+const error = computed(() => home.error);
 </script>
 
 <template>
@@ -89,6 +100,9 @@ const stats = computed(() => [
       <!-- Stats Section -->
       <section class="py-12">
         <div class="container px-4 mx-auto">
+          <div v-if="error" class="text-destructive text-center mb-4">
+            {{ error }}
+          </div>
           <div class="grid md:grid-cols-3 gap-8">
             <Card
               v-for="stat in stats"
@@ -98,12 +112,13 @@ const stats = computed(() => [
               <CardHeader
                 class="flex flex-row items-center justify-between space-y-0 pb-2"
               >
-                <CardTitle class="text-lg font-medium">{{
-                  stat.label
-                }}</CardTitle>
+                <CardTitle class="text-lg font-medium">
+                  {{ stat.label }}
+                </CardTitle>
                 <component
                   :is="stat.icon"
-                  class="h-5 w-5 text-muted-foreground"
+                  class="h-5 w-5"
+                  :class="loading ? 'animate-pulse' : 'text-muted-foreground'"
                 />
               </CardHeader>
               <CardContent>
