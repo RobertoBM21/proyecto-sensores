@@ -51,16 +51,16 @@ const quickLinks = [
 
 <template>
   <footer class="bg-card border-t">
-    <div class="container mx-auto px-4 py-8">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+    <div class="container mx-auto px-3 py-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
         <!-- About -->
-        <div class="space-y-3">
+        <div class="space-y-2">
           <h3 class="font-semibold">Sistema de Sensores</h3>
-          <p class="text-sm text-muted-foreground">
+          <p class="text-sm text-balance text-muted-foreground">
             Plataforma de monitorización y gestión de sensores IoT en tiempo
             real.
           </p>
-          <div class="flex items-center gap-2 pt-2">
+          <div class="flex items-center gap-2 pt-1">
             <Button
               variant="ghost"
               size="icon"
@@ -86,9 +86,9 @@ const quickLinks = [
         </div>
 
         <!-- Navigation -->
-        <div class="space-y-3">
+        <div class="space-y-2">
           <h3 class="font-semibold">Navegación</h3>
-          <nav class="flex flex-col gap-2">
+          <nav class="flex flex-col gap-1">
             <router-link
               v-for="link in links"
               :key="link.to"
@@ -101,9 +101,9 @@ const quickLinks = [
         </div>
 
         <!-- Resources -->
-        <div class="space-y-3">
+        <div class="space-y-2">
           <h3 class="font-semibold">Recursos</h3>
-          <nav class="flex flex-col gap-2">
+          <nav class="flex flex-col gap-1">
             <a
               v-for="resource in resources"
               :key="resource.label"
@@ -118,9 +118,9 @@ const quickLinks = [
         </div>
 
         <!-- Quick Links -->
-        <div class="space-y-3">
+        <div class="space-y-2">
           <h3 class="font-semibold">Enlaces Rápidos</h3>
-          <nav class="flex flex-col gap-2">
+          <nav class="flex flex-col gap-1">
             <a
               v-for="link in quickLinks"
               :key="link.label"
@@ -136,7 +136,7 @@ const quickLinks = [
       </div>
 
       <!-- Bottom Bar -->
-      <div class="pt-8 mt-8 border-t text-center">
+      <div class="pt-6 mt-6 border-t text-center">
         <p class="text-sm text-muted-foreground">
           © {{ new Date().getFullYear() }} Sistema de Sensores. Todos los
           derechos reservados.
@@ -145,23 +145,3 @@ const quickLinks = [
     </div>
   </footer>
 </template>
-
-<style scoped>
-.sleep-animation {
-  animation: sleep 2s ease-in-out infinite;
-  display: inline-block;
-  opacity: 0.7;
-}
-
-@keyframes sleep {
-  0%,
-  100% {
-    transform: translateY(0) scale(1);
-    opacity: 0.7;
-  }
-  50% {
-    transform: translateY(-5px) scale(1.1);
-    opacity: 1;
-  }
-}
-</style>
