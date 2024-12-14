@@ -30,13 +30,13 @@ onMounted(async () => {
 const STATS_CONFIG = [
   {
     label: "Dispositivos Activos",
-    value: (data) => data?.activeDevices || 0,
+    value: (data) => data?.activeDevices,
     icon: Cpu,
     description: "Sensores que han enviado datos en la última hora",
   },
   {
     label: "Mensajes Recibidos",
-    value: (data) => data?.recentMessages || 0,
+    value: (data) => data?.recentMessages,
     icon: BarChart3,
     description: "Mensajes recibidos en las últimas 24 horas",
   },
@@ -44,7 +44,7 @@ const STATS_CONFIG = [
     label: "Cobertura Semanal",
     value: (data) => {
       if (!data?.weeklyStats?.totalDevices || !data?.weeklyStats?.totalItems)
-        return "0%";
+        return undefined;
       return `${(
         (data.weeklyStats.totalItems / data.weeklyStats.totalDevices) *
         100
@@ -58,12 +58,11 @@ const STATS_CONFIG = [
 const stats = computed(() =>
   STATS_CONFIG.map((stat) => ({
     ...stat,
-    value: stat.value(home),
+    value: stat.value(home) ?? "N/A",
   }))
 );
 
 const loading = computed(() => home.loading);
-const error = computed(() => home.error);
 </script>
 
 <template>
@@ -100,9 +99,6 @@ const error = computed(() => home.error);
       <!-- Stats Section -->
       <section class="py-12">
         <div class="container px-4 mx-auto">
-          <div v-if="error" class="text-destructive text-center mb-4">
-            {{ error }}
-          </div>
           <div class="grid md:grid-cols-3 gap-8">
             <Card
               v-for="stat in stats"
@@ -118,11 +114,19 @@ const error = computed(() => home.error);
                 <component
                   :is="stat.icon"
                   class="h-5 w-5"
-                  :class="loading ? 'animate-pulse' : 'text-muted-foreground'"
+                  :class="{
+                    'text-muted-foreground animate-pulse': loading,
+                    'text-muted-foreground': !loading,
+                  }"
                 />
               </CardHeader>
               <CardContent>
-                <div class="text-3xl font-bold">{{ stat.value }}</div>
+                <div
+                  class="text-3xl font-bold"
+                  :class="{ 'animate-pulse': loading }"
+                >
+                  {{ stat.value }}
+                </div>
                 <p class="text-sm text-muted-foreground mt-1">
                   {{ stat.description }}
                 </p>

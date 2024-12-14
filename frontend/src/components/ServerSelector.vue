@@ -79,11 +79,10 @@ const fetchServers = async () => {
 
   try {
     const response = await fetch(config.getServersUrl);
-    if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+    if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
 
     servers.value = await response.json();
 
-    // Se actualiza la selección de servidores en función de si es una búsqueda nueva o una redirección
     if (servers.value.length > 0 && !search.filters.selectedServers.length) {
       if (props.initialValues?.selectedServers?.length) {
         search.updateServerSelection(props.initialValues.selectedServers);
@@ -93,10 +92,13 @@ const fetchServers = async () => {
     }
   } catch (err) {
     console.error("Error fetching servers:", err);
-    error.value =
-      err.name === "TypeError"
-        ? "No se puede conectar al servidor. Verifique que el servidor esté en ejecución."
-        : "Error al cargar los servidores";
+    const isConnectionError = err instanceof TypeError || !err.response;
+    error.value = {
+      name: isConnectionError ? "ConnectionError" : "UnexpectedError",
+      message: isConnectionError
+        ? "No se puede conectar al servidor. Verifique su conexión a internet y que el servidor esté en ejecución."
+        : "Ha ocurrido un error inesperado al cargar los servidores.",
+    };
   } finally {
     loading.value = false;
   }
@@ -150,8 +152,8 @@ onMounted(fetchServers);
 
         <!-- Error State -->
         <div v-else-if="error" class="px-2 py-1.5">
-          <p class="text-sm text-destructive text-center whitespace-normal">
-            {{ error }}
+          <p class="text-sm text-destructive text-center text-balance">
+            {{ error.message }}
           </p>
         </div>
 

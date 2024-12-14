@@ -5,17 +5,15 @@ const config = useConfigStore();
 
 export const useHomeStore = defineStore("home", {
   state: () => ({
-    activeDevices: 0,
-    recentMessages: 0,
+    activeDevices: null,
+    recentMessages: null,
     weeklyStats: null,
     loading: false,
-    error: null,
   }),
 
   actions: {
     async fetchAllStats() {
       this.loading = true;
-      this.error = null;
 
       try {
         // Obtener todos los servidores
@@ -52,7 +50,6 @@ export const useHomeStore = defineStore("home", {
         this.weeklyStats = weeklyStatsData;
       } catch (err) {
         console.error("Error fetching home stats:", err);
-        this.error = "Error al cargar las estadísticas";
       } finally {
         this.loading = false;
       }
