@@ -2,6 +2,7 @@
 // Layout components
 import DateRangeSelector from "./DateRangeSelector.vue";
 import ServerSelector from "./ServerSelector.vue";
+import AutoRefreshControl from "./AutoRefreshControl.vue";
 
 // UI components
 import { Button } from "@/components/ui/button";
@@ -192,6 +193,7 @@ defineExpose({ searchMessages, searchMessagesOnly });
 
       <!-- Action Buttons -->
       <div class="flex items-end gap-4">
+        <AutoRefreshControl @refresh="searchMessages" />
         <Button type="button" variant="secondary" @click="clearFilters">
           Limpiar Filtros
         </Button>
