@@ -13,8 +13,6 @@ import {
 } from "../components/ui/card";
 
 // Store and utilities
-import { useDevicesStore } from "../stores/devices";
-import { useMessagesStore } from "../stores/messages";
 import { useHomeStore } from "../stores/home";
 import { computed, onMounted } from "vue";
 import { Activity, Search, BarChart3, Cpu } from "lucide-vue-next";
@@ -30,19 +28,26 @@ onMounted(async () => {
 const STATS_CONFIG = [
   {
     label: "Dispositivos Activos",
-    value: (data) => data?.activeDevices,
+    value: (data) => {
+      if (data?.errors?.activeDevices?.name === "NotFoundError") return 0;
+      return data?.activeDevices;
+    },
     icon: Cpu,
     description: "Sensores que han enviado datos en la última hora",
   },
   {
     label: "Mensajes Recibidos",
-    value: (data) => data?.recentMessages,
+    value: (data) => {
+      if (data?.errors?.recentMessages?.name === "NotFoundError") return 0;
+      return data?.recentMessages;
+    },
     icon: BarChart3,
     description: "Mensajes recibidos en las últimas 24 horas",
   },
   {
     label: "Cobertura Semanal",
     value: (data) => {
+      if (data?.errors?.weeklyStats?.name === "NotFoundError") return "0%";
       if (!data?.weeklyStats?.totalDevices || !data?.weeklyStats?.totalItems)
         return undefined;
       return `${(

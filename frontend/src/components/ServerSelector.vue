@@ -92,12 +92,12 @@ const fetchServers = async () => {
     }
   } catch (err) {
     console.error("Error fetching servers:", err);
-    const isConnectionError = err instanceof TypeError || !err.response;
     error.value = {
-      name: isConnectionError ? "ConnectionError" : "UnexpectedError",
-      message: isConnectionError
-        ? "No se puede conectar al servidor. Verifique su conexión a internet y que el servidor esté en ejecución."
-        : "Ha ocurrido un error inesperado al cargar los servidores.",
+      name: err instanceof TypeError ? "ConnectionError" : "Error",
+      message:
+        err instanceof TypeError
+          ? "No se puede conectar al servidor. Verifique su conexión a internet y que el servidor esté en ejecución."
+          : "Ha ocurrido un error inesperado al cargar los servidores.",
     };
   } finally {
     loading.value = false;
