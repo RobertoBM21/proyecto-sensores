@@ -2,13 +2,13 @@ const Joi = require("joi");
 
 // Rangos de fecha válidos
 const validDateRanges = [
-  "today",
-  "yesterday",
   "last_5_minutes",
   "last_15_minutes",
   "last_30_minutes",
   "last_hour",
   "last_24_hours",
+  "today",
+  "yesterday",
   "last_week",
   "last_month",
   "last_year",

@@ -7,14 +7,6 @@ function getDateRange(range) {
     end = now;
 
   switch (range) {
-    case "today":
-      start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-      break;
-    case "yesterday":
-      start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-      end = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      break;
     case "last_5_minutes":
       start = new Date(now.getTime() - 5 * 60 * 1000);
       break;
@@ -29,6 +21,14 @@ function getDateRange(range) {
       break;
     case "last_24_hours":
       start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      break;
+    case "today":
+      start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      break;
+    case "yesterday":
+      start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      end = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       break;
     case "last_week":
       start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);

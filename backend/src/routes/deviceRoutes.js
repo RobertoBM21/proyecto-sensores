@@ -88,7 +88,7 @@ router.post("/", deviceController.createDevice);
  *         name: dateRange
  *         schema:
  *           type: string
- *           enum: [today, yesterday, last_5_minutes, last_15_minutes, last_30_minutes, last_hour, last_24_hours, last_week, last_month, last_year]
+ *           enum: [last_5_minutes, last_15_minutes, last_30_minutes, last_hour, last_24_hours, today, yesterday, last_week, last_month, last_year]
  *         description: Rango de fecha predefinido (requerido si no se usa startDate/endDate)
  *       - in: query
  *         name: page
