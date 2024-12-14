@@ -14,10 +14,13 @@ export const useDevicesStore = defineStore("devices", {
     filters: { ...DEFAULT_FILTERS },
     results: [],
     metadata: null,
+    error: null,
   }),
 
   getters: {
     hasResults: (state) => state.results.length > 0 && state.metadata !== null,
+    hasError: (state) => state.error !== null,
+    errorType: (state) => state.error?.name || null,
     currentPage: (state) => state.metadata?.page || 1,
     totalPages: (state) => state.metadata?.totalPages || 0,
   },
@@ -51,6 +54,13 @@ export const useDevicesStore = defineStore("devices", {
       };
     },
 
+    updateError(error) {
+      this.error = {
+        name: error.name || "Error",
+        message: error.message,
+      };
+    },
+
     resetPage() {
       this.filters.page = DEFAULT_FILTERS.page;
     },
@@ -63,6 +73,10 @@ export const useDevicesStore = defineStore("devices", {
     clearResults() {
       this.results = [];
       this.metadata = null;
+    },
+
+    clearError() {
+      this.error = null;
     },
   },
 });

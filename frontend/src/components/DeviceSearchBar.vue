@@ -37,11 +37,28 @@ const fetchData = async (params = {}) => {
   });
 
   const response = await fetch(url);
-  if (!response.ok) throw new Error("Network response was not ok");
-  return await response.json();
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = {
+      name:
+        response.status === 404
+          ? "NotFoundError"
+          : response.status === 400
+          ? "BadRequestError"
+          : "Error",
+      message: data.error,
+    };
+    throw error;
+  }
+
+  return data;
 };
 
 const searchDevices = async () => {
+  // Resetear errores previos
+  search.clearError();
+
   try {
     const baseParams = buildParams();
     const searchData = await fetchData({
@@ -53,6 +70,7 @@ const searchDevices = async () => {
     search.updateSearchResults(searchData);
   } catch (error) {
     console.error("Error fetching devices:", error);
+    search.updateError(error);
     search.clearResults();
   }
 };
@@ -71,6 +89,8 @@ const clearFilters = () => {
 
   // Reset store
   search.resetFilters();
+  search.clearResults();
+  search.clearError();
 };
 
 defineExpose({ searchDevices });

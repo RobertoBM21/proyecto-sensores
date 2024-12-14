@@ -57,13 +57,27 @@ const fetchData = async (endpoint, params = {}) => {
   });
 
   const response = await fetch(url);
-  if (!response.ok) throw new Error("Network response was not ok");
-  return await response.json();
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = {
+      name:
+        response.status === 404
+          ? "NotFoundError"
+          : response.status === 400
+          ? "BadRequestError"
+          : "Error",
+      message: data.error,
+    };
+    throw error;
+  }
+
+  return data;
 };
 
-// Búsqueda de mensajes y estadísticas
 const searchMessages = async () => {
-  // Resetear la pagina y flag de redirrecion
+  // Resetear los valores de store
+  search.clearError();
   search.resetPage();
   search.resetRedirectState();
   // Actualizar filtros del formulario
@@ -91,12 +105,16 @@ const searchMessages = async () => {
     search.updateStats(statsData);
   } catch (error) {
     console.error("Error fetching data:", error);
+    search.updateError(error);
     search.clearResults();
   }
 };
 
 // Búsqueda de mensajes únicamente
 const searchMessagesOnly = async () => {
+  // Resetear los valores de store
+  search.clearError();
+
   try {
     const baseParams = buildParams();
     const searchData = await fetchData("search", {
@@ -108,6 +126,7 @@ const searchMessagesOnly = async () => {
     search.updateSearchResults(searchData);
   } catch (error) {
     console.error("Error fetching messages:", error);
+    search.updateError(error);
     search.clearResults();
   }
 };
@@ -124,6 +143,8 @@ const clearFilters = () => {
 
   // Reset store
   search.resetFilters();
+  search.clearResults();
+  search.clearError();
 };
 
 defineExpose({ searchMessages, searchMessagesOnly });

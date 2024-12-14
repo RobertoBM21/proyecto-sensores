@@ -143,7 +143,34 @@ const navigateToMessages = (device) => {
 
 <template>
   <section class="space-y-6">
-    <template v-if="store.hasResults">
+    <template v-if="store.hasError">
+      <!-- Error Message -->
+      <div class="text-balance text-center text-muted-foreground py-8">
+        <template v-if="store.errorType === 'BadRequestError'">
+          <h3 class="text-xl font-semibold mb-2">Parámetros Inválidos</h3>
+          <p>
+            Los parámetros de búsqueda proporcionados no son válidos. Por favor,
+            verifica los datos ingresados e inténtalo nuevamente.
+          </p>
+        </template>
+        <template v-else-if="store.errorType === 'NotFoundError'">
+          <h3 class="text-xl font-semibold mb-2">Sin Resultados</h3>
+          <p>
+            No se encontraron dispositivos que coincidan con los criterios de
+            búsqueda especificados.
+          </p>
+        </template>
+        <template v-else>
+          <h3 class="text-xl font-semibold mb-2">Error Inesperado</h3>
+          <p>
+            Ha ocurrido un error inesperado. Por favor, inténtalo nuevamente más
+            tarde.
+          </p>
+        </template>
+      </div>
+    </template>
+
+    <template v-else-if="store.hasResults">
       <!-- Stats Cards -->
       <section class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card

@@ -18,11 +18,14 @@ export const useMessagesStore = defineStore("messages", {
     stats: [],
     results: [],
     metadata: null,
+    error: null,
   }),
 
   getters: {
     hasStats: (state) => state.stats.length > 0,
     hasResults: (state) => state.results.length > 0 && state.metadata !== null,
+    hasError: (state) => state.error !== null,
+    errorType: (state) => state.error?.name || null,
     currentPage: (state) => state.metadata?.page || 1,
     totalPages: (state) => state.metadata?.totalPages || 0,
   },
@@ -64,6 +67,13 @@ export const useMessagesStore = defineStore("messages", {
       };
     },
 
+    updateError(error) {
+      this.error = {
+        name: error.name || "Error",
+        message: error.message,
+      };
+    },
+
     resetPage() {
       this.filters.page = DEFAULT_FILTERS.page;
     },
@@ -87,6 +97,10 @@ export const useMessagesStore = defineStore("messages", {
       this.results = [];
       this.metadata = null;
       this.clearStats();
+    },
+
+    clearError() {
+      this.error = null;
     },
   },
 });
