@@ -75,13 +75,13 @@ export const useHomeStore = defineStore("home", {
         this.weeklyStats = weeklyStats;
       } catch (err) {
         console.error("Error fetching home stats:", err);
-        // Error de conexión (TypeError) u otros errores inesperados
+        // Error de conexión u otros errores inesperados
         const error = {
           name: err instanceof TypeError ? "ConnectionError" : "Error",
           message:
             err instanceof TypeError
               ? "No se puede conectar al servidor. Verifique su conexión a internet y que el servidor esté en ejecución."
-              : "Error inesperado al cargar los datos",
+              : "Ha ocurrido un error inesperado al cargar los servidores.",
         };
         this.errors.activeDevices = error;
         this.errors.recentMessages = error;

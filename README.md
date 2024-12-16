@@ -1,8 +1,8 @@
 # Sistema de Monitoreo de Sensores
 
-Este proyecto es una aplicación para gestionar los mensajes enviados por dispositivos IoT a través del protocolo MQTT. La aplicación recoge, estructura, almacena y muestra los servidores, dispositivos y mensajes. El backend está desarrollado utilizando **Node.js** con **Express** y **MySQL**. El frontend está desarrollado en **Vue.js**. Además, cuenta con documentación de API utilizando **Swagger**.
+Este proyecto es una aplicación para gestionar los mensajes enviados por dispositivos IoT a través del protocolo MQTT. La aplicación recoge, estructura, almacena y muestra los servidores, dispositivos y mensajes. El backend está desarrollado utilizando **Node.js** con **Express** y **MySQL**. El frontend está desarrollado en **Vue.js** con **Vite** y **TailwindCSS**. Además, cuenta con documentación de API utilizando **Swagger**.
 
-Incluye scripts en Python para la gestión de conexiones MQTT y una interfaz web para monitorizar el estado de las conexiones.
+Incluye scripts en Python para la gestión y monitorización de las conexiones MQTT.
 
 ## Tabla de Contenidos
 
@@ -26,7 +26,7 @@ El proyecto está organizado de la siguiente manera:
 
 ```
 proyecto-sensores/
-├── backend/               # Servidor Node.js/Express
+├── backend/               ## Servidor Node.js/Express
 │   ├── src/
 │   │   ├── config/        # Configuración de la base de datos
 │   │   ├── controllers/   # Controladores de la API
@@ -36,12 +36,17 @@ proyecto-sensores/
 │   │   ├── routes/        # Rutas de la API
 │   │   ├── services/      # Servicios de negocio
 │   │   └── utils/         # Utilidades
-├── frontend/              # Aplicación Vue.js
-│   ├── public/
+├── frontend/              ## Aplicación Vue.js
+│   ├── public/           # Archivos estáticos públicos (favicon)
 │   └── src/
-│       ├── assets/
-│       └── components/
-├── script/                 # Scripts Python MQTT
+│       ├── assets/       # Recursos estáticos (imágenes, iconos, fuentes)
+│       ├── components/   # Componentes Vue reutilizables
+│       │   └── ui/       # Componentes shadcn-vue reutilizables
+│       ├── lib/          # Utilidades y funciones auxiliares
+│       ├── router/       # Configuración de rutas de Vue Router
+│       ├── stores/       # Gestión de estado con Pinia
+│       └── views/        # Componentes de página/vista completa
+├── script/                 ## Scripts Python MQTT
 │   ├── mqtt_client.py      # Cliente MQTT individual
 │   ├── mqtt_manager.py     # Gestor de clientes MQTT
 │   └── logs/               # Carpeta para logs de MQTT
@@ -100,29 +105,29 @@ LOGS_DIR=tu_carpeta_para_almacenar_logs
 
 ```bash
 cd backend
-npm install
+npm/pnpm/yarn install
 ```
 
 Principales dependencias:
 
-- express: ^4.21.1
-- mysql2: ^3.11.3
-- sequelize: ^6.37.4
-- swagger-jsdoc: ^6.2.8
-- swagger-ui-express: ^5.0.1
+- Express v5 (API RESTFUL)
+- Sequelize (ORM)
+- Joi (Validación)
+- Swagger (Documentación API)
 
 **Frontend**
 
 ```bash
 cd frontend
-npm install
+npm/pnpm/yarn install
 ```
 
 Principales dependencias:
 
-- vue: ^3.2.13
-- bootstrap: ^5.1.3
-- bootstrap-icons: ^1.11.3
+- Vue v3
+- Pinia (Manejo del estado)
+- TailwindCSS (Estilos)
+- Vite (Herramienta de construcción)
 
 **Script MQTT**
 
@@ -149,26 +154,42 @@ Para desarrollo con recarga automática:
 
 ```bash
 cd backend
-npm run dev
+node --run dev
 ```
 
 Para producción:
 
 ```bash
 cd backend
-npm start
+node --run start
 ```
 
-El servidor se ejecutará en `http://localhost:3000` por defecto
+El servidor se ejecutará en `http://localhost:3000` por defecto.
 
 ### Frontend
 
+Para desarrollo con recarga automática:
+
 ```bash
 cd frontend
-npm run dev
+node --run dev
 ```
 
-La aplicación estará disponible en `http://localhost:5173` por defecto
+La aplicación estará disponible en `http://localhost:5173` por defecto.
+
+Para producción podemos construir la aplicación o previsualizarla localmente:
+
+```bash
+cd frontend
+node --run build # Genera archivos estáticos en /dist
+```
+
+```bash
+cd frontend
+node --run preview
+```
+
+Servidor local para archivos build en `http://localhost:4173` por defecto.
 
 ### Clientes MQTT
 
@@ -223,11 +244,11 @@ El proyecto utiliza un sistema de gestión de clientes MQTT que consiste en:
 ## Documentación API
 
 La documentación Swagger de la API está disponible en:
-`http://localhost:3000/api-docs`
+`API_URL/api-docs`
 
 ## Contacto
 
 Si tienes preguntas o necesitas más información, puedes contactarme a través de:
 
-- **Correo electrónico**: roberto.burruezom@um.es
+- **Correo electrónico**: roberto.burruezom@gmail.com
 - **Github**: [RobertoBM21](https://github.com/RobertoBM21)
