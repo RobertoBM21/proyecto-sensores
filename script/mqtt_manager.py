@@ -347,10 +347,22 @@ class MQTTManager:
         servers = self.get_servers()
         server_map = {str(server['id']): server for server in servers}
         
+        # Definir anchos de columnas
+        col_widths = {
+            'id': 5,
+            'name': 20,
+            'status': 10,
+            'pid': 10,
+            'log': 30
+        }
+        
+        # Calcular ancho total (suma de anchos + 3 por cada separador)
+        total_width = sum(col_widths.values()) + (len(col_widths) - 1) * 3
+        
         print("\nEstado de los clientes MQTT:")
-        print("-" * 90) 
-        print(f"{'ID':^5} | {'Nombre':^20} | {'Estado':^10} | {'PID':^10} | {'Log':^30}")
-        print("-" * 90)
+        print("-" * total_width)
+        print(f"{'ID':^{col_widths['id']}} | {'Nombre':^{col_widths['name']}} | {'Estado':^{col_widths['status']}} | {'PID':^{col_widths['pid']}} | {'Log':^{col_widths['log']}}")
+        print("-" * total_width)
         
         # Mostrar servidores activos
         for server_id, pid in self.processes.items():
@@ -363,15 +375,15 @@ class MQTTManager:
             log_file = self._get_latest_log(server_id)
             log_name = os.path.basename(log_file) if log_file else '-'
             
-            print(f"{server_id:^5} | {server['name'][:20]:^20} | {status:^10} | {pid:^10} | {log_name[:30]:^30}")
+            print(f"{server_id:^{col_widths['id']}} | {server['name'][:col_widths['name']]:^{col_widths['name']}} | {status:^{col_widths['status']}} | {pid:^{col_widths['pid']}} | {log_name[:col_widths['log']]:^{col_widths['log']}}")
         
         # Mostrar servidores sin proceso
         for server in servers:
             server_id = str(server['id'])
             if server_id not in self.processes:
                 status = "Pausado" if server_id in self.paused_servers else "Detenido"
-                print(f"{server_id:^5} | {server['name'][:20]:^20} | {status:^10} | {'-':^10} | {'-':^30}")
-        print("-" * 90)
+                print(f"{server_id:^{col_widths['id']}} | {server['name'][:col_widths['name']]:^{col_widths['name']}} | {status:^{col_widths['status']}} | {'-':^{col_widths['pid']}} | {'-':^{col_widths['log']}}")
+        print("-" * total_width)
 
 def main():
     """Función principal del gestor"""
