@@ -209,6 +209,7 @@ const formatFieldValue = (field, value) => {
                         'line-clamp-1': !expandedContents.has(result.id),
                         'whitespace-normal': expandedContents.has(result.id),
                         'whitespace-nowrap': !expandedContents.has(result.id),
+                        'break-all': field.key === 'content',
                       },
                     ]"
                   >
