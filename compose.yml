@@ -1,0 +1,53 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "4173:4173"
+    depends_on:
+      - backend
+    env_file:
+      - .env.docker
+
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DOCKER_ENV=true
+    env_file:
+      - .env.docker
+
+  mqtt-manager:
+    build: ./script
+    depends_on:
+      - backend
+    volumes:
+      - mqtt-logs:/app/logs
+    environment:
+      - DOCKER_ENV=true
+    env_file:
+      - .env.docker
+
+  db:
+    image: mysql:8.0
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-u", "root", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  mysql-data:
+  mqtt-logs:

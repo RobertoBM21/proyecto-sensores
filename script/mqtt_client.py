@@ -17,8 +17,9 @@ from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 
 # Carga las variables de entorno
-load_dotenv()
-
+if os.environ.get('DOCKER_ENV', None) is None:
+    load_dotenv()
+    
 # Variables de entorno y valores por defecto
 ENV_VARS = {
     'API_URL': 'http://localhost:3000',

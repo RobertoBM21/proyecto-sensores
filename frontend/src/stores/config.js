@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 
 export const useConfigStore = defineStore("config", {
   state: () => ({
-    apiBaseUrl: "http://localhost:3000",
+    apiBaseUrl: import.meta.env.VITE_API_URL || "http://localhost:3000",
     repoBaseUrl: "https://gitlab.odins.es/roberto.burruezom/proyecto-sensores",
   }),
   getters: {

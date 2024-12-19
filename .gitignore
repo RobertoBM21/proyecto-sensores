@@ -43,8 +43,7 @@ out-tsc/
 
 # dotenv environment variables file
 .env
-.env.test
-.env.production
+.env.*
 
 # MAC OS
 .DS_Store

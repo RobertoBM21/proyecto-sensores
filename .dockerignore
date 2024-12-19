@@ -1,0 +1,18 @@
+# Control de versiones y docs
+.git
+.gitignore
+README.md
+
+# Build y dependencias
+**/node_modules
+**/dist
+__pycache__
+
+# IDE y configuración
+.vscode
+.idea
+
+# Logs y tests
+logs
+*.log
+.coverage

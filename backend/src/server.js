@@ -1,4 +1,4 @@
-process.loadEnvFile("../.env"); //! Cargamos las variables de entorno (prioridad absoluta)
+if (!process.env.DOCKER_ENV) process.loadEnvFile("../.env"); // Cargar variables de entorno desde el archivo .env si no estamos en un contenedor Docker
 
 const app = require("./app.js");
 const { sequelize } = require("./models");

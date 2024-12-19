@@ -13,8 +13,10 @@ import psutil
 import requests
 from dotenv import load_dotenv
 
-# Carga las variables de entorno
-load_dotenv()
+# Carga las variables de entorno, si no estamos en Docker cargamos desde .env
+if os.environ.get('DOCKER_ENV', None) is None:
+    load_dotenv()
+
 
 # Variables de entorno y valores por defecto
 ENV_VARS = {
