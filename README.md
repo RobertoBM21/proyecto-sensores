@@ -133,18 +133,16 @@ Principales dependencias:
 
 ```bash
 cd script
-pip install <dependencia>
+pip install -r requirements.txt
 ```
 
-Requisitos Python:
+Principales dependencias:
 
-- paho-mqtt: **2.1.0**
-- requests
-- python-dotenv
-- psutil
-- cryptography
-
-Debes instalar todas las dependencias.
+- paho-mqtt: **2.1.0** (Conexión MQTT)
+- requests (Manejo HTTP)
+- python-dotenv (Variables de entorno)
+- psutil (Manejo de procesos)
+- cryptography (Encriptación)
 
 ## Ejecución del Proyecto
 
@@ -177,19 +175,15 @@ node --run dev
 
 La aplicación estará disponible en `http://localhost:5173` por defecto.
 
-Para producción podemos construir la aplicación o previsualizarla localmente:
+Para producción hay que construir la aplicación, si quieres previsualizarlo localmente emplea el comando `preview`:
 
 ```bash
 cd frontend
 node --run build # Genera archivos estáticos en /dist
+node --run preview # Ejecuta un servidor locar para previsualizar producción
 ```
 
-```bash
-cd frontend
-node --run preview
-```
-
-Servidor local para archivos build en `http://localhost:4173` por defecto.
+Si usas preview, el servidor local estará disponible en `http://localhost:4173` por defecto.
 
 ### Clientes MQTT
 

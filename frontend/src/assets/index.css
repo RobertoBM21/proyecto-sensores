@@ -95,7 +95,7 @@
     @apply bg-background text-foreground;
   }
 
-  /* Estilos para el ícono del reloj en Inputs type="time" */
+  /* Estilos para el ícono del reloj en Input type="time" */
   input[type="time"] {
     @apply pr-[0.75rem] pl-3 relative;
   }

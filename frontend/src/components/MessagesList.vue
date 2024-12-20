@@ -1,8 +1,7 @@
 <script setup>
-// UI components
+// Componentes UI
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
 import {
   Pagination,
   PaginationEllipsis,
@@ -23,14 +22,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-// Icons
+// Iconos
 import { ChevronDown, Cpu, Mails, BookOpen } from "lucide-vue-next";
 
-// Store & Utilities
+// Utilidades y Store
 import { useMessagesStore } from "../stores/messages";
 import { ref, computed } from "vue";
 
-// Types & Constants
+// Configuración de la tabla
 const TableFieldConfig = {
   ID: {
     key: "id",
@@ -62,6 +61,7 @@ const TableFieldConfig = {
   },
 };
 
+// Configuración de estadísticas
 const STATS_CONFIG = [
   {
     key: "totalDevices",
@@ -83,15 +83,15 @@ const STATS_CONFIG = [
   },
 ];
 
-// Component setup
+// Configuración del componente
 const emit = defineEmits(["pageChange"]);
 const store = useMessagesStore();
 
-// Component state
+// Estado del componente
 const expandedContents = ref(new Set());
 const isDialogOpen = ref(false);
 
-// Computed properties
+// Propiedades computadas
 const tableFields = computed(() => Object.values(TableFieldConfig));
 
 const statsData = computed(() => {
@@ -104,7 +104,7 @@ const statsData = computed(() => {
   }));
 });
 
-// Methods
+// Manejadores de eventos
 const toggleContent = (id) => {
   expandedContents.value.has(id)
     ? expandedContents.value.delete(id)
@@ -116,6 +116,7 @@ const handlePageChange = (page) => {
   emit("pageChange");
 };
 
+// Utilidades de formato
 const formatFieldValue = (field, value) => {
   if (!value) return "N/A";
   return field.formatter ? field.formatter(value) : value;
@@ -125,7 +126,7 @@ const formatFieldValue = (field, value) => {
 <template>
   <section class="space-y-6">
     <template v-if="store.hasError">
-      <!-- Error Message -->
+      <!-- Mensaje de Error -->
       <div class="text-balance text-center text-muted-foreground py-8">
         <template v-if="store.errorType === 'BadRequestError'">
           <h3 class="text-xl font-semibold mb-2">Parámetros Inválidos</h3>
@@ -152,7 +153,7 @@ const formatFieldValue = (field, value) => {
     </template>
 
     <template v-else-if="store.hasResults">
-      <!-- Stats Cards -->
+      <!-- Tarjetas de Estadísticas -->
       <section class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card
           v-for="stat in statsData"
@@ -174,7 +175,7 @@ const formatFieldValue = (field, value) => {
         </Card>
       </section>
 
-      <!-- Results Table -->
+      <!-- Tabla de Resultados -->
       <section>
         <Table>
           <TableHeader>
@@ -232,7 +233,7 @@ const formatFieldValue = (field, value) => {
         </Table>
       </section>
 
-      <!-- Pagination -->
+      <!-- Paginación -->
       <nav class="mt-8 pb-8">
         <Pagination
           v-model:page="store.filters.page"
@@ -280,6 +281,7 @@ const formatFieldValue = (field, value) => {
     </template>
   </section>
 
+  <!-- Diálogo de Selección de Página -->
   <PageSelectDialog
     v-model:is-open="isDialogOpen"
     :current-page="store.filters.page"

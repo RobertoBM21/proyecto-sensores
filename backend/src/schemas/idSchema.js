@@ -14,7 +14,7 @@ function validateId(id) {
   if (error) {
     throw new BadRequestError(`ID inválido: ${error.details[0].message}`);
   }
-  return value; // ID validado
+  return value;
 }
 
 module.exports = { validateId };

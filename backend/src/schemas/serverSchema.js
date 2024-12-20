@@ -2,9 +2,11 @@ const Joi = require("joi");
 const { BadRequestError } = require("../utils/errors.js");
 const { validateId } = require("./idSchema.js");
 
+// Expresión regular para validar el formato de la URL y el puerto
 const pattern =
   /^[a-zA-Z0-9.-]+:(6553[0-5]|655[0-2]\d|65[0-4]\d{2}|6[0-4]\d{3}|[1-5]\d{0,4})$/;
 
+// Esquema para servidor
 const serverSchema = Joi.object({
   name: Joi.string().required().messages({
     "string.empty": 'El campo "name" no puede estar vacío.',
@@ -40,7 +42,7 @@ function validateServer(data) {
   if (error) {
     throw new BadRequestError(error.details[0].message);
   }
-  return value; // Datos validados
+  return value;
 }
 
 //* Función para validar solo el ID del servidor

@@ -1,6 +1,7 @@
 const { BadRequestError } = require("./errors.js");
 const { Op } = require("sequelize");
 
+//* Obtiene el rango de fechas a partir de un rango de fechas predefinido
 function getDateRange(range) {
   const now = new Date();
   let start,
@@ -46,6 +47,7 @@ function getDateRange(range) {
   return { start, end };
 }
 
+//* Construye la cláusula WHERE base para las consultas de la base de datos
 function buildBaseWhere(params, dateField = "timestamp") {
   const { serial, apikey, serverIds, startDate, endDate, dateRange } = params;
   const baseWhere = {};

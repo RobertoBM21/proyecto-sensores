@@ -6,6 +6,7 @@ const {
   createOptionalDateValidation,
 } = require("./dateSchema");
 
+// Esquema para mensaje
 const messageSchema = Joi.object({
   serial: Joi.string().required().messages({
     "string.empty": 'El campo "serial" no puede estar vacío.',
@@ -26,6 +27,7 @@ const messageSchema = Joi.object({
   }),
 });
 
+// Esquema base para búsqueda de mensajes
 const baseSearchSchema = Joi.object({
   serial: Joi.string(),
   apikey: Joi.string(),
@@ -64,7 +66,7 @@ function validateMessage(data) {
   if (error) {
     throw new BadRequestError(error.details[0].message);
   }
-  return value; // Datos validados
+  return value;
 }
 
 //* Función para validar solo el ID del mensaje
@@ -78,7 +80,7 @@ function validateSearchParams(data) {
   if (error) {
     throw new BadRequestError(error.details[0].message);
   }
-  return value; // Datos validados
+  return value;
 }
 
 function validateStatsParams(data) {
@@ -86,7 +88,7 @@ function validateStatsParams(data) {
   if (error) {
     throw new BadRequestError(error.details[0].message);
   }
-  return value; // Datos validados
+  return value;
 }
 
 module.exports = {

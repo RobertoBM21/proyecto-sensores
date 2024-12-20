@@ -1,25 +1,25 @@
 <script setup>
-// Layout components
+// Componentes Vue
 import DateRangeSelector from "./DateRangeSelector.vue";
 import ServerSelector from "./ServerSelector.vue";
 import AutoRefreshControl from "./AutoRefreshControl.vue";
 
-// UI components
+// Componentes UI
 import { Button } from "@/components/ui/button";
 
-// Store
+// Stores
 import { useConfigStore } from "../stores/config";
 import { useDevicesStore } from "../stores/devices";
 
-// Utilities
+// Utilidades y Referencias
 import { ref } from "vue";
 
-// Store initialization
+// Estado y Referencias
 const config = useConfigStore();
 const search = useDevicesStore();
 const dateRangeSelectorRef = ref(null);
 
-// Methods
+// Utilidades de búsqueda
 const buildParams = () => {
   return {
     ...(search.filters.selectedServers.length > 0 && {
@@ -56,6 +56,7 @@ const fetchData = async (params = {}) => {
   return data;
 };
 
+// Manejadores de búsqueda
 const searchDevices = async () => {
   // Resetear errores previos
   search.clearError();
@@ -76,41 +77,42 @@ const searchDevices = async () => {
   }
 };
 
-// Resetea la página y vuelve a buscar (utilizado por el botón de búsqueda)
 const searchDevicesWithReset = async () => {
   search.resetPage();
   await searchDevices();
 };
 
+// Utilidades de formulario
 const clearFilters = () => {
-  // Reset child components
+  // Reset componentes hijo
   if (dateRangeSelectorRef.value) {
     dateRangeSelectorRef.value.clearAll();
   }
 
-  // Reset store
+  // Reset valores de búsqueda
   search.resetFilters();
   search.clearResults();
   search.clearError();
 };
 
+// Exposición de métodos
 defineExpose({ searchDevices });
 </script>
 
 <template>
   <form @submit.prevent="searchDevicesWithReset">
     <div class="grid grid-cols-1 md:grid-cols-[0.5fr,1fr,auto] gap-4 items-end">
-      <!-- Date Range Selector -->
+      <!-- Selector de Rango de Fechas -->
       <fieldset>
         <DateRangeSelector ref="dateRangeSelectorRef" storeName="devices" />
       </fieldset>
 
-      <!-- Server Selector -->
+      <!-- Selector de Servidor -->
       <fieldset>
         <ServerSelector storeName="devices" />
       </fieldset>
 
-      <!-- Action Buttons -->
+      <!-- Botones de Acción -->
       <div class="flex items-end justify-end gap-4 md:ml-auto">
         <AutoRefreshControl @refresh="searchDevices" />
         <Button type="button" variant="secondary" @click="clearFilters">

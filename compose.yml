@@ -22,6 +22,8 @@ services:
 
   mqtt-manager:
     build: ./script
+    stdin_open: true
+    tty: true
     depends_on:
       - backend
     volumes:

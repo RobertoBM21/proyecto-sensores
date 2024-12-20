@@ -1,22 +1,22 @@
 <script setup>
-// Layout components
+// Componentes Vue
 import DateRangeSelector from "./DateRangeSelector.vue";
 import ServerSelector from "./ServerSelector.vue";
 import AutoRefreshControl from "./AutoRefreshControl.vue";
 
-// UI components
+// Componentes UI
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-// Store
+// Stores
 import { useConfigStore } from "../stores/config";
 import { useMessagesStore } from "../stores/messages";
 
-// Utilities
+// Utilidades y Hooks
 import { ref } from "vue";
 
-// Prop para inicializar el formulario con valores iniciales
+// Props y Referencias
 const props = defineProps({
   initialValues: {
     type: Object,
@@ -24,16 +24,14 @@ const props = defineProps({
   },
 });
 
-// Store initialization
+// Estado y Referencias
 const config = useConfigStore();
 const search = useMessagesStore();
 const dateRangeSelectorRef = ref(null);
-
-// Form state
 const serial = ref(props.initialValues.serial || "");
 const apikey = ref("");
 
-// Methods
+// Utilidades de búsqueda
 const buildParams = () => {
   return {
     ...(search.filters.serial && { serial: search.filters.serial }),
@@ -76,6 +74,7 @@ const fetchData = async (endpoint, params = {}) => {
   return data;
 };
 
+// Manejadores de búsqueda
 const searchMessages = async () => {
   // Resetear los valores de store
   search.clearError();
@@ -132,22 +131,24 @@ const searchMessagesOnly = async () => {
   }
 };
 
+// Utilidades de formulario
 const clearFilters = () => {
-  // Reset local state
+  // Reset valores de formulario
   serial.value = "";
   apikey.value = "";
 
-  // Reset child components
+  // Reset valor de selector de fechas
   if (dateRangeSelectorRef.value) {
     dateRangeSelectorRef.value.clearAll();
   }
 
-  // Reset store
+  // Reset valores de store
   search.resetFilters();
   search.clearResults();
   search.clearError();
 };
 
+// Exposición de métodos
 defineExpose({ searchMessages, searchMessagesOnly });
 </script>
 
@@ -156,7 +157,7 @@ defineExpose({ searchMessages, searchMessagesOnly });
     <div
       class="grid grid-cols-1 md:grid-cols-[2fr,1.5fr,2fr,auto,auto,auto] gap-4 items-end"
     >
-      <!-- Serial Input -->
+      <!-- Entrada de Número de Serie -->
       <fieldset class="space-y-2">
         <Label for="serial">Número de serie</Label>
         <Input
@@ -167,7 +168,7 @@ defineExpose({ searchMessages, searchMessagesOnly });
         />
       </fieldset>
 
-      <!-- API Key Input -->
+      <!-- Entrada de API Key -->
       <fieldset class="space-y-2">
         <Label for="apikey">API Key</Label>
         <Input
@@ -178,7 +179,7 @@ defineExpose({ searchMessages, searchMessagesOnly });
         />
       </fieldset>
 
-      <!-- Date Range Selector -->
+      <!-- Selector de Rango de Fechas -->
       <fieldset>
         <DateRangeSelector
           ref="dateRangeSelectorRef"
@@ -186,12 +187,12 @@ defineExpose({ searchMessages, searchMessagesOnly });
         />
       </fieldset>
 
-      <!-- Server Selector -->
+      <!-- Selector de Servidor -->
       <fieldset class="flex items-end">
         <ServerSelector :initial-values="initialValues" />
       </fieldset>
 
-      <!-- Action Buttons -->
+      <!-- Botones de Acción -->
       <div class="flex items-end gap-4">
         <AutoRefreshControl @refresh="searchMessages" />
         <Button type="button" variant="secondary" @click="clearFilters">

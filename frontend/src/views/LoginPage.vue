@@ -1,9 +1,9 @@
 <script setup>
-// Layout components
+// Componentes Vue
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 
-// UI components
+// Componentes UI
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
@@ -15,26 +15,27 @@ import {
   CardTitle,
 } from "../components/ui/card";
 
-// Utilities
+// Utilidades y Hooks
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useColorMode } from "@vueuse/core";
 
-// Icons
+// Recursos e iconos
 import githubDark from "@/assets/icons/github-dark.svg";
 import githubLight from "@/assets/icons/github-light.svg";
 
-// Estado del formulario
+// Estado y referencias
 const username = ref("");
 const password = ref("");
 const router = useRouter();
 const mode = useColorMode();
 
+// Computación de recursos
 const githubIcon = computed(() =>
   mode.value === "light" ? githubLight : githubDark
 );
 
-// Mock de autenticación => será reemplazado por Keycloak
+// Manejadores de eventos (mocks de autenticación)
 const handleLogin = () => router.push("/");
 const handleSocialLogin = (_provider) => router.push("/");
 </script>
@@ -44,7 +45,7 @@ const handleSocialLogin = (_provider) => router.push("/");
     <Header />
     <main class="flex-grow flex items-center justify-center">
       <Card class="w-full max-w-md">
-        <!-- Login Form Header -->
+        <!-- Encabezado del Formulario -->
         <CardHeader>
           <CardTitle class="text-2xl">Iniciar Sesión</CardTitle>
           <CardDescription>
@@ -53,7 +54,7 @@ const handleSocialLogin = (_provider) => router.push("/");
         </CardHeader>
 
         <CardContent>
-          <!-- Credentials Form -->
+          <!-- Formulario de Credenciales -->
           <form @submit.prevent="handleLogin" class="space-y-4">
             <div class="space-y-2">
               <Label for="username">Usuario</Label>
@@ -76,7 +77,7 @@ const handleSocialLogin = (_provider) => router.push("/");
             <Button type="submit" class="w-full">Iniciar Sesión</Button>
           </form>
 
-          <!-- Social Login Separator -->
+          <!-- Separador de Inicio de Sesión Social -->
           <section class="relative my-4">
             <div class="absolute inset-0 flex items-center">
               <hr class="w-full border-border" />
@@ -88,7 +89,7 @@ const handleSocialLogin = (_provider) => router.push("/");
             </div>
           </section>
 
-          <!-- Social Login Options -->
+          <!-- Opciones de Inicio de Sesión Social -->
           <nav class="grid grid-cols-2 gap-4">
             <Button
               @click="handleSocialLogin('google')"

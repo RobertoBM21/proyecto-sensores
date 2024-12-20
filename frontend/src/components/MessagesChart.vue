@@ -1,5 +1,5 @@
 <script setup>
-// UI components
+// Componentes UI
 import { AreaChart } from "@/components/ui/chart-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,11 +7,11 @@ import { Button } from "@/components/ui/button";
 // Store
 import { useMessagesStore } from "../stores/messages";
 
-// Utilities
+// Utilidades y Hooks
 import { computed, ref } from "vue";
 import { CurveType } from "@unovis/ts";
 
-// Types and Interfaces
+// Tipos y Constantes
 const ChartRangeType = {
   HOUR: "hour",
   DAY: "day",
@@ -21,7 +21,7 @@ const ChartRangeType = {
   FIVE_YEAR: "5year",
 };
 
-// Constants & Configuration
+// Configuración
 const DATE_CONFIG = {
   formats: {
     DAYS_COMPLETE: [
@@ -77,11 +77,11 @@ const DATE_CONFIG = {
   ],
 };
 
-// Store & State
+// Estado y Referencias
 const store = useMessagesStore();
 const selectedRange = ref(ChartRangeType.HOUR);
 
-// Time Range => Patron Estrategia
+// Estrategias de Rangos de Tiempo (Patrón de Diseño: Strategy)
 const timeRangeStrategies = {
   [ChartRangeType.HOUR]: {
     getTimeLimit: (startDate) => new Date(startDate),
@@ -191,11 +191,11 @@ const timeRangeStrategies = {
   },
 };
 
-// Utility Functions
+// Utilidades de Formato
 const formatHourMinute = (hour, minute) =>
   `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
 
-// Data Processing Service
+// Servicio de Procesamiento de Datos
 const chartDataService = {
   getTimeRange(range) {
     const now = new Date();
@@ -262,7 +262,7 @@ const chartDataService = {
   },
 };
 
-// Computed Properties
+// Propiedades Computadas
 const chartData = computed(() => {
   if (!store.stats?.length) return [];
 
@@ -289,7 +289,7 @@ const chartData = computed(() => {
   }));
 });
 
-// Formatters
+// Formateadores
 const xFormatter = computed(() => (value) => {
   const timestamp = chartData.value[value]?.timestamp;
   if (!timestamp) return "";
@@ -305,6 +305,7 @@ const yFormatter = (value) => value.toLocaleString("es-ES");
   <section class="chart-section">
     <template v-if="store.hasStats">
       <Card>
+        <!-- Encabezado del Gráfico -->
         <header>
           <CardHeader class="flex flex-row items-center justify-between">
             <CardTitle>Mensajes Recibidos</CardTitle>
@@ -324,6 +325,7 @@ const yFormatter = (value) => value.toLocaleString("es-ES");
             </nav>
           </CardHeader>
         </header>
+        <!-- Contenido del Gráfico -->
         <CardContent>
           <AreaChart
             class="h-[350px]"

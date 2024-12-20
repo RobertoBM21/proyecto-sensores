@@ -1,5 +1,5 @@
 <script setup>
-// UI components
+// Componentes UI
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -9,18 +9,18 @@ import {
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
 
-// Icons
+// Iconos
 import { Server, X, Plus, Layers } from "lucide-vue-next";
 
-// Store
+// Stores
 import { useMessagesStore } from "../stores/messages";
 import { useDevicesStore } from "../stores/devices";
-
-// Utilities
-import { ref, computed, onMounted } from "vue";
 import { useConfigStore } from "../stores/config";
 
-// Prop para determinar qué store usar
+// Utilidades y Hooks
+import { ref, computed, onMounted } from "vue";
+
+// Props y Validación
 const props = defineProps({
   storeName: {
     type: String,
@@ -33,8 +33,13 @@ const props = defineProps({
   },
 });
 
-// Store initialization
+// Estado y Referencias
 const config = useConfigStore();
+const servers = ref([]);
+const loading = ref(false);
+const error = ref(null);
+
+// Inicialización del Store
 const getStore = () => {
   switch (props.storeName) {
     case "devices":
@@ -46,12 +51,7 @@ const getStore = () => {
 
 const search = getStore();
 
-// Component state
-const servers = ref([]);
-const loading = ref(false);
-const error = ref(null);
-
-// Computed properties
+// Propiedades Computadas
 const selectionState = computed(() => {
   const totalServers = servers.value.length;
   const selectedCount = search.filters.selectedServers.length;
@@ -72,7 +72,7 @@ const selectionTitle = computed(() =>
   selectionState.value === "all" ? "Borrar selección" : "Seleccionar todos"
 );
 
-// Methods
+// Utilidades de Datos
 const fetchServers = async () => {
   loading.value = true;
   error.value = null;
@@ -83,6 +83,7 @@ const fetchServers = async () => {
 
     servers.value = await response.json();
 
+    // Inicialización de selección
     if (servers.value.length > 0 && !search.filters.selectedServers.length) {
       if (props.initialValues?.selectedServers?.length) {
         search.updateServerSelection(props.initialValues.selectedServers);
@@ -104,6 +105,7 @@ const fetchServers = async () => {
   }
 };
 
+// Manejadores de Eventos
 const handleServerChange = (serverId) => {
   const currentSelection = new Set(search.filters.selectedServers);
   currentSelection.has(serverId)
@@ -112,9 +114,6 @@ const handleServerChange = (serverId) => {
 
   search.updateServerSelection([...currentSelection]);
 };
-
-const isServerSelected = (serverId) =>
-  search.filters.selectedServers.includes(serverId);
 
 const toggleAllServers = () => {
   const newSelection =
@@ -125,12 +124,17 @@ const toggleAllServers = () => {
   search.updateServerSelection(newSelection);
 };
 
-// Inicializar la lista de servidores al montar el componente
+// Utilidades de UI
+const isServerSelected = (serverId) =>
+  search.filters.selectedServers.includes(serverId);
+
+// Inicialización
 onMounted(fetchServers);
 </script>
 
 <template>
   <div class="server-selector">
+    <!-- Menú Desplegable -->
     <DropdownMenu>
       <DropdownMenuTrigger as-child>
         <Button
@@ -143,28 +147,28 @@ onMounted(fetchServers);
       </DropdownMenuTrigger>
 
       <DropdownMenuContent class="w-auto">
-        <!-- Loading State -->
+        <!-- Estado de Carga -->
         <div v-if="loading" class="px-2 py-1.5">
           <p class="text-sm text-muted-foreground text-center">
             Cargando servidores...
           </p>
         </div>
 
-        <!-- Error State -->
+        <!-- Estado de Error -->
         <div v-else-if="error" class="px-2 py-1.5">
           <p class="text-sm text-destructive text-center text-balance">
             {{ error.message }}
           </p>
         </div>
 
-        <!-- Empty State -->
+        <!-- Estado Vacío -->
         <div v-else-if="servers.length === 0" class="px-2 py-1.5">
           <p class="text-sm text-muted-foreground text-center">
             No hay servidores disponibles
           </p>
         </div>
 
-        <!-- Server List -->
+        <!-- Selección de Servidores -->
         <section v-else>
           <header
             class="flex items-center justify-between px-2 py-2.5 border-b"

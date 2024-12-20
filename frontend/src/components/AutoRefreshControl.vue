@@ -1,4 +1,5 @@
 <script setup>
+// Componentes UI
 import {
   Popover,
   PopoverContent,
@@ -14,9 +15,14 @@ import {
   NumberFieldIncrement,
   NumberFieldDecrement,
 } from "@/components/ui/number-field";
-import { ref, watch, onBeforeUnmount } from "vue";
+
+// Iconos
 import { RefreshCw } from "lucide-vue-next";
 
+// Utilidades y Hooks
+import { ref, watch, onBeforeUnmount } from "vue";
+
+// Props y Configuración
 const props = defineProps({
   defaultInterval: {
     type: Number,
@@ -26,10 +32,12 @@ const props = defineProps({
 
 const emit = defineEmits(["refresh"]);
 
+// Estado y Referencias
 const isEnabled = ref(false);
 const interval = ref(Number(props.defaultInterval));
 let pollingInterval = null;
 
+// Utilidades de Control
 const startPolling = () => {
   if (pollingInterval) clearInterval(pollingInterval);
   pollingInterval = setInterval(() => {
@@ -45,6 +53,7 @@ const stopPolling = () => {
   }
 };
 
+// Observadores y Ciclo de Vida
 watch([isEnabled, interval], ([newIsEnabled, newInterval]) => {
   stopPolling();
   if (newIsEnabled && newInterval > 0) {
@@ -52,7 +61,6 @@ watch([isEnabled, interval], ([newIsEnabled, newInterval]) => {
   }
 });
 
-// Asegurarnos de que interval siempre sea un número
 watch(interval, (newVal) => {
   interval.value = Number(newVal);
 });
@@ -64,6 +72,7 @@ onBeforeUnmount(() => {
 
 <template>
   <Popover>
+    <!-- Botón de Control -->
     <PopoverTrigger as-child>
       <Button
         variant="outline"
@@ -74,15 +83,21 @@ onBeforeUnmount(() => {
         <RefreshCw class="h-4 w-4" :class="{ 'animate-spin': isEnabled }" />
       </Button>
     </PopoverTrigger>
+
+    <!-- Panel de Configuración -->
     <PopoverContent class="w-80">
       <div class="grid gap-4">
+        <!-- Encabezado -->
         <div class="space-y-2">
           <h4 class="font-medium leading-none">Actualización automática</h4>
           <p class="text-sm text-muted-foreground">
             Configura la frecuencia de actualización de los datos
           </p>
         </div>
+
+        <!-- Controles -->
         <div class="grid gap-4">
+          <!-- Switch de Activación -->
           <div class="flex items-center space-x-4">
             <Switch
               id="auto-refresh"
@@ -91,6 +106,8 @@ onBeforeUnmount(() => {
             />
             <Label for="auto-refresh">Activar actualización automática</Label>
           </div>
+
+          <!-- Control de Intervalo -->
           <div class="grid gap-2">
             <Label for="interval">Intervalo (segundos)</Label>
             <NumberField

@@ -1,20 +1,26 @@
 <script setup>
-import { useColorMode } from "@vueuse/core";
+// Componentes UI
 import { Button } from "@/components/ui/button";
+
+// Utilidades y Hooks
+import { useColorMode } from "@vueuse/core";
 import { useConfigStore } from "@/stores/config";
 import { computed } from "vue";
 
-// Icons
+// Iconos
 import githubDark from "@/assets/icons/github-dark.svg";
 import githubLight from "@/assets/icons/github-light.svg";
 
+// Estado y referencias
 const mode = useColorMode();
 const config = useConfigStore();
 
+// Computación de recursos
 const githubIcon = computed(() =>
   mode.value === "light" ? githubLight : githubDark
 );
 
+// Configuración de enlaces
 const links = [
   { label: "Inicio", to: "/" },
   { label: "Mensajes", to: "/search/messages" },
@@ -51,9 +57,10 @@ const quickLinks = [
 
 <template>
   <footer class="bg-card border-t">
+    <!-- Contenido Principal -->
     <div class="container mx-auto px-3 py-6">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-        <!-- About -->
+        <!-- Acerca de -->
         <div class="space-y-2">
           <h3 class="font-semibold">Sistema de Sensores</h3>
           <p class="text-sm text-balance text-muted-foreground">
@@ -85,7 +92,7 @@ const quickLinks = [
           </div>
         </div>
 
-        <!-- Navigation -->
+        <!-- Navegación -->
         <div class="space-y-2">
           <h3 class="font-semibold">Navegación</h3>
           <nav class="flex flex-col gap-1">
@@ -100,7 +107,7 @@ const quickLinks = [
           </nav>
         </div>
 
-        <!-- Resources -->
+        <!-- Recursos -->
         <div class="space-y-2">
           <h3 class="font-semibold">Recursos</h3>
           <nav class="flex flex-col gap-1">
@@ -117,7 +124,7 @@ const quickLinks = [
           </nav>
         </div>
 
-        <!-- Quick Links -->
+        <!-- Enlaces Rápidos -->
         <div class="space-y-2">
           <h3 class="font-semibold">Enlaces Rápidos</h3>
           <nav class="flex flex-col gap-1">
@@ -135,7 +142,7 @@ const quickLinks = [
         </div>
       </div>
 
-      <!-- Bottom Bar -->
+      <!-- Barra Inferior -->
       <div class="pt-6 mt-6 border-t text-center">
         <p class="text-sm text-muted-foreground">
           © {{ new Date().getFullYear() }} Sistema de Sensores. Todos los

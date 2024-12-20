@@ -38,7 +38,7 @@ class ServerService {
       endpoint,
       username,
       password: encrypt(password),
-      ...(topicFormat && { topicFormat }), // Solo incluir si se proporciona
+      ...(topicFormat && { topicFormat }), // Solo incluir el formato si se proporciona, sino se usa el valor por defecto
     });
 
     return server;
@@ -67,7 +67,7 @@ class ServerService {
       endpoint,
       username,
       password: encrypt(password),
-      ...(topicFormat && { topicFormat }), // Solo incluir si se proporciona
+      ...(topicFormat && { topicFormat }), // Solo incluir si se proporciona, sino se usa el valor actual
     });
 
     return server;

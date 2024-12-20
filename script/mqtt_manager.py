@@ -32,6 +32,7 @@ TIMEOUT = 5                 # Tiempo de espera para comprobar si el proceso se d
 LOG_DATE_FORMAT = '%Y%m%d'  # Formato de fecha para archivos de log
 
 
+# Funciones de configuración y argumentos
 def validate_environment():
     """Valida y devuelve la configuración de variables de entorno"""
     config = {}
@@ -49,7 +50,6 @@ def validate_environment():
     
     return config
 
-# Funciones de configuración
 def parse_arguments():
     """Procesa los argumentos de línea de comandos"""
     parser = argparse.ArgumentParser(description='Gestor de Clientes MQTT')
@@ -63,6 +63,7 @@ def parse_arguments():
                        help='Días a mantener los logs')
     return parser.parse_args()
 
+# Clase principal del gestor
 class MQTTManager:
     """Gestor de procesos para clientes MQTT"""
     

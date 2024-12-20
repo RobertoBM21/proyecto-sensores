@@ -6,6 +6,7 @@ const {
   createRequiredDateValidation,
 } = require("./dateSchema");
 
+// Esquema para dispositivo
 const deviceSchema = Joi.object({
   serial: Joi.string().required().messages({
     "string.empty": 'El campo "serial" no puede estar vacío.',
@@ -68,7 +69,7 @@ function validateDevice(data) {
   if (error) {
     throw new BadRequestError(error.details[0].message);
   }
-  return value; // Datos validados
+  return value;
 }
 
 //* Función para validar actualización parcial
@@ -77,7 +78,7 @@ function validatePartialDevice(data) {
   if (error) {
     throw new BadRequestError(error.details[0].message);
   }
-  return value; // Datos validados
+  return value;
 }
 
 //* Función para validar solo el ID del dispositivo
@@ -95,7 +96,7 @@ function validateSerial(serial) {
   if (error) {
     throw new BadRequestError(error.details[0].message);
   }
-  return value; // Serial validado
+  return value;
 }
 
 //* Función para validar los parámetros del reporte de actividad
@@ -104,7 +105,7 @@ function validateActivityReportParams(data) {
   if (error) {
     throw new BadRequestError(error.details[0].message);
   }
-  return value; // Datos validados
+  return value;
 }
 
 module.exports = {

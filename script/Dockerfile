@@ -15,6 +15,5 @@ COPY . .
 # Instalar dependencias de Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-
-# Comando por defecto
-CMD ["python", "mqtt_manager.py"]
+# Ejecutar el script con opción -u para no colapsar el buffer de salida
+CMD ["python", "-u", "mqtt_manager.py"]

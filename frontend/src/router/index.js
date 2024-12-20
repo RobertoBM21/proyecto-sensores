@@ -57,7 +57,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  //? Si en el futuro necesitamos desplegar desde un subdirectorio, podemos usar (import.meta.env.BASE_URL)
+  //? Si en el futuro necesitamos desplegar desde un subdirectorio, podemos usar createWebHistory(import.meta.env.BASE_URL)
   history: createWebHistory(),
   routes,
 });

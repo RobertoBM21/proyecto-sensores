@@ -1,5 +1,5 @@
 <script setup>
-// UI components
+// Componentes UI
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -19,20 +19,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-// Icons
+// Iconos
 import { X } from "lucide-vue-next";
 
-// Store
+// Stores
 import { useMessagesStore } from "../stores/messages";
 import { useDevicesStore } from "../stores/devices";
 
-// Utilities
+// Utilidades y Hooks
 import { ref, computed, watch } from "vue";
-
-// Importar utilidades de @internationalized/date
 import { CalendarDate } from "@internationalized/date";
 
-// Props
+// Props y Validación
 const props = defineProps({
   storeName: {
     type: String,
@@ -45,7 +43,7 @@ const props = defineProps({
   },
 });
 
-// Store initialization ajustado
+// Inicialización del Store
 const getStore = () => {
   switch (props.storeName) {
     case "devices":
@@ -57,19 +55,18 @@ const getStore = () => {
 
 const search = getStore();
 
-// Initial states
+// Valores Iniciales y Referencias
 const initialDateValue = { start: null, end: null };
 const initialTimeValue = { start: "00:00", end: "23:59" };
 
-// Funciones helper para convertir fechas
-const toCalendarDate = (date) => {
-  if (!date) return null;
-  const tzOffset = new Date().getTimezoneOffset() * 60000;
-  const localDate = new Date(new Date(date).getTime() + tzOffset);
+// Utilidades de Formato
+const toCalendarDate = (localDate) => {
+  if (!localDate) return null;
+  const date = new Date(localDate);
   return new CalendarDate(
-    localDate.getFullYear(),
-    localDate.getMonth() + 1,
-    localDate.getDate()
+    date.getFullYear(),
+    date.getMonth() + 1,
+    date.getDate()
   );
 };
 
@@ -78,7 +75,13 @@ const fromCalendarDate = (calendarDate) => {
   return new Date(calendarDate.year, calendarDate.month - 1, calendarDate.day);
 };
 
-// Initial states con soporte para valores iniciales
+const formatTimeFromDate = (date) => {
+  return `${String(date.getHours()).padStart(2, "0")}:${String(
+    date.getMinutes()
+  ).padStart(2, "0")}`;
+};
+
+// Estado del Componente
 const getInitialDateValue = () => {
   if (props.initialValues.startDate && props.initialValues.endDate) {
     return {
@@ -94,18 +97,13 @@ const getInitialTimeValue = () => {
     const startDate = new Date(props.initialValues.startDate);
     const endDate = new Date(props.initialValues.endDate);
     return {
-      start: `${String(startDate.getHours()).padStart(2, "0")}:${String(
-        startDate.getMinutes()
-      ).padStart(2, "0")}`,
-      end: `${String(endDate.getHours()).padStart(2, "0")}:${String(
-        endDate.getMinutes()
-      ).padStart(2, "0")}`,
+      start: formatTimeFromDate(startDate),
+      end: formatTimeFromDate(endDate),
     };
   }
   return { ...initialTimeValue };
 };
 
-// Component state actualizado
 const dateValue = ref(getInitialDateValue());
 const timeValue = ref(getInitialTimeValue());
 const showTimeSelection = ref(
@@ -116,7 +114,7 @@ const showTimeSelection = ref(
 const calendarKey = ref(0);
 const dateRange = ref(props.initialValues.dateRange || "");
 
-// Date range options
+// Configuración de Rangos
 const dateRangeOptions = [
   { value: "last_5_minutes", label: "Últimos 5 minutos" },
   { value: "last_15_minutes", label: "Últimos 15 minutos" },
@@ -130,7 +128,7 @@ const dateRangeOptions = [
   { value: "last_year", label: "Último año" },
 ];
 
-// Computed properties
+// Propiedades Computadas
 const selectedDateRangeLabel = computed(
   () =>
     dateRangeOptions.find((opt) => opt.value === dateRange.value)?.label ||
@@ -152,7 +150,7 @@ const hasDateSelection = computed(
   () => dateRange.value || (dateValue.value.start && dateValue.value.end)
 );
 
-// Methods
+// Manejadores de Eventos
 const updateDateRange = (range) => {
   if (!range.start || !range.end) return;
 
@@ -160,8 +158,11 @@ const updateDateRange = (range) => {
   const endDate = fromCalendarDate(range.end);
 
   if (showTimeSelection.value) {
-    setTimeOnDate(startDate, timeValue.value.start);
-    setTimeOnDate(endDate, timeValue.value.end).setSeconds(59);
+    const [startHours, startMinutes] = timeValue.value.start.split(":");
+    const [endHours, endMinutes] = timeValue.value.end.split(":");
+
+    startDate.setHours(parseInt(startHours), parseInt(startMinutes), 0);
+    endDate.setHours(parseInt(endHours), parseInt(endMinutes), 59);
   } else {
     startDate.setHours(0, 0, 0);
     endDate.setHours(23, 59, 59);
@@ -174,7 +175,7 @@ const updateDateRange = (range) => {
   });
 };
 
-// Reset methods
+// Utilidades de Reseteo
 const resetToDefaults = () => {
   dateValue.value = getInitialDateValue();
   timeValue.value = getInitialTimeValue();
@@ -201,20 +202,14 @@ const clearAll = () => {
   });
 };
 
-// Helper methods
+// Utilidades de UI
 const getTextColorClass = (hasValue) =>
   hasValue ? "text-foreground" : "text-muted-foreground";
 
-const setTimeOnDate = (date, timeString) => {
-  const [hours, minutes] = timeString.split(":");
-  date.setHours(parseInt(hours), parseInt(minutes));
-  return date;
-};
-
-// Expose clearAll method
+// Exposición de Métodos
 defineExpose({ clearAll });
 
-// Watchers
+// Observadores
 watch(
   dateValue,
   (newValue) => {
@@ -255,11 +250,13 @@ watch(
 
 <template>
   <fieldset class="space-y-2">
+    <!-- Etiqueta del Selector -->
     <legend>
       <Label for="date-range-selector">Rango de fecha</Label>
     </legend>
+
     <Popover>
-      <!-- Date Range Selector Button -->
+      <!-- Botón del Selector -->
       <header class="relative">
         <PopoverTrigger as-child>
           <Button
@@ -286,10 +283,10 @@ watch(
         </button>
       </header>
 
-      <!-- Popover Content -->
+      <!-- Contenido del Popover -->
       <PopoverContent class="w-auto">
         <article class="grid gap-4">
-          <!-- Header -->
+          <!-- Encabezado -->
           <header class="space-y-2">
             <h4 class="font-medium leading-none">Rango de fechas</h4>
             <p class="text-sm text-muted-foreground">
@@ -297,9 +294,9 @@ watch(
             </p>
           </header>
 
-          <!-- Selection Controls Container -->
+          <!-- Controles de Selección -->
           <div class="space-y-4">
-            <!-- Quick Date Range Select -->
+            <!-- Selector Rápido de Rangos -->
             <Select v-model="dateRange" class="w-full">
               <SelectTrigger>
                 <SelectValue :placeholder="selectedDateRangeLabel" />
@@ -317,23 +314,24 @@ watch(
               </SelectContent>
             </Select>
 
+            <!-- Separador -->
             <hr class="border-border border-t" />
 
-            <!-- Custom Date Range -->
+            <!-- Selector Personalizado -->
             <p class="text-sm text-muted-foreground">
               O escoge los días y horas que desees
             </p>
 
-            <!-- Grid Container -->
+            <!-- Contenedor de la Grid -->
             <div class="grid grid-cols-[1fr,180px] gap-4">
-              <!-- Calendar -->
+              <!-- Calendario -->
               <RangeCalendar
                 :key="calendarKey"
                 v-model="dateValue"
                 class="rounded-md border p-3"
               />
 
-              <!-- Time Selection -->
+              <!-- Selección de Hora -->
               <fieldset class="space-y-4 p-3 border-border border rounded-md">
                 <div>
                   <legend class="flex items-center space-x-2">

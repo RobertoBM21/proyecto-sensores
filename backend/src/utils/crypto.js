@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 
+//* Encripta un texto con el algoritmo AES-256-CBC (se usa para encriptar la contraseña de cada servidor de la base de datos)
 function encrypt(text) {
   const SEPARATOR = ":";
   const ALGORITHM = "aes-256-cbc";

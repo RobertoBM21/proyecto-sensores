@@ -1,9 +1,9 @@
 <script setup>
-// Layout components
+// Componentes Vue
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 
-// UI components
+// Componentes UI
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -12,19 +12,20 @@ import {
   CardTitle,
 } from "../components/ui/card";
 
-// Store and utilities
+// Utilidades y Hooks
 import { useHomeStore } from "../stores/home";
 import { computed, onMounted } from "vue";
 import { Activity, Search, BarChart3, Cpu } from "lucide-vue-next";
 
-// Store initialization
+// Inicialización del Store
 const home = useHomeStore();
 
-// Load initial data
+// Configuración y carga inicial
 onMounted(async () => {
   await home.fetchAllStats();
 });
 
+// Configuración de estadísticas
 const STATS_CONFIG = [
   {
     label: "Dispositivos Activos",
@@ -60,6 +61,7 @@ const STATS_CONFIG = [
   },
 ];
 
+// Computación de estadísticas
 const stats = computed(() =>
   STATS_CONFIG.map((stat) => ({
     ...stat,
@@ -67,6 +69,7 @@ const stats = computed(() =>
   }))
 );
 
+// Estado de carga
 const loading = computed(() => home.loading);
 </script>
 
@@ -74,7 +77,7 @@ const loading = computed(() => home.loading);
   <div class="min-h-screen flex flex-col">
     <Header />
     <main class="flex-grow">
-      <!-- Hero Section -->
+      <!-- Sección Principal (Hero) -->
       <section class="relative bg-background py-20">
         <div class="container px-4 mx-auto">
           <div class="max-w-3xl mx-auto text-center">
@@ -101,7 +104,7 @@ const loading = computed(() => home.loading);
         </div>
       </section>
 
-      <!-- Stats Section -->
+      <!-- Sección de Estadísticas -->
       <section class="py-12">
         <div class="container px-4 mx-auto">
           <div class="grid md:grid-cols-3 gap-8">
@@ -141,7 +144,7 @@ const loading = computed(() => home.loading);
         </div>
       </section>
 
-      <!-- Features Section -->
+      <!-- Sección de Características -->
       <section class="py-16">
         <div class="container px-4 mx-auto">
           <h2 class="text-3xl font-bold text-center mb-12">

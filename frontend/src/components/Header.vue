@@ -1,5 +1,5 @@
 <script setup>
-// UI components
+// Componentes UI
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -11,18 +11,18 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
 
-// Icons
+// Iconos y utilidades
 import { Icon } from "@iconify/vue";
-
-// Utilities
 import { useColorMode } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
 
+// Estado y referencias
 const route = useRoute();
 const router = useRouter();
 const mode = useColorMode();
 
-// Obtener rutas principales (sin grupo)
+// Configuración de navegación
+// Rutas principales (sin grupos)
 const mainRoutes = router.options.routes
   .filter(
     (route) =>
@@ -38,7 +38,7 @@ const mainRoutes = router.options.routes
       route.name.charAt(0).toUpperCase() + route.name.slice(1),
   }));
 
-// Obtener grupos y sus rutas
+// Rutas agrupadas
 const groupedRoutes = router.options.routes.reduce((groups, route) => {
   if (route.meta?.group && !route.meta?.hideInNav) {
     const group = route.meta.group;
@@ -65,11 +65,11 @@ const groupedRoutes = router.options.routes.reduce((groups, route) => {
     class="sticky z-40 top-0 bg-background/80 backdrop-blur-lg border-b border-border"
   >
     <div class="container flex h-14 items-center justify-between">
-      <!-- Main Navigation -->
+      <!-- Navegación Principal -->
       <nav class="primary-navigation">
         <NavigationMenu>
           <NavigationMenuList>
-            <!-- Main routes -->
+            <!-- Rutas Principales -->
             <NavigationMenuItem v-for="link in mainRoutes" :key="link.path">
               <NavigationMenuLink asChild>
                 <router-link
@@ -85,7 +85,7 @@ const groupedRoutes = router.options.routes.reduce((groups, route) => {
               </NavigationMenuLink>
             </NavigationMenuItem>
 
-            <!-- Grouped routes -->
+            <!-- Rutas Agrupadas -->
             <NavigationMenuItem
               v-for="(group, groupId) in groupedRoutes"
               :key="groupId"
@@ -127,7 +127,7 @@ const groupedRoutes = router.options.routes.reduce((groups, route) => {
         </NavigationMenu>
       </nav>
 
-      <!-- Actions Menu -->
+      <!-- Menú de Acciones -->
       <nav class="flex items-center gap-2">
         <Button
           variant="ghost"
