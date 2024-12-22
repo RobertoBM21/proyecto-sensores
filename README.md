@@ -4,6 +4,8 @@ Este proyecto es una aplicación para gestionar los mensajes enviados por dispos
 
 Incluye scripts en Python para la gestión y monitorización de las conexiones MQTT.
 
+El proyecto se lanza con **Docker**.
+
 ## Tabla de Contenidos
 
 - [Estructura del Proyecto](#estructura-del-proyecto)
@@ -150,11 +152,39 @@ Principales dependencias:
 
 ### Docker
 
-Para ejecutar el proyecto puedes usar simplemente Docker e ignorar el resto de secciones de este apartado.
+El proyecto está completamente dockerizado y se puede ejecutar con un solo comando:
 
 ```bash
-`docker compose up -d --build`
+docker compose up -d --build
 ```
+
+Esto iniciará todos los servicios:
+
+- Frontend (accesible en `http://localhost:80`)
+- Backend (accesible en `http://localhost:3000`)
+- Base de datos MySQL
+- Gestor MQTT (requiere interacción manual)
+
+#### Ejecución del Script MQTT
+
+Para ejecutar el gestor MQTT tienes dos opciones:
+
+1. **Usando Docker CLI**:
+
+```bash
+docker exec -it proyecto-sensores-mqtt-manager-1 python mqtt_manager.py
+```
+
+2. **Usando Docker Desktop**:
+   - Abre Docker Desktop
+   - Ve a la pestaña "Containers"
+   - Accede al contenedor "proyecto-sensores-mqtt-manager-1"
+   - Haz clic en el botón "Exec"
+   - Ejecuta: `python mqtt_manager.py`
+
+El script proporcionará una interfaz interactiva para gestionar las conexiones MQTT.
+
+Para salir del script usa `Ctrl+C` o la opción 5 del menú. El contenedor seguirá ejecutándose y podrás volver a iniciar el script cuando lo necesites.
 
 ### Backend
 

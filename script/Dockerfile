@@ -17,5 +17,5 @@ WORKDIR /app
 COPY --from=builder /install /usr/local
 COPY mqtt_manager.py mqtt_client.py ./
 
-CMD ["python", "-u", "mqtt_manager.py"]
-
+# Mantener el contenedor en ejecución
+CMD ["tail", "-f", "/dev/null"]
