@@ -146,6 +146,14 @@ Principales dependencias:
 
 ## Ejecución del Proyecto
 
+### Docker
+
+Para ejecutar el proyecto puedes usar simplemente Docker e ignorar el resto de secciones de este apartado.
+
+```bash
+`docker compose up -d --build`
+```
+
 ### Backend
 
 Para desarrollo con recarga automática:

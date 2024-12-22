@@ -2,7 +2,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "4173:4173"
+      - "80:80"
     depends_on:
       - backend
     env_file:
@@ -17,6 +17,7 @@ services:
         condition: service_healthy
     environment:
       - DOCKER_ENV=true
+      - NODE_ENV=production
     env_file:
       - .env.docker
 

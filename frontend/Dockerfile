@@ -1,17 +1,11 @@
-# Utilizo alpine para reducir el tamaño de la imagen
-FROM node:22-alpine
-
-# Establecer directorio de trabajo
+# Primera etapa: Construir la aplicación
+FROM node:22-alpine AS builder
 WORKDIR /app
-
-# Copiar todos los archivos menos los que están en .dockerignore
 COPY . .
-
-# Instalar dependencias y construir la aplicación
 RUN npm install && node --run build
 
-# Exponer puerto
-EXPOSE 4173
-
-# Comando por defecto
-CMD ["node", "--run", "preview"]
+# Segunda etapa: Servir la aplicación con nginx
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

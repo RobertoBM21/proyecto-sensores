@@ -2,6 +2,7 @@
 .git
 .gitignore
 README.md
+LICENSE
 
 # Build y dependencias
 **/node_modules

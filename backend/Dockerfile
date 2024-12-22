@@ -1,17 +1,19 @@
-# Utilizo alpine para reducir el tamaño de la imagen
-FROM node:22-alpine
-
-# Establecer directorio de trabajo
+# Primera etapa: Construir la aplicación
+FROM node:22-alpine AS builder
 WORKDIR /app
-
-# Copiar todos los archivos menos los que están en .dockerignore
-COPY . .
-
-# Instalar dependencias
+COPY package*.json ./
 RUN npm install
 
-# Exponer puerto
-EXPOSE 3000
+# Segunda etapa: Servir la aplicación con node
+FROM node:22-alpine
+WORKDIR /app
 
-# Comando por defecto
+# Asegurar permisos antes de cambiar usuario
+COPY --from=builder --chown=node:node /app/package*.json ./
+COPY --from=builder --chown=node:node /app/node_modules ./node_modules
+COPY --chown=node:node ./src ./src
+
+USER node
+
+EXPOSE 3000
 CMD ["node", "--run", "start"]
