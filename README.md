@@ -1,26 +1,20 @@
 # Sistema de Monitoreo de Sensores
 
-Este proyecto es una aplicación para gestionar los mensajes enviados por dispositivos IoT a través del protocolo MQTT. La aplicación recoge, estructura, almacena y muestra los servidores, dispositivos y mensajes. El backend está desarrollado utilizando **Node.js** con **Express** y **MySQL**. El frontend está desarrollado en **Vue.js** con **Vite** y **TailwindCSS**. Además, cuenta con documentación de API utilizando **Swagger**.
-
-Incluye scripts en Python para la gestión y monitorización de las conexiones MQTT.
-
-El proyecto se lanza con **Docker**.
+Este proyecto es una aplicación para gestionar los mensajes enviados por dispositivos IoT a través del protocolo MQTT. La aplicación recoge, estructura, almacena y muestra los servidores, dispositivos y mensajes. El backend está desarrollado utilizando **Node.js** con **Express** y **MySQL** y cuenta con documentación de API utilizando **Swagger**. El frontend está desarrollado en **Vue.js** con **Vite** y **TailwindCSS**. Los scripts están desarrollados con **Python**. El proyecto en su conjunto se despliega con **Docker**.
 
 ## Tabla de Contenidos
 
 - [Estructura del Proyecto](#estructura-del-proyecto)
-- [Instalación y Configuración](#instalación-y-configuración)
-  - [Requisitos Previos](#requisitos-previos)
-  - [Configuración de Variables de Entorno](#configuración-de-variables-de-entorno)
+- [Requisitos](#requisitos)
+- [Configuración](#configuración)
+  - [Variables de Entorno](#variables-de-entorno)
+- [Ejecución con Docker](#ejecución-con-docker)
+  - [Inicio Rápido](#inicio-rápido)
+  - [Gestión del Script MQTT](#gestión-del-script-mqtt)
+- [Desarrollo Local](#desarrollo-local)
   - [Instalación de Dependencias](#instalación-de-dependencias)
-- [Ejecución del Proyecto](#ejecución-del-proyecto)
-  - [Backend](#backend)
-  - [Frontend](#frontend)
-  - [Clientes MQTT](#clientes-mqtt)
-- [Documentación API](#documentación-api)
+  - [Ejecución en Desarrollo](#ejecución-en-desarrollo)
 - [Contacto](#contacto)
-
----
 
 ## Estructura del Proyecto
 
@@ -54,36 +48,36 @@ proyecto-sensores/
 │   └── logs/               # Carpeta para logs de MQTT
 ```
 
----
+## Requisitos
 
-## Instalación y Configuración
+Para ejecutar con Docker:
 
-### Requisitos Previos
+- **Docker** y **Docker Compose**
 
-- **Node.js** v22.11.0 o superior.
-- **MySQL** instalado y en ejecución.
-- **Python 3.x**.
-- **npm**/**pnpm**/**yarn** como gestor de paquetes de Node.
-- **Pip** para instalar las dependencias de Python.
+Para desarrollo local:
 
-### Configuración de Variables de Entorno
+- **Node.js** v22.11.0 o superior
+- **Python** 3.x
+- **MySQL** 8.0
+- **npm**/**pnpm**/**yarn**
 
-Crea un archivo `.env` en la raíz del proyecto. Asegúrate de reemplazar los valores con tus credenciales y configuración.
-Los valores de ciertas variables vienen condicionadas sobre si se lanza el proyecto con Docker o no.
+## Configuración
 
-Las variables se dividen en **requeridas** y **opcionales**:
+### Variables de Entorno
 
-**Requeridas**
+El proyecto requiere un archivo de variables de entorno:
+
+- Para Docker: `.env.docker`
+- Para desarrollo local: `.env`
+
+Variables necesarias:
 
 ```env
-# Configuración del servidor
-PORT=tu_puerto
-
 # Configuración de Base de Datos
 DB_NAME=sensores
 DB_USER=tu_usuario_de_mysql
 DB_PASSWORD=tu_contraseña_de_mysql
-DB_HOST=localhost o db (Docker)
+DB_HOST=db           # Para Docker usar 'db', para desarrollo local usar 'localhost'
 DB_DIALECT=mysql
 DB_PORT=3306
 
@@ -91,81 +85,32 @@ DB_PORT=3306
 ENCRYPTION_KEY=tu_clave_de_encriptación_de_64_caracteres_en_hexadecimal
 
 # Configuración MQTT
-API_URL=http://localhost:tu_puerto o http://backend:tu_puerto (Docker)
-VITE_API_URL=http://localhost:tu_puerto
+API_URL=http://backend:3000     # Para Docker usar 'backend', para desarrollo local usar 'localhost'
+VITE_API_URL=http://localhost:3000
 ```
 
-**Opcionales**
+## Ejecución con Docker
 
-```env
-# Configuración MQTT
-MQTT_TOPIC=formato_de_topic
-LOGS_DIR=tu_carpeta_para_almacenar_logs
-```
-
-### Instalación de Dependencias
-
-**Backend**
+### Inicio Rápido
 
 ```bash
-cd backend
-npm/pnpm/yarn install
-```
+cd proyecto-sensores
 
-Principales dependencias:
+# Crear y configurar variables de entorno
+touch .env.docker
+# Editar .env.docker con los valores necesarios (ver sección Variables de Entorno)
 
-- Express v5 (API RESTFUL)
-- Sequelize (ORM)
-- Joi (Validación)
-- Swagger (Documentación API)
-
-**Frontend**
-
-```bash
-cd frontend
-npm/pnpm/yarn install
-```
-
-Principales dependencias:
-
-- Vue v3
-- Pinia (Manejo del estado)
-- TailwindCSS (Estilos)
-- Vite (Herramienta de construcción)
-
-**Script MQTT**
-
-```bash
-cd script
-pip install -r requirements.txt
-```
-
-Principales dependencias:
-
-- paho-mqtt: **2.1.0** (Conexión MQTT)
-- requests (Manejo HTTP)
-- python-dotenv (Variables de entorno)
-- psutil (Manejo de procesos)
-- cryptography (Encriptación)
-
-## Ejecución del Proyecto
-
-### Docker
-
-El proyecto está completamente dockerizado y se puede ejecutar con un solo comando:
-
-```bash
+# Construir y ejecutar
 docker compose up -d --build
 ```
 
-Esto iniciará todos los servicios:
+Los servicios estarán disponibles en:
 
-- Frontend (accesible en `http://localhost:80`)
-- Backend (accesible en `http://localhost:3000`)
-- Base de datos MySQL
-- Gestor MQTT (requiere interacción manual)
+- Frontend: http://localhost:80
+- Backend: http://localhost:3000
+- API Docs: http://localhost:3000/api-docs
 
-#### Ejecución del Script MQTT
+### Gestión del Script MQTT
 
 Para ejecutar el gestor MQTT tienes dos opciones:
 
@@ -184,9 +129,36 @@ docker exec -it proyecto-sensores-mqtt-manager-1 python mqtt_manager.py
 
 El script proporcionará una interfaz interactiva para gestionar las conexiones MQTT.
 
-Para salir del script usa `Ctrl+C` o la opción 5 del menú. El contenedor seguirá ejecutándose y podrás volver a iniciar el script cuando lo necesites.
+## Desarrollo Local
 
-### Backend
+Si prefieres desarrollar sin Docker, sigue estas instrucciones:
+
+### Instalación de Dependencias
+
+**Backend**
+
+```bash
+cd backend
+npm/pnpm/yarn install
+```
+
+**Frontend**
+
+```bash
+cd frontend
+npm/pnpm/yarn install
+```
+
+**Script MQTT**
+
+```bash
+cd script
+pip install -r requirements.txt
+```
+
+### Ejecución en Desarrollo
+
+**Backend**
 
 Para desarrollo con recarga automática:
 
@@ -204,7 +176,7 @@ node --run start
 
 El servidor se ejecutará en `http://localhost:3000` por defecto.
 
-### Frontend
+**Frontend**
 
 Para desarrollo con recarga automática:
 
@@ -225,7 +197,7 @@ node --run preview # Ejecuta un servidor locar para previsualizar producción
 
 Si usas preview, el servidor local estará disponible en `http://localhost:4173` por defecto.
 
-### Clientes MQTT
+**Clientes MQTT**
 
 El proyecto utiliza un sistema de gestión de clientes MQTT que consiste en:
 
@@ -274,11 +246,6 @@ El proyecto utiliza un sistema de gestión de clientes MQTT que consiste en:
    - **Almacenamiento de mensajes** recibidos en el backend.
    - **Gestión de reconexión automática** y recuperación ante fallos.
    - **Manejo de logs detallados**, con opción de nivel de log dinámico mediante el argumento `--debug`.
-
-## Documentación API
-
-La documentación Swagger de la API está disponible en:
-`API_URL/api-docs`
 
 ## Contacto
 
