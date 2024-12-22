@@ -28,6 +28,7 @@ services:
       - mqtt-logs:/app/logs
     environment:
       - DOCKER_ENV=true
+      - TZ=Europe/Madrid
     env_file:
       - .env.docker
 
