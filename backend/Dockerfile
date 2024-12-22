@@ -8,7 +8,6 @@ RUN npm install
 FROM node:22-alpine
 WORKDIR /app
 
-# Asegurar permisos antes de cambiar usuario
 COPY --from=builder --chown=node:node /app/package*.json ./
 COPY --from=builder --chown=node:node /app/node_modules ./node_modules
 COPY --chown=node:node ./src ./src

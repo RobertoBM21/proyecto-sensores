@@ -67,6 +67,7 @@ proyecto-sensores/
 ### Configuración de Variables de Entorno
 
 Crea un archivo `.env` en la raíz del proyecto. Asegúrate de reemplazar los valores con tus credenciales y configuración.
+Los valores de ciertas variables vienen condicionadas sobre si se lanza el proyecto con Docker o no.
 
 Las variables se dividen en **requeridas** y **opcionales**:
 
@@ -77,10 +78,10 @@ Las variables se dividen en **requeridas** y **opcionales**:
 PORT=tu_puerto
 
 # Configuración de Base de Datos
-DB_NAME=tu_nombre_de_base_de_datos
+DB_NAME=sensores
 DB_USER=tu_usuario_de_mysql
 DB_PASSWORD=tu_contraseña_de_mysql
-DB_HOST=localhost
+DB_HOST=localhost o db (Docker)
 DB_DIALECT=mysql
 DB_PORT=3306
 
@@ -88,7 +89,8 @@ DB_PORT=3306
 ENCRYPTION_KEY=tu_clave_de_encriptación_de_64_caracteres_en_hexadecimal
 
 # Configuración MQTT
-API_URL=url_del_backend (url:PORT)
+API_URL=http://localhost:tu_puerto o http://backend:tu_puerto (Docker)
+VITE_API_URL=http://localhost:tu_puerto
 ```
 
 **Opcionales**
