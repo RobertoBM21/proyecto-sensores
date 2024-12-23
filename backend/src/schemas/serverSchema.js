@@ -30,9 +30,17 @@ const serverSchema = Joi.object({
     .pattern(
       /^\/(\{[a-zA-Z_][a-zA-Z0-9_]*\}|\w+)(\/(\{[a-zA-Z_][a-zA-Z0-9_]*\}|\w+))*$/
     )
+    .custom((value, helpers) => {
+      if (!value.includes("{apikey}") || !value.includes("{serial}")) {
+        return helpers.message(
+          'El campo "topicFormat" debe contener "apikey" y "serial".'
+        );
+      }
+      return value;
+    })
     .messages({
       "string.pattern.base":
-        'El campo "topicFormat" debe tener un formato válido (ej: "/{apikey}/{serial}/{type}").',
+        'El campo "topicFormat" debe tener un formato válido (ej: "/{{apikey}}/{{serial}}/{{type}}")',
     }),
 });
 
