@@ -55,7 +55,7 @@ function buildBaseWhere(params, dateField = "timestamp") {
   baseWhere["$Device.serverId$"] = { [Op.in]: serverIds };
 
   if (serial) {
-    baseWhere.serial = { [Op.like]: `${serial}%` };
+    baseWhere.serial = { [Op.like]: `%${serial}%` };
   }
   if (apikey) {
     baseWhere["$Device.apikey$"] = apikey;
