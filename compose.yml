@@ -6,7 +6,7 @@ services:
     depends_on:
       - backend
     env_file:
-      - .env.docker
+      - .env
 
   backend:
     build: ./backend
@@ -18,7 +18,7 @@ services:
     environment:
       - DOCKER_ENV=true
     env_file:
-      - .env.docker
+      - .env
 
   mqtt-manager:
     build: ./script
@@ -30,7 +30,23 @@ services:
       - DOCKER_ENV=true
       - TZ=Europe/Madrid
     env_file:
-      - .env.docker
+      - .env
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.7
+    command: start-dev
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD}
+      - KC_DB=mysql
+      - KC_DB_URL=jdbc:mysql://db:3306/keycloak
+      - KC_DB_USERNAME=${DB_USER}
+      - KC_DB_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
 
   db:
     image: mysql:8.0
@@ -40,6 +56,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=${DB_NAME}

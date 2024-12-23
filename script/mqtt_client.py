@@ -18,7 +18,7 @@ from cryptography.hazmat.backends import default_backend
 
 # Carga las variables de entorno
 if os.environ.get('DOCKER_ENV', None) is None:
-    load_dotenv()
+    load_dotenv("../.env.local")
     
 # Variables de entorno y valores por defecto
 ENV_VARS = {

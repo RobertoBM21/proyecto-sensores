@@ -67,8 +67,8 @@ Para desarrollo local:
 
 El proyecto requiere un archivo de variables de entorno:
 
-- Para Docker: `.env.docker`
-- Para desarrollo local: `.env`
+- Para Docker: `.env`
+- Para desarrollo local: `.env.local`
 
 Variables necesarias:
 
@@ -77,12 +77,13 @@ Variables necesarias:
 DB_NAME=sensores
 DB_USER=tu_usuario_de_mysql
 DB_PASSWORD=tu_contraseña_de_mysql
-DB_HOST=db           # Para Docker usar 'db', para desarrollo local usar 'localhost'
+DB_HOST=db                      # Para Docker usar 'db', para desarrollo local usar 'localhost'
 DB_DIALECT=mysql
 DB_PORT=3306
 
 # Configuración de seguridad
 ENCRYPTION_KEY=tu_clave_de_encriptación_de_64_caracteres_en_hexadecimal
+KC_BOOTSTRAP_ADMIN_PASSWORD     # En desarrollo local omitir esta variable
 
 # Configuración MQTT
 API_URL=http://backend:3000     # Para Docker usar 'backend', para desarrollo local usar 'localhost'
@@ -96,9 +97,8 @@ VITE_API_URL=http://localhost:3000
 ```bash
 cd proyecto-sensores
 
-# Crear y configurar variables de entorno
+# Crear y configurar .env.docker con los valores necesarios (ver sección Variables de Entorno)
 touch .env.docker
-# Editar .env.docker con los valores necesarios (ver sección Variables de Entorno)
 
 # Construir y ejecutar
 docker compose up -d --build
