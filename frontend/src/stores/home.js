@@ -26,62 +26,54 @@ export const useHomeStore = defineStore("home", {
       };
 
       try {
-        // 1. Obtener servidores
-        const serversResponse = await fetch(config.getServersUrl);
-        const servers = await serversResponse.json();
-        const serverIds = servers.map((server) => server.id).join(",");
+        const response = await fetch(`${config.getHomeStatsUrl}`);
+        const data = await response.json();
 
-        // 2. Realizar las tres llamadas en paralelo
-        const responses = await Promise.all([
-          fetch(
-            `${config.getDevicesActivityUrl}?serverIds=${serverIds}&dateRange=last_hour`
-          ),
-          fetch(
-            `${config.getMessagesSearchUrl}?serverIds=${serverIds}&dateRange=last_24_hours`
-          ),
-          fetch(
-            `${config.getDevicesActivityUrl}?serverIds=${serverIds}&dateRange=last_week`
-          ),
-        ]);
+        if (!response.ok) {
+          // Manejar errores HTTP específicos
+          const error = {
+            name:
+              response.status === 404
+                ? "NotFoundError"
+                : response.status === 400
+                ? "BadRequestError"
+                : "Error",
+            message: data.error || "Error inesperado al cargar los datos",
+          };
 
-        // 3. Procesar las respuestas
-        const [activeDevices, recentMessages, weeklyStats] = await Promise.all(
-          responses.map(async (response, index) => {
-            const data = await response.json();
-            const key = ["activeDevices", "recentMessages", "weeklyStats"][
-              index
-            ];
+          // Aplicar el error a todos los campos si es un error general
+          if (response.status !== 404) {
+            this.errors.activeDevices = error;
+            this.errors.recentMessages = error;
+            this.errors.weeklyStats = error;
+            return;
+          }
+        }
 
-            if (!response.ok) {
+        // Actualizar el estado con los datos del backend
+        this.activeDevices = data.activeDevices;
+        this.recentMessages = data.recentMessages;
+        this.weeklyStats = data.weeklyStats;
+
+        // Actualizar errores específicos que vienen del backend
+        if (data.errors) {
+          Object.keys(data.errors).forEach((key) => {
+            if (data.errors[key]) {
               this.errors[key] = {
-                name:
-                  response.status === 404
-                    ? "NotFoundError"
-                    : response.status === 400
-                    ? "BadRequestError"
-                    : "Error",
-                message: data.error || "Error inesperado al cargar los datos",
+                name: data.errors[key].name,
+                message: data.errors[key].message,
               };
-              return null;
             }
-
-            return data;
-          })
-        );
-
-        // 4. Actualizar el estado
-        this.activeDevices = activeDevices?.totalItems ?? null;
-        this.recentMessages = recentMessages?.totalItems ?? null;
-        this.weeklyStats = weeklyStats;
+          });
+        }
       } catch (err) {
         console.error("Error fetching home stats:", err);
-        // Error de conexión u otros errores inesperados
         const error = {
           name: err instanceof TypeError ? "ConnectionError" : "Error",
           message:
             err instanceof TypeError
               ? "No se puede conectar al servidor. Verifique su conexión a internet y que el servidor esté en ejecución."
-              : "Ha ocurrido un error inesperado al cargar los servidores.",
+              : "Ha ocurrido un error inesperado al cargar los datos.",
         };
         this.errors.activeDevices = error;
         this.errors.recentMessages = error;

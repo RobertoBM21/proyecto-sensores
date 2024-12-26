@@ -7,7 +7,7 @@ const {
 } = require("../schemas/messageSchema.js");
 
 // Obtener todos los mensajes
-exports.getAllMessages = async (req, res) => {
+exports.getAllMessages = async (_req, res) => {
   const messages = await messageService.getAllMessages();
   res.json(messages);
 };

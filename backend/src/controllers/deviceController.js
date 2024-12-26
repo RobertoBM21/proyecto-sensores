@@ -8,7 +8,7 @@ const {
 } = require("../schemas/deviceSchema.js");
 
 // Obtener todos los dispositivos
-exports.getAllDevices = async (req, res) => {
+exports.getAllDevices = async (_req, res) => {
   const devices = await deviceService.getAllDevices();
   res.json(devices);
 };

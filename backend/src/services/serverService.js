@@ -1,4 +1,6 @@
 const { Server } = require("../models");
+const deviceService = require("./deviceService.js");
+const messageService = require("./messageService.js");
 const { NotFoundError, ConflictError } = require("../utils/errors.js");
 const { encrypt } = require("../utils/crypto.js");
 
@@ -78,6 +80,66 @@ class ServerService {
     const server = await this.getServerById(id);
     await server.destroy();
     return { message: "Servidor eliminado correctamente" };
+  }
+
+  //* Obtener estadísticas generales
+  async getGeneralStats() {
+    const servers = await this.getAllServers();
+    const serverIds = servers.map((server) => server.id);
+
+    // Función auxiliar para manejar cada promesa y mantener consistencia de errores
+    const handlePromise = async (promise) => {
+      try {
+        const result = await promise;
+        return { data: result, error: null };
+      } catch (error) {
+        return {
+          data: null,
+          error: {
+            name: error.name || "Error",
+            message: error.message,
+          },
+        };
+      }
+    };
+
+    const [activeDevicesResult, recentMessagesResult, weeklyStatsResult] =
+      await Promise.all([
+        handlePromise(
+          deviceService.getDeviceActivityReport({
+            serverIds,
+            dateRange: "last_hour",
+          })
+        ),
+        handlePromise(
+          messageService.searchMessages({
+            serverIds,
+            dateRange: "last_24_hours",
+          })
+        ),
+        handlePromise(
+          deviceService.getDeviceActivityReport({
+            serverIds,
+            dateRange: "last_week",
+          })
+        ),
+      ]);
+
+    return {
+      activeDevices: activeDevicesResult.data?.totalItems ?? null,
+      recentMessages: recentMessagesResult.data?.totalItems ?? null,
+      weeklyStats: weeklyStatsResult.data
+        ? {
+            totalDevices: weeklyStatsResult.data.totalDevices,
+            totalItems: weeklyStatsResult.data.totalItems,
+          }
+        : null,
+      errors: {
+        activeDevices: activeDevicesResult.error,
+        recentMessages: recentMessagesResult.error,
+        weeklyStats: weeklyStatsResult.error,
+      },
+    };
   }
 }
 

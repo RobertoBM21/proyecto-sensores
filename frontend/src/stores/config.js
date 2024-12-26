@@ -18,7 +18,8 @@ export const useConfigStore = defineStore("config", {
     getRepoReadmeUrl: (state) => `${state.repoBaseUrl}/blob/main/README.md`,
     getRepoIssuesUrl: (state) => `${state.repoBaseUrl}/issues/new`,
 
-    // Endpoints de la API (para las rutas de búsqueda)
+    // Endpoints de la API
+    getHomeStatsUrl: (state) => `${state.apiBaseUrl}/servers/stats`,
     getMessagesSearchUrl: (state) => `${state.apiBaseUrl}/messages/search`,
     getMessagesStatsUrl: (state) => `${state.apiBaseUrl}/messages/stats`,
     getDevicesActivityUrl: (state) => `${state.apiBaseUrl}/devices/activity`,

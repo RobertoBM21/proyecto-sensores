@@ -29,6 +29,80 @@ router.get("/", serverController.getAllServers);
 
 /**
  * @swagger
+ * /servers/stats:
+ *   get:
+ *     summary: Obtiene las estadísticas generales del sistema
+ *     tags: [Servers]
+ *     responses:
+ *       200:
+ *         description: Estadísticas obtenidas exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 activeDevices:
+ *                   type: integer
+ *                   nullable: true
+ *                   description: Número de dispositivos que han enviado datos en la última hora
+ *                 recentMessages:
+ *                   type: integer
+ *                   nullable: true
+ *                   description: Número de mensajes recibidos en las últimas 24 horas
+ *                 weeklyStats:
+ *                   type: object
+ *                   nullable: true
+ *                   properties:
+ *                     totalDevices:
+ *                       type: integer
+ *                       description: Total de dispositivos detectados en la última semana
+ *                     totalItems:
+ *                       type: integer
+ *                       description: Total de mensajes recibidos en la última semana
+ *                 errors:
+ *                   type: object
+ *                   properties:
+ *                     activeDevices:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         name:
+ *                           type: string
+ *                           enum: [NotFoundError, Error]
+ *                         message:
+ *                           type: string
+ *                     recentMessages:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         name:
+ *                           type: string
+ *                           enum: [NotFoundError, Error]
+ *                         message:
+ *                           type: string
+ *                     weeklyStats:
+ *                       type: object
+ *                       nullable: true
+ *                       properties:
+ *                         name:
+ *                           type: string
+ *                           enum: [NotFoundError, Error]
+ *                         message:
+ *                           type: string
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+router.get("/stats", serverController.getGeneralStats);
+
+/**
+ * @swagger
  * /servers/{id}:
  *   get:
  *     summary: Obtiene un servidor por ID

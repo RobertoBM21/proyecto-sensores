@@ -5,7 +5,7 @@ const {
 } = require("../schemas/serverSchema.js");
 
 // Obtener todos los servidores
-exports.getAllServers = async (req, res) => {
+exports.getAllServers = async (_req, res) => {
   const servers = await serverService.getAllServers();
   res.json(servers);
 };
@@ -15,6 +15,12 @@ exports.getServerById = async (req, res) => {
   const id = validateServerId(req.params.id); //* Validación
   const server = await serverService.getServerById(id);
   res.json(server);
+};
+
+// Obtener estadísticas generales
+exports.getGeneralStats = async (_req, res) => {
+  const stats = await serverService.getGeneralStats();
+  res.json(stats);
 };
 
 // Crear un nuevo servidor
