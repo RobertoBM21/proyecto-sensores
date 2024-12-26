@@ -307,21 +307,25 @@ const yFormatter = (value) => value.toLocaleString("es-ES");
       <Card>
         <!-- Encabezado del Gráfico -->
         <header>
-          <CardHeader class="flex flex-row items-center justify-between">
+          <CardHeader
+            class="flex flex-col sm:flex-row items-center justify-between gap-4"
+          >
             <CardTitle>Mensajes Recibidos</CardTitle>
-            <nav
-              class="inline-flex items-center rounded-md border bg-muted p-1 text-muted-foreground"
-            >
-              <Button
-                v-for="range in DATE_CONFIG.timeRanges"
-                :key="range.id"
-                @click="selectedRange = range.id"
-                :variant="selectedRange === range.id ? 'default' : 'ghost'"
-                class="px-2.5"
-                :title="range.description"
+            <nav class="w-full sm:w-auto flex justify-end overflow-x-auto">
+              <div
+                class="inline-flex items-center rounded-md border bg-muted p-1 text-muted-foreground min-w-fit"
               >
-                {{ range.label }}
-              </Button>
+                <Button
+                  v-for="range in DATE_CONFIG.timeRanges"
+                  :key="range.id"
+                  @click="selectedRange = range.id"
+                  :variant="selectedRange === range.id ? 'default' : 'ghost'"
+                  class="px-2.5 whitespace-nowrap"
+                  :title="range.description"
+                >
+                  {{ range.label }}
+                </Button>
+              </div>
             </nav>
           </CardHeader>
         </header>

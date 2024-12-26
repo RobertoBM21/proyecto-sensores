@@ -43,10 +43,10 @@ const handleSocialLogin = (_provider) => router.push("/");
 <template>
   <section class="min-h-screen flex flex-col">
     <Header />
-    <main class="flex-grow flex items-center justify-center">
-      <Card class="w-full max-w-md">
+    <main class="flex-grow flex items-center justify-center py-8 sm:py-12">
+      <Card class="w-full max-w-md mx-4">
         <!-- Encabezado del Formulario -->
-        <CardHeader>
+        <CardHeader class="space-y-1">
           <CardTitle class="text-2xl">Iniciar Sesión</CardTitle>
           <CardDescription>
             Introduce tus credenciales para acceder al sistema
@@ -78,7 +78,7 @@ const handleSocialLogin = (_provider) => router.push("/");
           </form>
 
           <!-- Separador de Inicio de Sesión Social -->
-          <section class="relative my-4">
+          <section class="relative my-6">
             <div class="absolute inset-0 flex items-center">
               <hr class="w-full border-border" />
             </div>

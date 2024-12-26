@@ -79,7 +79,7 @@ const loading = computed(() => home.loading);
     <main class="flex-grow">
       <!-- Sección Principal (Hero) -->
       <section class="relative bg-background py-20">
-        <div class="container px-4 mx-auto">
+        <div class="container px-4 sm:px-6 md:px-8 mx-auto">
           <div class="max-w-3xl mx-auto text-center">
             <h1
               class="text-4xl font-bold tracking-tight text-foreground sm:text-6xl"
@@ -106,7 +106,7 @@ const loading = computed(() => home.loading);
 
       <!-- Sección de Estadísticas -->
       <section class="py-12">
-        <div class="container px-4 mx-auto">
+        <div class="container px-4 sm:px-6 md:px-8 mx-auto">
           <div class="grid md:grid-cols-3 gap-8">
             <Card
               v-for="stat in stats"
@@ -146,12 +146,14 @@ const loading = computed(() => home.loading);
 
       <!-- Sección de Características -->
       <section class="py-16">
-        <div class="container px-4 mx-auto">
+        <div class="container px-4 sm:px-6 md:px-8 mx-auto">
           <h2 class="text-3xl font-bold text-center mb-12">
             Características Principales
           </h2>
           <div class="grid md:grid-cols-2 gap-8">
-            <div class="space-y-4">
+            <div
+              class="space-y-4 flex flex-col items-center text-center md:text-left md:items-start"
+            >
               <Search class="h-8 w-8 text-primary" />
               <h3 class="text-xl font-semibold">Búsqueda Avanzada</h3>
               <p class="text-muted-foreground">
@@ -159,7 +161,9 @@ const loading = computed(() => home.loading);
                 por número de serie, rango de fechas y servidor.
               </p>
             </div>
-            <div class="space-y-4">
+            <div
+              class="space-y-4 flex flex-col items-center text-center md:text-left md:items-start"
+            >
               <Activity class="h-8 w-8 text-primary" />
               <h3 class="text-xl font-semibold">Monitoreo en Tiempo Real</h3>
               <p class="text-muted-foreground">

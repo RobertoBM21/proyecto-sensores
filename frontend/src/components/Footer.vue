@@ -58,10 +58,12 @@ const quickLinks = [
 <template>
   <footer class="bg-card border-t">
     <!-- Contenido Principal -->
-    <div class="container mx-auto px-3 py-6">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+    <div class="container mx-auto px-4 sm:px-6 md:px-8 py-6">
+      <div
+        class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-4 text-center md:text-left"
+      >
         <!-- Acerca de -->
-        <div class="space-y-2">
+        <div class="space-y-2 flex flex-col items-center md:items-start">
           <h3 class="font-semibold">Sistema de Sensores</h3>
           <p class="text-sm text-balance text-muted-foreground">
             Plataforma de monitorización y gestión de sensores IoT en tiempo
@@ -95,7 +97,7 @@ const quickLinks = [
         <!-- Navegación -->
         <div class="space-y-2">
           <h3 class="font-semibold">Navegación</h3>
-          <nav class="flex flex-col gap-1">
+          <nav class="flex flex-col items-center md:items-start gap-1">
             <router-link
               v-for="link in links"
               :key="link.to"
@@ -110,7 +112,7 @@ const quickLinks = [
         <!-- Recursos -->
         <div class="space-y-2">
           <h3 class="font-semibold">Recursos</h3>
-          <nav class="flex flex-col gap-1">
+          <nav class="flex flex-col items-center md:items-start gap-1">
             <a
               v-for="resource in resources"
               :key="resource.label"
@@ -127,7 +129,7 @@ const quickLinks = [
         <!-- Enlaces Rápidos -->
         <div class="space-y-2">
           <h3 class="font-semibold">Enlaces Rápidos</h3>
-          <nav class="flex flex-col gap-1">
+          <nav class="flex flex-col items-center md:items-start gap-1">
             <a
               v-for="link in quickLinks"
               :key="link.label"

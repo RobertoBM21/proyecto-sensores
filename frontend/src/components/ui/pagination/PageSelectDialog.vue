@@ -42,7 +42,9 @@ const handleSubmit = () => {
 
 <template>
   <Dialog :open="isOpen" @update:open="$emit('update:isOpen', $event)">
-    <DialogContent class="sm:max-w-[425px]">
+    <DialogContent
+      class="sm:max-w-[425px] mx-auto rounded-lg w-[calc(100%-2rem)] left-[50%] -translate-x-[50%]"
+    >
       <DialogHeader>
         <DialogTitle>Ir a la página</DialogTitle>
         <DialogDescription>
