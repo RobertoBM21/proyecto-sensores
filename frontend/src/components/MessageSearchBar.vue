@@ -155,7 +155,7 @@ defineExpose({ searchMessages, searchMessagesOnly });
 <template>
   <form @submit.prevent="searchMessages">
     <div
-      class="grid grid-cols-1 md:grid-cols-[2fr,1.5fr,2fr,auto,auto,auto] gap-4 items-end"
+      class="grid grid-cols-1 md:grid-cols-[2fr,2fr,2fr,auto,auto,auto] gap-4 items-end"
     >
       <!-- Entrada de Número de Serie -->
       <fieldset class="space-y-2">

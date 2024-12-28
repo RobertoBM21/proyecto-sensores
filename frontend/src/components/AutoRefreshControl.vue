@@ -85,7 +85,7 @@ onBeforeUnmount(() => {
     </PopoverTrigger>
 
     <!-- Panel de Configuración -->
-    <PopoverContent class="w-80">
+    <PopoverContent class="w-auto mx-4 rounded-lg">
       <div class="grid gap-4">
         <!-- Encabezado -->
         <div class="space-y-2">

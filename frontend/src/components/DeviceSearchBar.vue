@@ -107,13 +107,12 @@ defineExpose({ searchDevices });
         <DateRangeSelector ref="dateRangeSelectorRef" storeName="devices" />
       </fieldset>
 
-      <!-- Selector de Servidor -->
-      <fieldset>
-        <ServerSelector storeName="devices" />
-      </fieldset>
-
       <!-- Botones de Acción -->
       <div class="flex items-end justify-end gap-4 md:ml-auto">
+        <!-- Selector de Servidor -->
+        <fieldset>
+          <ServerSelector storeName="devices" />
+        </fieldset>
         <AutoRefreshControl @refresh="searchDevices" />
         <Button type="button" variant="secondary" @click="clearFilters">
           Limpiar Filtros

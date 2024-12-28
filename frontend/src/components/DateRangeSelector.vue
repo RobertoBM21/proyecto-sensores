@@ -284,7 +284,7 @@ watch(
       </header>
 
       <!-- Contenido del Popover -->
-      <PopoverContent class="w-auto">
+      <PopoverContent class="w-[calc(100vw-2rem)] sm:w-auto mx-4 rounded-lg">
         <article class="grid gap-4">
           <!-- Encabezado -->
           <header class="space-y-2">
@@ -323,23 +323,30 @@ watch(
             </p>
 
             <!-- Contenedor de la Grid -->
-            <div class="grid grid-cols-[1fr,180px] gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-[1fr,180px] gap-4">
               <!-- Calendario -->
               <RangeCalendar
                 :key="calendarKey"
                 v-model="dateValue"
-                class="rounded-md border p-3"
+                class="rounded-md border p-2 sm:p-3 w-full min-w-[300px] grid justify-items-center text-center"
               />
 
               <!-- Selección de Hora -->
-              <fieldset class="space-y-4 p-3 border-border border rounded-md">
+              <fieldset
+                class="space-y-4 p-2 sm:p-3 border-border border rounded-md"
+              >
                 <div>
-                  <legend class="flex items-center space-x-2">
-                    <Label for="time-selection">Especificar Hora</Label>
+                  <legend
+                    class="flex items-center md:space-x-2 justify-center md:justify-start"
+                  >
+                    <Label for="time-selection" class="text-center md:text-left"
+                      >Especificar Hora</Label
+                    >
                     <Switch
                       id="time-selection"
                       :checked="showTimeSelection"
                       @update:checked="showTimeSelection = $event"
+                      class="ml-2"
                     />
                   </legend>
                 </div>

@@ -146,7 +146,7 @@ onMounted(fetchServers);
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent class="w-auto">
+      <DropdownMenuContent class="w-auto mx-4 rounded-lg">
         <!-- Estado de Carga -->
         <div v-if="loading" class="px-2 py-1.5">
           <p class="text-sm text-muted-foreground text-center">
