@@ -187,9 +187,8 @@ defineExpose({ searchMessages, searchMessagesOnly });
         />
       </fieldset>
 
-      <!-- Botones de Acción -->
+      <!-- Botones -->
       <div class="flex items-end gap-4">
-        <!-- Selector de Servidor -->
         <fieldset class="flex items-end">
           <ServerSelector :initial-values="initialValues" />
         </fieldset>

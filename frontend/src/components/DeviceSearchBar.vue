@@ -101,18 +101,15 @@ defineExpose({ searchDevices });
 
 <template>
   <form @submit.prevent="searchDevicesWithReset">
-    <div class="grid grid-cols-1 md:grid-cols-[0.5fr,1fr,auto] gap-4 items-end">
+    <div class="grid grid-cols-1 md:grid-cols-[2fr,auto] gap-4 items-end">
       <!-- Selector de Rango de Fechas -->
       <fieldset>
         <DateRangeSelector ref="dateRangeSelectorRef" storeName="devices" />
       </fieldset>
 
-      <!-- Botones de Acción -->
-      <div class="flex items-end justify-end gap-4">
-        <!-- Selector de Servidor -->
-        <fieldset>
-          <ServerSelector storeName="devices" />
-        </fieldset>
+      <!-- Botones -->
+      <div class="flex items-end gap-4">
+        <ServerSelector storeName="devices" />
         <div class="shrink-0">
           <AutoRefreshControl @refresh="searchDevices" />
         </div>
