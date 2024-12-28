@@ -108,12 +108,14 @@ defineExpose({ searchDevices });
       </fieldset>
 
       <!-- Botones de Acción -->
-      <div class="flex items-end justify-end gap-4 md:ml-auto">
+      <div class="flex items-end justify-end gap-4">
         <!-- Selector de Servidor -->
         <fieldset>
           <ServerSelector storeName="devices" />
         </fieldset>
-        <AutoRefreshControl @refresh="searchDevices" />
+        <div class="shrink-0">
+          <AutoRefreshControl @refresh="searchDevices" />
+        </div>
         <Button type="button" variant="secondary" @click="clearFilters">
           Limpiar Filtros
         </Button>

@@ -204,7 +204,7 @@ const clearAll = () => {
 
 // Utilidades de UI
 const getTextColorClass = (hasValue) =>
-  hasValue ? "text-foreground" : "text-muted-foreground";
+  hasValue ? "text-foreground, pr-8" : "text-muted-foreground";
 
 // Exposición de Métodos
 defineExpose({ clearAll });
@@ -263,7 +263,7 @@ watch(
             id="date-range-selector"
             variant="outline"
             :class="[
-              'w-full pr-8 justify-start',
+              'w-full justify-start',
               getTextColorClass(hasDateSelection),
               'font-normal',
             ]"

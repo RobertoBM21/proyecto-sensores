@@ -155,7 +155,7 @@ defineExpose({ searchMessages, searchMessagesOnly });
 <template>
   <form @submit.prevent="searchMessages">
     <div
-      class="grid grid-cols-1 md:grid-cols-[2fr,2fr,2fr,auto,auto,auto] gap-4 items-end"
+      class="grid grid-cols-1 lg:grid-cols-[2fr,2fr,2fr,auto,auto,auto] gap-4 items-end"
     >
       <!-- Entrada de Número de Serie -->
       <fieldset class="space-y-2">
@@ -170,7 +170,7 @@ defineExpose({ searchMessages, searchMessagesOnly });
 
       <!-- Entrada de API Key -->
       <fieldset class="space-y-2">
-        <Label for="apikey">API Key</Label>
+        <Label for="apikey" class="whitespace-nowrap">API Key</Label>
         <Input
           type="text"
           id="apikey"
@@ -187,14 +187,15 @@ defineExpose({ searchMessages, searchMessagesOnly });
         />
       </fieldset>
 
-      <!-- Selector de Servidor -->
-      <fieldset class="flex items-end">
-        <ServerSelector :initial-values="initialValues" />
-      </fieldset>
-
       <!-- Botones de Acción -->
       <div class="flex items-end gap-4">
-        <AutoRefreshControl @refresh="searchMessages" />
+        <!-- Selector de Servidor -->
+        <fieldset class="flex items-end">
+          <ServerSelector :initial-values="initialValues" />
+        </fieldset>
+        <div class="shrink-0">
+          <AutoRefreshControl @refresh="searchMessages" />
+        </div>
         <Button type="button" variant="secondary" @click="clearFilters">
           Limpiar Filtros
         </Button>
