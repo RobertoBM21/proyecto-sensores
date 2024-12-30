@@ -19,6 +19,7 @@ import {
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useColorMode } from "@vueuse/core";
+import { useAuthStore } from "../stores/auth";
 
 // Recursos e iconos
 import githubDark from "@/assets/icons/github-dark.svg";
@@ -29,15 +30,20 @@ const username = ref("");
 const password = ref("");
 const router = useRouter();
 const mode = useColorMode();
+const auth = useAuthStore();
 
 // Computación de recursos
 const githubIcon = computed(() =>
   mode.value === "light" ? githubLight : githubDark
 );
 
+//TODO: Manejadores de eventos con keycloak
 // Manejadores de eventos (mocks de autenticación)
-const handleLogin = () => router.push("/");
-const handleSocialLogin = (_provider) => router.push("/");
+const handleLogin = () => {
+  auth.login(username.value, password.value);
+  router.push("/");
+};
+const handleSocialLogin = (_provider) => handleLogin();
 </script>
 
 <template>

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 
 // Constantes para grupos de rutas
 const RouteGroups = {
@@ -13,6 +14,7 @@ const routes = [
     component: () => import("../views/HomePage.vue"),
     meta: {
       label: "Inicio",
+      requiresAuth: false,
     },
   },
   {
@@ -22,6 +24,7 @@ const routes = [
     meta: {
       label: "Iniciar Sesión",
       hideInNav: true,
+      requiresAuth: false,
     },
   },
 
@@ -35,6 +38,7 @@ const routes = [
       label: "Mensajes",
       groupLabel: "Búsqueda",
       description: "Busca mensajes por fecha, dispositivo, o servidores.",
+      requiresAuth: true,
     },
   },
   {
@@ -46,6 +50,7 @@ const routes = [
       label: "Dispositivos",
       groupLabel: "Búsqueda",
       description: "Busca los dispositivos que han dejado de enviar mensajes.",
+      requiresAuth: true,
     },
   },
 
@@ -57,9 +62,18 @@ const routes = [
 ];
 
 const router = createRouter({
-  //? Si en el futuro necesitamos desplegar desde un subdirectorio, podemos usar createWebHistory(import.meta.env.BASE_URL)
   history: createWebHistory(),
   routes,
+});
+
+// Guardia de navegación
+router.beforeEach(async (to) => {
+  const auth = useAuthStore();
+
+  // Si la ruta requiere autenticación y el usuario no está autenticado, redirigir a la página de inicio de sesión
+  if (to.meta.requiresAuth && !auth.isAuthenticated) {
+    return { name: "login" };
+  }
 });
 
 export default router;

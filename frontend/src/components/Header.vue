@@ -10,16 +10,26 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Iconos y utilidades
 import { Icon } from "@iconify/vue";
 import { useColorMode } from "@vueuse/core";
 import { useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 
 // Estado y referencias
 const route = useRoute();
 const router = useRouter();
 const mode = useColorMode();
+const auth = useAuthStore();
 
 // Configuración de navegación
 // Rutas principales (sin grupos)
@@ -58,6 +68,11 @@ const groupedRoutes = router.options.routes.reduce((groups, route) => {
   }
   return groups;
 }, {});
+
+const handleLogout = async () => {
+  await auth.logout();
+  router.push("/login");
+};
 </script>
 
 <template>
@@ -146,15 +161,45 @@ const groupedRoutes = router.options.routes.reduce((groups, route) => {
           <span class="sr-only">Cambiar Tema</span>
         </Button>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          @click="router.push('/login')"
-          title="Usuario"
-        >
-          <Icon icon="lucide:circle-user-round" class="h-4 w-4" />
-          <span class="sr-only">Usuario</span>
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child>
+            <Button variant="ghost" size="icon" title="Usuario">
+              <Icon icon="lucide:circle-user-round" class="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent class="w-56" align="end">
+            <template v-if="auth.isAuthenticated">
+              <DropdownMenuLabel class="font-normal">
+                <div class="flex flex-col space-y-1">
+                  <p class="text-sm font-medium leading-none">
+                    {{ auth.name || auth.username }}
+                  </p>
+                  <p class="text-xs leading-none text-muted-foreground">
+                    {{ auth.email }}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem @click="handleLogout" class="cursor-pointer">
+                <div class="flex w-full items-center justify-between">
+                  <span>Cerrar Sesión</span>
+                  <Icon icon="lucide:log-out" class="h-4 w-4" />
+                </div>
+              </DropdownMenuItem>
+            </template>
+            <template v-else>
+              <DropdownMenuItem asChild>
+                <router-link
+                  to="/login"
+                  class="flex w-full items-center justify-between cursor-pointer"
+                >
+                  <span>Iniciar Sesión</span>
+                  <Icon icon="lucide:log-in" class="h-4 w-4" />
+                </router-link>
+              </DropdownMenuItem>
+            </template>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </nav>
     </div>
   </header>

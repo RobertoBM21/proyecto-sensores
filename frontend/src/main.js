@@ -1,8 +1,7 @@
 import "./assets/index.css";
-
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-
+import { useAuthStore } from "./stores/auth";
 import App from "./App.vue";
 import router from "./router";
 
@@ -16,3 +15,16 @@ app.use(createPinia());
 app.use(router);
 
 app.mount("#app");
+
+// // Inicializar keycloak antes de montar la app
+// const initApp = async () => {
+//   try {
+//     const authStore = useAuthStore();
+//     await authStore.initialize();
+//     app.mount("#app");
+//   } catch (error) {
+//     console.error("Failed to initialize app:", error);
+//   }
+// };
+
+// initApp();
