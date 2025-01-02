@@ -19,6 +19,7 @@ import { useConfigStore } from "../stores/config";
 
 // Utilidades y Hooks
 import { ref, computed, onMounted } from "vue";
+import { fetchWithAuth } from "../lib/http";
 
 // Props y Validación
 const props = defineProps({
@@ -78,7 +79,7 @@ const fetchServers = async () => {
   error.value = null;
 
   try {
-    const response = await fetch(config.getServersUrl);
+    const response = await fetchWithAuth(config.getServersUrl);
     if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
 
     servers.value = await response.json();

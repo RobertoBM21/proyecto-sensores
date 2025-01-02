@@ -14,17 +14,18 @@ app.use(createPinia());
 // Usar el enrutador de Vue
 app.use(router);
 
-app.mount("#app");
+// Inicializar keycloak antes de montar la app
+const initApp = async () => {
+  try {
+    const authStore = useAuthStore();
+    await authStore.initialize();
 
-// // Inicializar keycloak antes de montar la app
-// const initApp = async () => {
-//   try {
-//     const authStore = useAuthStore();
-//     await authStore.initialize();
-//     app.mount("#app");
-//   } catch (error) {
-//     console.error("Failed to initialize app:", error);
-//   }
-// };
+    if (authStore.initialized) {
+      app.mount("#app");
+    }
+  } catch (error) {
+    console.error("Failed to initialize app:", error);
+  }
+};
 
-// initApp();
+initApp();

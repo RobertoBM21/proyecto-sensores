@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 
+//TODO: Sustituir valores por variables de entorno(solo apiBaseUrl)
 export const useConfigStore = defineStore("config", {
   state: () => ({
     apiBaseUrl: import.meta.env.VITE_API_URL || "http://localhost:3000",

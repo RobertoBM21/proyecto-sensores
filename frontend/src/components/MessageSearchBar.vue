@@ -15,6 +15,7 @@ import { useMessagesStore } from "../stores/messages";
 
 // Utilidades y Hooks
 import { ref } from "vue";
+import { fetchWithAuth } from "../lib/http";
 
 // Props y Referencias
 const props = defineProps({
@@ -55,7 +56,7 @@ const fetchData = async (endpoint, params = {}) => {
     url.searchParams.append(key, value);
   });
 
-  const response = await fetch(url);
+  const response = await fetchWithAuth(url);
   const data = await response.json();
 
   if (!response.ok) {

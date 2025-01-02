@@ -68,11 +68,6 @@ const groupedRoutes = router.options.routes.reduce((groups, route) => {
   }
   return groups;
 }, {});
-
-const handleLogout = async () => {
-  await auth.logout();
-  router.push("/login");
-};
 </script>
 
 <template>
@@ -172,15 +167,18 @@ const handleLogout = async () => {
               <DropdownMenuLabel class="font-normal">
                 <div class="flex flex-col space-y-1">
                   <p class="text-sm font-medium leading-none">
-                    {{ auth.name || auth.username }}
+                    {{ auth.userInfo.name || auth.userInfo.username }}
                   </p>
                   <p class="text-xs leading-none text-muted-foreground">
-                    {{ auth.email }}
+                    {{ auth.userInfo.email }}
                   </p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem @click="handleLogout" class="cursor-pointer">
+              <DropdownMenuItem
+                @click="auth.logout"
+                class="cursor-pointer font-medium"
+              >
                 <div class="flex w-full items-center justify-between">
                   <span>Cerrar Sesión</span>
                   <Icon icon="lucide:log-out" class="h-4 w-4" />
@@ -188,14 +186,14 @@ const handleLogout = async () => {
               </DropdownMenuItem>
             </template>
             <template v-else>
-              <DropdownMenuItem asChild>
-                <router-link
-                  to="/login"
-                  class="flex w-full items-center justify-between cursor-pointer"
-                >
+              <DropdownMenuItem
+                @click="auth.login(route.path)"
+                class="cursor-pointer font-medium"
+              >
+                <div class="flex w-full items-center justify-between">
                   <span>Iniciar Sesión</span>
                   <Icon icon="lucide:log-in" class="h-4 w-4" />
-                </router-link>
+                </div>
               </DropdownMenuItem>
             </template>
           </DropdownMenuContent>

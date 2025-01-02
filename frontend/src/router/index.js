@@ -17,6 +17,7 @@ const routes = [
       requiresAuth: false,
     },
   },
+  //TODO: Eliminar la ruta de login y la propia pagina de login
   {
     path: "/login",
     name: "login",
@@ -72,7 +73,7 @@ router.beforeEach(async (to) => {
 
   // Si la ruta requiere autenticación y el usuario no está autenticado, redirigir a la página de inicio de sesión
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
-    return { name: "login" };
+    auth.login(to.path);
   }
 });
 

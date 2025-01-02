@@ -13,6 +13,7 @@ import { useDevicesStore } from "../stores/devices";
 
 // Utilidades y Referencias
 import { ref } from "vue";
+import { fetchWithAuth } from "../lib/http";
 
 // Estado y Referencias
 const config = useConfigStore();
@@ -37,7 +38,7 @@ const fetchData = async (params = {}) => {
     url.searchParams.append(key, value);
   });
 
-  const response = await fetch(url);
+  const response = await fetchWithAuth(url);
   const data = await response.json();
 
   if (!response.ok) {

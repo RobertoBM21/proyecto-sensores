@@ -37,7 +37,6 @@ const githubIcon = computed(() =>
   mode.value === "light" ? githubLight : githubDark
 );
 
-//TODO: Manejadores de eventos con keycloak
 // Manejadores de eventos (mocks de autenticación)
 const handleLogin = () => {
   auth.login(username.value, password.value);
