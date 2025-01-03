@@ -7,7 +7,7 @@ const RouteGroups = {
 };
 
 const routes = [
-  // Rutas principales
+  // Ruta principal
   {
     path: "/",
     name: "home",
@@ -17,18 +17,6 @@ const routes = [
       requiresAuth: false,
     },
   },
-  //TODO: Eliminar la ruta de login y la propia pagina de login
-  {
-    path: "/login",
-    name: "login",
-    component: () => import("../views/LoginPage.vue"),
-    meta: {
-      label: "Iniciar Sesión",
-      hideInNav: true,
-      requiresAuth: false,
-    },
-  },
-
   // Rutas de búsqueda
   {
     path: "/search/messages",

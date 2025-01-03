@@ -11,7 +11,6 @@ const errorHandler = require("./middleware/errorHandler.js");
 // Crear la aplicación de Express
 const app = express();
 
-// TODO: Configurar CORS y otros middlewares
 // Middleware de seguridad
 app.use(
   cors({
