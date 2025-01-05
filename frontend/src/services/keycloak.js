@@ -61,7 +61,7 @@ const login = async (path) => {
 
 const logout = async () => {
   await keycloakInstance?.logout({
-    redirectUri: HOME_URL,
+    redirectUri: `${HOME_URL}/`,
   });
 };
 
