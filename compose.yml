@@ -22,6 +22,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      - DOCKER_ENV=true
     env_file:
       - .env
 
@@ -32,6 +34,7 @@ services:
     volumes:
       - mqtt-logs:/app/logs
     environment:
+      - DOCKER_ENV=true
       - TZ=Europe/Madrid
     env_file:
       - .env

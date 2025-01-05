@@ -8,10 +8,12 @@ Este proyecto es una aplicación para gestionar los mensajes enviados por dispos
 - [Requisitos](#requisitos)
 - [Configuración](#configuración)
   - [Variables de Entorno](#variables-de-entorno)
-- [Ejecución](#ejecución)
+- [Ejecución con Docker](#ejecución-con-docker)
   - [Inicio Rápido](#inicio-rápido)
   - [Gestión del Script MQTT](#gestión-del-script-mqtt)
-- [ Información Clientes MQTT ](#información-clientes-mqtt)
+- [Desarrollo Local](#desarrollo-local)
+  - [Instalación de Dependencias](#instalación-de-dependencias)
+  - [Ejecución en Desarrollo](#ejecución-en-desarrollo)
 - [Contacto](#contacto)
 
 ## Estructura del Proyecto
@@ -52,6 +54,13 @@ Para ejecutar con Docker:
 
 - **Docker** y **Docker Compose**
 
+Para desarrollo local:
+
+- **Node.js** v22.11.0 o superior
+- **Python** 3.x
+- **MySQL** 8.0
+- **npm**/**pnpm**/**yarn**
+
 ## Configuración
 
 ### Variables de Entorno
@@ -59,40 +68,29 @@ Para ejecutar con Docker:
 El proyecto requiere un archivo de variables de entorno:
 
 - Para Docker: `.env`
+- Para desarrollo local: `.env.local`
 
 Variables necesarias:
 
 ```env
-# Configuración del servidor
-PORT=3000
-
 # Configuración de Base de Datos
 DB_NAME=sensores
 DB_USER=tu_usuario_de_mysql
 DB_PASSWORD=tu_contraseña_de_mysql
-DB_HOST=db
+DB_HOST=db                      # Para Docker usar 'db', para desarrollo local usar 'localhost'
 DB_DIALECT=mysql
 DB_PORT=3306
 
 # Configuración de seguridad
 ENCRYPTION_KEY=tu_clave_de_encriptación_de_64_caracteres_en_hexadecimal
-ENCRYPTION_KEY=tu_clave_de_encriptación_de_64_caracteres_en_hexadecimal
+KC_BOOTSTRAP_ADMIN_PASSWORD     # En desarrollo local omitir esta variable
 
-# Configuración API Script y Frontend
-API_URL=http://backend:3000
+# Configuración MQTT
+API_URL=http://backend:3000     # Para Docker usar 'backend', para desarrollo local usar 'localhost'
 VITE_API_URL=http://localhost:3000
-
-#Configuración ruta Frontend
-VITE_FRONTEND_URL=http://localhost:80
-
-# Configuración Keycloak
-KC_BOOTSTRAP_ADMIN_PASSWORD=admin
-VITE_KEYCLOAK_URL=http://localhost:8080/
-VITE_KEYCLOAK_REALM=sensores
-VITE_KEYCLOAK_CLIENT_ID=app-sensores
 ```
 
-## Ejecución
+## Ejecución con Docker
 
 ### Inicio Rápido
 
@@ -131,7 +129,75 @@ docker exec -it proyecto-sensores-mqtt-manager-1 python mqtt_manager.py
 
 El script proporcionará una interfaz interactiva para gestionar las conexiones MQTT.
 
-## Información Clientes MQTT
+## Desarrollo Local
+
+Si prefieres desarrollar sin Docker, sigue estas instrucciones:
+
+### Instalación de Dependencias
+
+**Backend**
+
+```bash
+cd backend
+npm/pnpm/yarn install
+```
+
+**Frontend**
+
+```bash
+cd frontend
+npm/pnpm/yarn install
+```
+
+**Script MQTT**
+
+```bash
+cd script
+pip install -r requirements.txt
+```
+
+### Ejecución en Desarrollo
+
+**Backend**
+
+Para desarrollo con recarga automática:
+
+```bash
+cd backend
+node --run dev
+```
+
+Para producción:
+
+```bash
+cd backend
+node --run start
+```
+
+El servidor se ejecutará en `http://localhost:3000` por defecto.
+
+**Frontend**
+
+Para desarrollo con recarga automática:
+
+```bash
+cd frontend
+node --run dev
+```
+
+La aplicación estará disponible en `http://localhost:5173` por defecto.
+
+Para producción hay que construir la aplicación, si quieres previsualizarlo localmente emplea el comando `preview`:
+
+```bash
+cd frontend
+node --run build # Genera archivos estáticos en /dist
+node --run preview # Ejecuta un servidor locar para previsualizar producción
+```
+
+Si usas preview, el servidor local estará disponible en `http://localhost:4173` por defecto.
+
+**Clientes MQTT**
 
 El proyecto utiliza un sistema de gestión de clientes MQTT que consiste en:
 

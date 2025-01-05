@@ -11,6 +11,11 @@ from datetime import datetime, timedelta
 # Importaciones de terceros
 import psutil
 import requests
+from dotenv import load_dotenv
+
+# Carga las variables de entorno, si no estamos en Docker cargamos desde .env
+if os.environ.get('DOCKER_ENV', None) is None:
+    load_dotenv("../.env.local")
 
 # Variables de entorno y valores por defecto
 ENV_VARS = {
