@@ -1,12 +1,13 @@
 import Keycloak from "keycloak-js";
 
-//TODO: Sustituir valores por variables de entorno
 // Constantes
 const KEYCLOAK_CONFIG = {
-  url: "http://localhost:8080/",
-  realm: "sensores",
-  clientId: "frontend-sensores",
+  url: import.meta.env.VITE_KEYCLOAK_URL,
+  realm: import.meta.env.VITE_KEYCLOAK_REALM,
+  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
 };
+
+const HOME_URL = import.meta.env.VITE_FRONTEND_URL;
 
 const TOKEN_REFRESH_THRESHOLD = 30;
 
@@ -54,13 +55,13 @@ const updateToken = async () => {
 
 const login = async (path) => {
   await keycloakInstance?.login({
-    redirectUri: `http://localhost:80${path}`,
+    redirectUri: `${HOME_URL}${path}`,
   });
 };
 
 const logout = async () => {
   await keycloakInstance?.logout({
-    redirectUri: "http://localhost:80/",
+    redirectUri: HOME_URL,
   });
 };
 
