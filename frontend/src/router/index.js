@@ -56,12 +56,12 @@ const router = createRouter({
 });
 
 // Guardia de navegación
-router.beforeEach(async (to) => {
+router.beforeResolve(async (to) => {
   const auth = useAuthStore();
 
   // Si la ruta requiere autenticación y el usuario no está autenticado, redirigir a la página de inicio de sesión
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
-    auth.login(to.path);
+    await auth.login(to.path);
   }
 });
 

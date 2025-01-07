@@ -44,7 +44,7 @@ services:
     command: start-dev
     environment:
       - KC_BOOTSTRAP_ADMIN_USERNAME=admin
-      - KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD}
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
       - KC_DB=mysql
       - KC_DB_URL=jdbc:mysql://db:3306/keycloak
       - KC_DB_USERNAME=${DB_USER}
