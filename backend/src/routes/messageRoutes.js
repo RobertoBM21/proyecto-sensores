@@ -1,4 +1,5 @@
 const messageController = require("../controllers/messageController.js");
+const { authMiddleware } = require("../middleware/auth.js");
 const express = require("express");
 const router = express.Router();
 
@@ -25,7 +26,7 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Message'
  */
-router.get("/", messageController.getAllMessages);
+router.get("/", authMiddleware, messageController.getAllMessages);
 
 /**
  * @swagger
@@ -118,7 +119,7 @@ router.get("/", messageController.getAllMessages);
  *       404:
  *        description: Mensajes no encontrados para los filtros proporcionados
  */
-router.get("/search", messageController.searchMessages);
+router.get("/search", authMiddleware, messageController.searchMessages);
 
 /**
  * @swagger
@@ -193,7 +194,7 @@ router.get("/search", messageController.searchMessages);
  *       404:
  *         description: No se encontraron mensajes
  */
-router.get("/stats", messageController.getMessagesStats);
+router.get("/stats", authMiddleware, messageController.getMessagesStats);
 
 /**
  * @swagger
@@ -220,7 +221,7 @@ router.get("/stats", messageController.getMessagesStats);
  *       404:
  *         description: Mensaje no encontrado
  */
-router.get("/:id", messageController.getMessageById);
+router.get("/:id", authMiddleware, messageController.getMessageById);
 
 /**
  * @swagger
@@ -244,7 +245,7 @@ router.get("/:id", messageController.getMessageById);
  *       400:
  *         description: Error en la solicitud
  */
-router.post("/", messageController.createMessage);
+router.post("/", authMiddleware, messageController.createMessage);
 
 /**
  * @swagger
@@ -277,7 +278,7 @@ router.post("/", messageController.createMessage);
  *       404:
  *         description: Mensaje no encontrado
  */
-router.put("/:id", messageController.updateMessage);
+router.put("/:id", authMiddleware, messageController.updateMessage);
 
 /**
  * @swagger
@@ -298,6 +299,6 @@ router.put("/:id", messageController.updateMessage);
  *       404:
  *         description: Mensaje no encontrado
  */
-router.delete("/:id", messageController.deleteMessage);
+router.delete("/:id", authMiddleware, messageController.deleteMessage);
 
 module.exports = router;
