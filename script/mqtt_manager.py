@@ -18,6 +18,10 @@ ENV_VARS = {
     'LOGS_DIR': 'logs',
     'REFRESH_INTERVAL': '60',  # Segundos de refresco automático
     'LOG_RETENTION_DAYS': '7',  # Días a mantener logs
+    'KEYCLOAK_URL': None,       # URL de Keycloak
+    'KEYCLOAK_REALM': None,     # Realm de Keycloak
+    'MQTT_KEYCLOAK_CLIENT_ID': None,    # ID de cliente MQTT en Keycloak
+    'MQTT_KEYCLOAK_CLIENT_SECRET': None # Secreto de cliente MQTT en Keycloak
 }
 
 # Constantes internas
@@ -66,17 +70,50 @@ class MQTTManager:
         # Cargar configuración de entorno
         self.config = validate_environment()
         
-        # Configuración inicial
+        # Variables de entorno
         self.refresh_interval = refresh_interval or int(self.config['REFRESH_INTERVAL'])
         self.retention_days = retention_days or int(self.config['LOG_RETENTION_DAYS'])
+        self.keycloak_url = self.config['KEYCLOAK_URL']
+        self.keycloak_realm = self.config['KEYCLOAK_REALM']
+        self.keycloak_client_id = self.config['MQTT_KEYCLOAK_CLIENT_ID']
+        self.keycloak_client_secret = self.config['MQTT_KEYCLOAK_CLIENT_SECRET']
+        
+        # Configuración inicial
         self.processes: Dict[str, int] = {}
         self.paused_servers = set()
+        self.token = None
+        self.token_expires_in = None
         
         # Inicialización del directorio de logs y carga de procesos
         if not os.path.exists(self.config['LOGS_DIR']):
             os.makedirs(self.config['LOGS_DIR'])
             
+        self._fetch_token()
         self._setup_auto_refresh()
+
+    def _fetch_token(self):
+        """
+        Obtiene un nuevo access_token desde Keycloak vía client_credentials
+        y actualiza self._token y self.token_expires_in.
+        """
+        url = f"{self.keycloak_url}realms/{self.keycloak_realm}/protocol/openid-connect/token"
+        data = {
+            "grant_type": "client_credentials",
+            "client_id": self.keycloak_client_id,
+            "client_secret": self.keycloak_client_secret
+        }
+        try:
+            resp = requests.post(url, data=data)
+            resp.raise_for_status()  # lanza excepción si status_code != 2xx
+            token_data = resp.json()
+            
+            self.token = token_data["access_token"]
+            self.token_expires_in = token_data["expires_in"]            
+            
+        except Exception as e:
+            print(f"Error al obtener token de Keycloak: {e}")
+            self.token = None
+            self.token_expires_in = None
 
     def _setup_auto_refresh(self):
         """Configura el refresco automático y la ejecución diaria"""
@@ -98,12 +135,20 @@ class MQTTManager:
             while True:
                 self.check_status(verbose=False)
                 threading.Event().wait(self.refresh_interval)
+                
+        def token_thread():
+            while True:
+                threading.Event().wait(self.token_expires_in - 60)
+                self._fetch_token()  # Obtener nuevo token
+                self.daily_task()    # Relanzar clientes con nuevo token
         
-        # Iniciar ambos hilos
+        # Iniciar todos los hilos
         refresh_thread = threading.Thread(target=timer_thread, daemon=True)
         daily_thread = threading.Thread(target=daily_thread, daemon=True)
+        token_refresh_thread = threading.Thread(target=token_thread, daemon=True)
         refresh_thread.start()
         daily_thread.start()
+        token_refresh_thread.start()
 
     def cleanup_old_logs(self):
         """Elimina logs más antiguos que retention_days"""
@@ -125,7 +170,7 @@ class MQTTManager:
                 continue
 
     def daily_task(self):
-        """Tarea que se ejecutará diariamente a medianoche"""
+        """Tarea que se ejecutará diariamente a medianoche o al actualizar el token"""
         # 1. Limpiar logs antiguos
         self.cleanup_old_logs()
         
@@ -151,7 +196,8 @@ class MQTTManager:
     def get_servers(self):
         """Obtiene la lista de servidores desde la API"""
         try:
-            response = requests.get(f"{self.config['API_URL']}/servers")
+            headers = {'Authorization': f'Bearer {self.token}'}
+            response = requests.get(f"{self.config['API_URL']}/servers", headers=headers)
             if response.status_code == 200:
                 return response.json()
             else:
@@ -195,7 +241,7 @@ class MQTTManager:
             with open(log_file, 'a', encoding='utf-8') as f:
                 f.write(f"\n--- Nueva sesión iniciada {datetime.now()} ---\n")
                 process = subprocess.Popen(
-                    ['python', 'mqtt_client.py', str(server_id)],
+                    ['python', 'mqtt_client.py', str(server_id), self.token],
                     stdout=f,
                     stderr=subprocess.STDOUT,   # Redirigir stderr a stdout
                     text=True,

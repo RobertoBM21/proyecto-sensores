@@ -26,6 +26,7 @@ ENV_VARS = {
 # Variables globales
 client = None  # Cliente MQTT (para manejo de señales)
 config = None  # Configuración validada de variables de entorno
+session = None  # Sesión de requests
 
 # Funciones de configuración y logging
 def setup_logging():
@@ -71,6 +72,9 @@ def parse_arguments():
     parser.add_argument('server_id', 
                        type=int,
                        help='ID del servidor MQTT al que conectarse')
+    parser.add_argument('token',
+                        type=str,
+                        help='Token de autenticación para la API')
     parser.add_argument('--debug', 
                        action='store_true',
                        help='Activa el modo debug (sobrescribe LOG_LEVEL)')
@@ -149,7 +153,7 @@ if os.name == 'nt':
 def get_server(server_id):
     """Obtiene la configuración de un servidor MQTT desde la API."""
     try:
-        response = requests.get(f"{config['API_URL']}/servers/{server_id}")
+        response = session.get(f"{config['API_URL']}/servers/{server_id}")
         if response.status_code == 200:
             server = response.json()
             if not server:
@@ -165,11 +169,11 @@ def get_server(server_id):
 def update_or_create_device(serial, apikey, last_communication, server_id):
     """Actualiza o crea un dispositivo en la base de datos."""
     try:
-        response = requests.get(f"{config['API_URL']}/devices/serial/{serial}")
+        response = session.get(f"{config['API_URL']}/devices/serial/{serial}")
         if response.status_code == 200 and response.json():
             device = response.json()
             update_payload = {"lastCommunication": last_communication}
-            patch_response = requests.patch(f"{config['API_URL']}/devices/{device['id']}", json=update_payload)
+            patch_response = session.patch(f"{config['API_URL']}/devices/{device['id']}", json=update_payload)
             if patch_response.status_code == 200:
                 logging.info(f"Dispositivo {serial} actualizado en la base de datos")
             else:
@@ -181,7 +185,7 @@ def update_or_create_device(serial, apikey, last_communication, server_id):
                 "lastCommunication": last_communication,
                 "serverId": server_id
             }
-            post_response = requests.post(f"{config['API_URL']}/devices", json=new_device)
+            post_response = session.post(f"{config['API_URL']}/devices", json=new_device)
             if post_response.status_code == 201:
                 logging.info(f"Dispositivo {serial} guardado en la base de datos")
             else:
@@ -232,7 +236,7 @@ def on_message(client, userdata, msg):
 
     # Enviar mensaje a la API
     try:
-        response = requests.post(f"{config['API_URL']}/messages", json=message)
+        response = session.post(f"{config['API_URL']}/messages", json=message)
         if response.status_code == 201:
             logging.info("Mensaje guardado en la base de datos")
         else:
@@ -290,6 +294,13 @@ def main():
     
     # Configurar logging
     setup_logging()
+    
+    # Configurar sesiones y headers
+    global session
+    session = requests.Session()
+    session.headers.update({
+        'Authorization': f"Bearer {args.token}"
+    })
         
     # Obtener configuración del servidor
     server = get_server(args.server_id)
