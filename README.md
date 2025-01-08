@@ -92,6 +92,10 @@ KEYCLOAK_REALM=sensores
 VITE_KEYCLOAK_URL=http://localhost:8080/
 VITE_KEYCLOAK_REALM=sensores
 VITE_KEYCLOAK_CLIENT_ID=app-sensores
+
+# Configuración Keycloak (Script)
+MQTT_KEYCLOAK_CLIENT_ID=mqtt-service
+MQTT_KEYCLOAK_CLIENT_SECRET=client_secret_de_cliend_id
 ```
 
 ## Ejecución
