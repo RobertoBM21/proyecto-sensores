@@ -8,6 +8,12 @@ Este proyecto es una aplicación para gestionar los mensajes enviados por dispos
 - [Requisitos](#requisitos)
 - [Configuración](#configuración)
   - [Variables de Entorno](#variables-de-entorno)
+  - [Configuración de Keycloak](#configuración-de-keycloak)
+    - [Primer Acceso y Administración](#primer-acceso-y-administración)
+    - [Configuración del Realm](#configuración-del-realm)
+    - [Gestión de Usuarios y Roles](#gestión-de-usuarios-y-roles)
+    - [Autenticación Externa](#autenticación-externa)
+    - [Configuración de Producción](#configuración-de-producción)
 - [Ejecución](#ejecución)
   - [Inicio Rápido](#inicio-rápido)
   - [Script MQTT](#script-mqtt)
@@ -46,6 +52,7 @@ proyecto-sensores/
 │   ├── mqtt_client.py      # Cliente MQTT individual
 │   ├── mqtt_manager.py     # Gestor de clientes MQTT
 │   └── logs/               # Carpeta para logs de MQTT
+|-- .env                   # Archivo con las variables de entorno
 ```
 
 ## Requisitos
@@ -97,6 +104,101 @@ VITE_KEYCLOAK_CLIENT_ID=app-sensores
 MQTT_KEYCLOAK_CLIENT_ID=mqtt-service
 MQTT_KEYCLOAK_CLIENT_SECRET=client_secret_de_cliend_id
 ```
+
+## Configuración de Keycloak
+
+Keycloak proporciona la gestión de autenticación y autorización para el proyecto. Es necesario realizar una configuración inicial antes de utilizar cualquier servicio (backend, frontend, scripts).
+
+> **Acceso a la Consola**: http://localhost:8080
+
+### Primer Acceso y Administración
+
+1. **Acceso Inicial**:
+
+   - Use las credenciales temporales definidas en `compose.yml`
+   - Accederá al realm "master"
+
+2. **Crear Administrador Principal**:
+   - Navegue a: Users → Add user
+   - Complete los datos del nuevo administrador
+   - En la pestaña Credentials: Establezca una contraseña no temporal
+   - En Role mapping: Asigne el rol "admin", filtrando por "realm roles"
+   - ⚠️ Elimine el usuario temporal inicial
+
+> **Nota**: El rol admin en el realm master otorga control total sobre Keycloak. No confundir con roles de otros realms.
+
+### Configuración del Realm
+
+1. **Crear Nuevo Realm**:
+   - Click en "Create realm"
+   - Importe el archivo `realm-export.json` proporcionado
+2. **Configuración del Cliente MQTT**:
+   - Acceda a: Clients → mqtt-service → Credentials
+   - Para regenerar el client_secret: Click en "Regenerate"
+   - Actualice el nuevo secret en el archivo `.env`
+
+### Gestión de Usuarios y Roles
+
+1. **Grupos Obligatorios**:
+
+   - Todo usuario debe pertenecer a uno de estos grupos:
+     - **admins**: Acceso total a la API del backend
+     - **users**: Acceso restringido a la API del backend
+
+2. **Grupos de Acceso a Servidores**:
+
+   - Todo usuario debe pertenecer a al menos uno de estos grupos:
+     - **all-servers**: Acceso a todos los servidores (recomendado solo para administradores)
+     - **servers-X**: Grupos específicos por servidor (ej: servers-A, servers-B)
+   - Un usuario puede pertenecer a múltiples grupos servers-X simultáneamente
+   - Los servidores accesibles serán la suma de todos sus grupos
+
+3. **Gestión de Servidores**:
+
+   - Al crear un nuevo servidor en la base de datos:
+     - Crear nuevo grupo servers-X con atributo allowedServers, si es necesario
+     - Actualizar atributo allowedServers en grupos existentes según necesidades de acceso
+     - El grupo all-servers se actualiza automáticamente para incluir nuevos servidores
+
+4. **Atributo allowedServers**:
+
+   - Definido a nivel de grupo
+   - Contiene lista de IDs de servidores accesibles
+   - Se hereda automáticamente por los miembros del grupo
+   - Para usuarios en múltiples grupos servers-X, los permisos se acumulan
+   - Actualizar cuando se añadan/eliminen servidores
+
+5. **Creación de Usuarios**:
+   - Vía consola administrativa
+   - Mediante registro con social login
+   - Configuración requerida:
+     - Asignar a admins o users (obligatorio)
+     - Asignar a all-servers o uno o más servers-X (obligatorio)
+     - Verificar que los grupos asignados cubren todos los servidores necesarios
+
+### Autenticación Externa
+
+El proyecto incluye configuración para autenticación mediante:
+
+- Google
+- GitHub
+
+Para modificar o añadir proveedores:
+
+1. Acceda a Identity Providers
+2. Configure las credenciales del proveedor
+3. Ajuste el flujo de autenticación según necesidades
+
+### Configuración de Producción
+
+El proyecto usa Keycloak en modo desarrollo (permite HTTP). Para producción:
+
+1. Habilite modo producción
+2. Configure HTTPS
+3. Establezca certificados SSL
+4. Configure resolución de hostname
+
+> Para más detalles: [Documentación oficial de Keycloak](https://www.keycloak.org/server/configuration-production)
 
 ## Ejecución
 
