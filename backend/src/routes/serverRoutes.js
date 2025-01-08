@@ -25,6 +25,8 @@ const router = express.Router();
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Server'
+ *       401:
+ *         description: Token no proporcionado o inválido
  */
 router.get("/", authMiddleware(), serverController.getAllServers);
 
@@ -124,6 +126,8 @@ router.get("/stats", serverController.getGeneralStats);
  *               $ref: '#/components/schemas/Server'
  *       400:
  *        description: ID inválido
+ *       401:
+ *        description: Token no proporcionado o inválido
  *       404:
  *         description: Servidor no encontrado
  */
@@ -150,6 +154,10 @@ router.get("/:id", authMiddleware(), serverController.getServerById);
  *               $ref: '#/components/schemas/Server'
  *       400:
  *         description: Error en la solicitud
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       403:
+ *         description: No tiene permisos para realizar esta acción
  *       409:
  *         description: Ya existe el usuario en el servidor
  */
@@ -183,6 +191,10 @@ router.post("/", authMiddleware(ROLES.ADMIN), serverController.createServer);
  *               $ref: '#/components/schemas/Server'
  *       400:
  *         description: Error en la solicitud
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       403:
+ *         description: No tiene permisos para realizar esta acción
  *       404:
  *         description: Servidor no encontrado
  *       409:
@@ -206,6 +218,10 @@ router.put("/:id", authMiddleware(ROLES.ADMIN), serverController.updateServer);
  *     responses:
  *       200:
  *         description: Servidor eliminado exitosamente
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       403:
+ *         description: No tiene permisos para realizar esta acción
  *       404:
  *         description: Servidor no encontrado
  */

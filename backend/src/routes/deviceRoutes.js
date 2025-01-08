@@ -25,6 +25,8 @@ const router = express.Router();
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Device'
+ *       401:
+ *         description: Token no proporcionado o inválido
  */
 router.get("/", authMiddleware(), deviceController.getAllDevices);
 
@@ -49,6 +51,10 @@ router.get("/", authMiddleware(), deviceController.getAllDevices);
  *               $ref: '#/components/schemas/Device'
  *       400:
  *         description: Error en la solicitud
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       403:
+ *         description: No tiene permisos para realizar esta acción
  *       409:
  *         description: Ya existe un dispositivo con ese serial
  */
@@ -153,6 +159,8 @@ router.post("/", authMiddleware(ROLES.ADMIN), deviceController.createDevice);
  *                   description: Indica si hay páginas anteriores
  *       400:
  *         description: Parámetros inválidos
+ *       401:
+ *         description: Token no proporcionado o inválido
  *       404:
  *         description: No se encontraron dispositivos para los filtros proporcionados
  */
@@ -184,6 +192,8 @@ router.get(
  *               $ref: '#/components/schemas/Device'
  *       400:
  *         description: Serial inválido
+ *       401:
+ *         description: Token no proporcionado o inválido
  *       404:
  *         description: Dispositivo no encontrado
  */
@@ -217,6 +227,8 @@ router.get(
  *               $ref: '#/components/schemas/Device'
  *       400:
  *         description: ID inválido
+ *       401:
+ *         description: Token no proporcionado o inválido
  *       404:
  *         description: Dispositivo no encontrado
  */
@@ -250,6 +262,10 @@ router.get("/:id", authMiddleware(), deviceController.getDeviceById);
  *               $ref: '#/components/schemas/Device'
  *       400:
  *         description: Error en la solicitud
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       403:
+ *        description: No tiene permisos para realizar esta acción
  *       404:
  *         description: Dispositivo no encontrado
  *       409:
@@ -298,6 +314,10 @@ router.put("/:id", authMiddleware(ROLES.ADMIN), deviceController.updateDevice);
  *               $ref: '#/components/schemas/Device'
  *       400:
  *         description: Error en la solicitud
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       403:
+ *         description: No tiene permisos para realizar esta acción
  *       404:
  *         description: Dispositivo no encontrado
  *       409:
@@ -325,6 +345,10 @@ router.patch(
  *     responses:
  *       200:
  *         description: Dispositivo eliminado exitosamente
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       403:
+ *         description: No tiene permisos para realizar esta acción
  *       404:
  *         description: Dispositivo no encontrado
  */

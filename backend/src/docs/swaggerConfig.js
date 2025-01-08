@@ -5,10 +5,25 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "API de Projecto-Sensores",
+      title: "API de Sistema de Monitoreo de Sensores",
       version: "1.0.0",
-      description: "Documentación de la API para el proyecto de sensores MQTT",
+      description:
+        "Documentación de la API para el proyecto de monitoreo de IoT",
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
   },
   apis: ["./src/routes/*.js", "./src/models/*.js"],
 };

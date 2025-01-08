@@ -25,6 +25,8 @@ const router = express.Router();
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Message'
+ *       401:
+ *         description: Token no proporcionado o inválido
  */
 router.get("/", authMiddleware(), messageController.getAllMessages);
 
@@ -116,6 +118,8 @@ router.get("/", authMiddleware(), messageController.getAllMessages);
  *                   description: Indica si hay páginas anteriores
  *       400:
  *         description: Parámetros inválidos
+ *       401:
+ *        description: Token no proporcionado o inválido
  *       404:
  *        description: Mensajes no encontrados para los filtros proporcionados
  */
@@ -191,6 +195,8 @@ router.get("/search", authMiddleware(), messageController.searchMessages);
  *                     format: date-time
  *       400:
  *         description: Parámetros inválidos
+ *       401:
+ *        description: Token no proporcionado o inválido
  *       404:
  *         description: No se encontraron mensajes
  */
@@ -218,6 +224,8 @@ router.get("/stats", authMiddleware(), messageController.getMessagesStats);
  *               $ref: '#/components/schemas/Message'
  *       400:
  *         description: ID inválido
+ *       401:
+ *         description: Token no proporcionado o inválido
  *       404:
  *         description: Mensaje no encontrado
  */
@@ -244,6 +252,10 @@ router.get("/:id", authMiddleware(), messageController.getMessageById);
  *               $ref: '#/components/schemas/Message'
  *       400:
  *         description: Error en la solicitud
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       403:
+ *         description: No tiene permisos para crear un mensaje
  */
 router.post("/", authMiddleware(ROLES.ADMIN), messageController.createMessage);
 
@@ -275,6 +287,10 @@ router.post("/", authMiddleware(ROLES.ADMIN), messageController.createMessage);
  *               $ref: '#/components/schemas/Message'
  *       400:
  *         description: Error en la solicitud
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       403:
+ *         description: No tiene permisos para actualizar el mensaje
  *       404:
  *         description: Mensaje no encontrado
  */
@@ -300,6 +316,10 @@ router.put(
  *     responses:
  *       200:
  *         description: Mensaje eliminado exitosamente
+ *       401:
+ *         description: Token no proporcionado o inválido
+ *       403:
+ *         description: No tiene permisos para eliminar el mensaje
  *       404:
  *         description: Mensaje no encontrado
  */
