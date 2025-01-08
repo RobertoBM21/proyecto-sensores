@@ -5,8 +5,8 @@ const {
 } = require("../schemas/serverSchema.js");
 
 // Obtener todos los servidores
-exports.getAllServers = async (_req, res) => {
-  const servers = await serverService.getAllServers();
+exports.getAllServers = async (req, res) => {
+  const servers = await serverService.getAllServers(req.user);
   res.json(servers);
 };
 

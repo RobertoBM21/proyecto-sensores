@@ -5,9 +5,23 @@ const { NotFoundError, ConflictError } = require("../utils/errors.js");
 const { encrypt } = require("../utils/crypto.js");
 
 class ServerService {
-  //* Obtener todos los servidores
-  async getAllServers() {
-    return await Server.findAll();
+  //* Obtener todos los servidores permitidos para un usuario
+  async getAllServers(user) {
+    const allowedServers = user.allowedServers;
+
+    // Si no hay servidores permitidos, devolver un array vacío
+    if (!allowedServers) {
+      return [];
+    }
+
+    // Si el usuario tiene acceso a todos los servidores, devolver todos los servidores
+    if (allowedServers.includes("all")) {
+      return await Server.findAll();
+    }
+
+    // Si no, devolver solo los servidores permitidos
+    const serverIds = allowedServers.split(",").map(Number);
+    return await Server.findAll({ where: { id: serverIds } });
   }
 
   //* Obtener un servidor por ID
@@ -84,7 +98,7 @@ class ServerService {
 
   //* Obtener estadísticas generales
   async getGeneralStats() {
-    const servers = await this.getAllServers();
+    const servers = await Server.findAll();
     const serverIds = servers.map((server) => server.id);
 
     // Función auxiliar para manejar cada promesa y mantener consistencia de errores

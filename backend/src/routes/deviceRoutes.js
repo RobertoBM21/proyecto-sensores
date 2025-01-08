@@ -1,5 +1,5 @@
 const deviceController = require("../controllers/deviceController.js");
-const { authMiddleware } = require("../middleware/auth.js");
+const { authMiddleware, ROLES } = require("../middleware/auth.js");
 const express = require("express");
 const router = express.Router();
 
@@ -26,7 +26,7 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Device'
  */
-router.get("/", authMiddleware, deviceController.getAllDevices);
+router.get("/", authMiddleware(), deviceController.getAllDevices);
 
 /**
  * @swagger
@@ -52,7 +52,7 @@ router.get("/", authMiddleware, deviceController.getAllDevices);
  *       409:
  *         description: Ya existe un dispositivo con ese serial
  */
-router.post("/", authMiddleware, deviceController.createDevice);
+router.post("/", authMiddleware(ROLES.ADMIN), deviceController.createDevice);
 
 /**
  * @swagger
@@ -158,7 +158,7 @@ router.post("/", authMiddleware, deviceController.createDevice);
  */
 router.get(
   "/activity",
-  authMiddleware,
+  authMiddleware(),
   deviceController.getDeviceActivityReport
 );
 
@@ -191,7 +191,7 @@ router.get(
 //? La ruta se coloca antes de la ruta /:id para que se procese correctamente
 router.get(
   "/serial/:serial",
-  authMiddleware,
+  authMiddleware(),
   deviceController.getDeviceBySerial
 );
 
@@ -220,7 +220,7 @@ router.get(
  *       404:
  *         description: Dispositivo no encontrado
  */
-router.get("/:id", authMiddleware, deviceController.getDeviceById);
+router.get("/:id", authMiddleware(), deviceController.getDeviceById);
 
 /**
  * @swagger
@@ -255,7 +255,7 @@ router.get("/:id", authMiddleware, deviceController.getDeviceById);
  *       409:
  *         description: Conflicto, el dispositivo ya existe
  */
-router.put("/:id", authMiddleware, deviceController.updateDevice);
+router.put("/:id", authMiddleware(ROLES.ADMIN), deviceController.updateDevice);
 
 /**
  * @swagger
@@ -303,7 +303,11 @@ router.put("/:id", authMiddleware, deviceController.updateDevice);
  *       409:
  *         description: Ya existe un dispositivo con ese serial
  */
-router.patch("/:id", authMiddleware, deviceController.updateDevicePartial);
+router.patch(
+  "/:id",
+  authMiddleware(ROLES.ADMIN),
+  deviceController.updateDevicePartial
+);
 
 /**
  * @swagger
@@ -324,6 +328,10 @@ router.patch("/:id", authMiddleware, deviceController.updateDevicePartial);
  *       404:
  *         description: Dispositivo no encontrado
  */
-router.delete("/:id", authMiddleware, deviceController.deleteDevice);
+router.delete(
+  "/:id",
+  authMiddleware(ROLES.ADMIN),
+  deviceController.deleteDevice
+);
 
 module.exports = router;

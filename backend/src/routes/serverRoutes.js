@@ -1,5 +1,5 @@
 const serverController = require("../controllers/serverController.js");
-const { authMiddleware } = require("../middleware/auth.js");
+const { authMiddleware, ROLES } = require("../middleware/auth.js");
 const express = require("express");
 const router = express.Router();
 
@@ -26,7 +26,7 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/Server'
  */
-router.get("/", authMiddleware, serverController.getAllServers);
+router.get("/", authMiddleware(), serverController.getAllServers);
 
 /**
  * @swagger
@@ -127,7 +127,7 @@ router.get("/stats", serverController.getGeneralStats);
  *       404:
  *         description: Servidor no encontrado
  */
-router.get("/:id", authMiddleware, serverController.getServerById);
+router.get("/:id", authMiddleware(), serverController.getServerById);
 
 /**
  * @swagger
@@ -153,7 +153,7 @@ router.get("/:id", authMiddleware, serverController.getServerById);
  *       409:
  *         description: Ya existe el usuario en el servidor
  */
-router.post("/", authMiddleware, serverController.createServer);
+router.post("/", authMiddleware(ROLES.ADMIN), serverController.createServer);
 
 /**
  * @swagger
@@ -188,7 +188,7 @@ router.post("/", authMiddleware, serverController.createServer);
  *       409:
  *         description: Ya existe el usuario en el servidor
  */
-router.put("/:id", authMiddleware, serverController.updateServer);
+router.put("/:id", authMiddleware(ROLES.ADMIN), serverController.updateServer);
 
 /**
  * @swagger
@@ -209,6 +209,10 @@ router.put("/:id", authMiddleware, serverController.updateServer);
  *       404:
  *         description: Servidor no encontrado
  */
-router.delete("/:id", authMiddleware, serverController.deleteServer);
+router.delete(
+  "/:id",
+  authMiddleware(ROLES.ADMIN),
+  serverController.deleteServer
+);
 
 module.exports = router;
