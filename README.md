@@ -119,11 +119,20 @@ Keycloak proporciona la gestión de autenticación y autorización para el proye
    - Accederá al realm "master"
 
 2. **Crear Administrador Principal**:
+
    - Navegue a: Users → Add user
    - Complete los datos del nuevo administrador
    - En la pestaña Credentials: Establezca una contraseña no temporal
    - En Role mapping: Asigne el rol "admin", filtrando por "realm roles"
    - ⚠️ Elimine el usuario temporal inicial
+
+3. **Contraseñas y Exportación/Importación**:
+   - Al exportar un realm, las contraseñas y secretos no se incluyen por motivos de seguridad
+   - Después de importar un realm, es necesario:
+     - Regenerar y configurar los client secrets para los clientes OAuth2
+     - Reconfigurar las credenciales de los Social Logins (Google, GitHub)
+     - Actualizar las variables de entorno con los nuevos secrets
+   - Se recomienda documentar los client IDs y secrets en un lugar seguro
 
 > **Nota**: El rol admin en el realm master otorga control total sobre Keycloak. No confundir con roles de otros realms.
 
