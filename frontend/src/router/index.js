@@ -38,7 +38,7 @@ const routes = [
       group: RouteGroups.SEARCH,
       label: "Dispositivos",
       groupLabel: "Búsqueda",
-      description: "Busca los dispositivos que han dejado de enviar mensajes.",
+      description: "Busca los dispositivos en base a su última comunicación.",
       requiresAuth: true,
     },
   },
